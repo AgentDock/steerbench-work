@@ -1,0 +1,19 @@
+{
+  "schema_version": "steerbench.variant_configs.v1",
+  "generated_at": "2026-06-07T08:55:30.750Z",
+  "variants": {
+    "mini": {
+      "vendor": "openai",
+      "label": "gpt-5.4-mini",
+      "model": "gpt-5.4-mini",
+      "reasoning_effort": null,
+      "reasoning_label": "off",
+      "max_output_tokens": 8000,
+      "pricing": {
+        "input": 0.75,
+        "output": 4.5
+      },
+      "config_hash": "f15b08eb562cb4f8fdbdf1d6ce16fbcd1a504ac6592bb961efb5d4babb116d07"
+    }
+  }
+}

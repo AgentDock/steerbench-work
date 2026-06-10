@@ -1,0 +1,17 @@
+{
+  "schema_version": "steerbench.validator_report.v1",
+  "run_id": "tm-2026-06-07T08-55-30-748Z",
+  "run_root": "sample-artifacts",
+  "validated_at": "2026-06-08T09:43:30.891Z",
+  "pass": true,
+  "error_count": 0,
+  "errors": [],
+  "checks": {
+    "prompt_hash_matches_plan": true,
+    "variant_config_hashes_match_plan": true,
+    "scenario_files_match_manifest": true,
+    "trial_provenance_intact": true,
+    "cell_recompute_matches": true,
+    "run_complete": true
+  }
+}

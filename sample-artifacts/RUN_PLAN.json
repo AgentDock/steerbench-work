@@ -1,0 +1,21 @@
+{
+  "schema_version": "steerbench.run_plan.v1",
+  "run_id": "tm-2026-06-07T08-55-30-748Z",
+  "created_at": "2026-06-07T08:55:30.778Z",
+  "mode": "sample-artifact",
+  "scenario_set": "steerbench-work-2026-05",
+  "scenario_set_dir": "scenario-sets/steerbench-work-2026-05",
+  "scenario_count": 1,
+  "n_trials_per_cell": 5,
+  "scoring_field": "commit_permission",
+  "prompt_sha256": "5c52863676cebeb0aa14d56e4bb69f129b67bd09942d66a27254336be1e56878",
+  "pass_k_levels": [
+    5
+  ],
+  "planned_variants": [
+    "mini"
+  ],
+  "variant_config_hashes": {
+    "mini": "f15b08eb562cb4f8fdbdf1d6ce16fbcd1a504ac6592bb961efb5d4babb116d07"
+  }
+}

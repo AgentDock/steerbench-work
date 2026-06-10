@@ -1,0 +1,27 @@
+{
+  "name": "steerbench-work-runner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "files": [
+    "src",
+    "scripts",
+    "scenario-sets",
+    "sample-artifacts",
+    "configs",
+    "README.md",
+    "REVIEW_GUIDE.md",
+    "CONTRIBUTING.md",
+    "CITATION.cff",
+    "LICENSE",
+    "LICENSE-DATA",
+    ".env.example"
+  ],
+  "scripts": {
+    "bench": "node src/bench-cli.mjs",
+    "test": "node --test",
+    "validate-sample": "node scripts/validate-run.mjs --run sample-artifacts",
+    "generate-manifest-md": "node scripts/generate-scenario-manifest-md.mjs"
+  },
+  "dependencies": {}
+}

@@ -1,0 +1,26 @@
+{
+  "schema_version": "steerbench.run_state.v1",
+  "run_id": "tm-2026-06-07T08-55-30-748Z",
+  "mode": "sample-artifact",
+  "created_at": "2026-06-07T08:55:30.779Z",
+  "updated_at": "2026-06-08T02:50:41.459Z",
+  "planned_variants": [
+    "mini"
+  ],
+  "variant_runs": {
+    "mini": {
+      "status": "completed",
+      "started_at": "2026-06-07T10:05:53.072Z",
+      "finished_at": "2026-06-07T10:06:51.587Z",
+      "resume_count": 0,
+      "interrupt_signal": null,
+      "n_calls_made": 5,
+      "n_trials_reused": 0,
+      "n_errors": 0,
+      "n_truncated": 0,
+      "n_parse_failed": 0,
+      "n_infrastructure_failed": 0
+    }
+  },
+  "overall_status": "completed"
+}

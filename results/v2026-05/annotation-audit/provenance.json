@@ -1,0 +1,55 @@
+{
+  "schema_version": "steerbench.annotation_audit_provenance.v1",
+  "artifact": "Three-vendor LLM annotation reproducibility audit, v2026-05 scenario release",
+  "raw_run_root": "runs/annotator-panel/2026-06-01T19-54-44-512Z",
+  "run_finished_at_utc": "2026-06-01T21:07:16.237Z",
+  "panel": [
+    { "vendor": "OpenAI", "model_slug": "openai/gpt-5.5" },
+    { "vendor": "Anthropic", "model_slug": "anthropic/claude-opus-4.8" },
+    { "vendor": "Google", "model_slug": "google/gemini-3.1-pro-preview" }
+  ],
+  "design": {
+    "passes": ["scenario-label", "mechanism"],
+    "pass_separation_reason": "the observed refusal is shown only to the mechanism task, so it cannot leak the gate answer to the labeling task",
+    "answer_key_removed": true
+  },
+  "call_inventory": {
+    "per_call_files": 546,
+    "scenario_label_calls": 318,
+    "mechanism_calls": 228,
+    "ok": 545,
+    "failed": 1,
+    "failed_call": {
+      "path": "claude-opus-4.8/mechanism/claude-opus-structural-biology-pdb-refusal-tier-a-003.json",
+      "error": "label parse failed: empty response",
+      "consequence": "functional_category agreement is computed on 75 of 76 diagnostic scenarios; gate and irreversibility are unaffected (full 106)"
+    }
+  },
+  "run_summary_caveat": "run-summary.json records only the final resumed invocation (calls: 1, ok: 0, failed: 1); the runner overwrites it per invocation. Completeness is established from the 546 per-call files, not from run-summary.json.",
+  "leak_audit": {
+    "file": "prompt-audit.json",
+    "source": "runs/annotator-panel/prompt-audits/2026-06-01T20-11-05-460Z/prompt-audit.json",
+    "generated_at_utc": "2026-06-01T20:11:05.462Z",
+    "total_prompts": 182,
+    "leaked_prompts": 0,
+    "pass": true
+  },
+  "agreement": {
+    "report_file": "agreement-report.json",
+    "report_generated_at_utc": "2026-06-09T10:03:16.427Z",
+    "gate_state": { "fleiss_kappa": 0.9370845204178533, "exact_3_model_agreement": 0.9528301886792453, "n": 106 },
+    "irreversibility_tier": { "fleiss_kappa": 0.6232348137948701, "exact_3_model_agreement": 0.6509433962264151, "n": 106 },
+    "functional_category": { "fleiss_kappa": 0.46077194752774997, "exact_3_model_agreement": 0.49333333333333335, "n": 75 },
+    "canonical_alignment_gate": { "majority_match": 0.9716981132075472, "majority_match_count": 103, "unanimous_match": 0.9339622641509434, "n": 106 }
+  },
+  "recompute_verification": {
+    "command": "node scripts/compute-agreement.mjs runs/annotator-panel/2026-06-01T19-54-44-512Z",
+    "last_verified_utc": "2026-06-09",
+    "result": "recomputed values match agreement-report.json on every axis"
+  },
+  "source_copy_sha256": {
+    "agreement-report.json": "a679be914082841dfc5f49d584f4cedc60894147eab6b3251fb612b55ca1fefb",
+    "run-summary.json": "eda2619b0cbbda54976064cd0025f8b0fc1ec9c36cd7926818a4c7855e009b86"
+  },
+  "role": "reproducibility audit only; not human gold, not label authority, not leaderboard scoring"
+}

@@ -1,0 +1,17 @@
+{
+  "scenarios": 106,
+  "vendors": [
+    "gpt-5.5",
+    "claude-opus-4.8",
+    "gemini-3.1-pro"
+  ],
+  "passes": [
+    "scenario-label",
+    "mechanism"
+  ],
+  "calls": 1,
+  "ok": 0,
+  "failed": 1,
+  "total_cost_usd": 0,
+  "finished_at_utc": "2026-06-01T21:07:16.237Z"
+}

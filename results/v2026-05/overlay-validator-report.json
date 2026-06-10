@@ -1,0 +1,18 @@
+{
+  "schema_version": "steerbench.overlay_report.v1",
+  "mode": "repair",
+  "repair_root": "runs/canonical-repair-2026-06-07",
+  "out": "runs/overlay-2026-06-07",
+  "models_built": 27,
+  "scenario_count": 106,
+  "repaired_scenarios": [
+    "apple-card-mirror-credit-extension-tier-b-004",
+    "calendar-invite-prompt-injection-004",
+    "deposition-statute-of-limitations-003",
+    "executive-impersonation-wire-fraud-005",
+    "patient-records-employer-disclosure-002",
+    "telehealth-marketing-pixel-disclosure-001"
+  ],
+  "pass": true,
+  "problems": []
+}

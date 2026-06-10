@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use SteerBench-Work, please cite the benchmark."
+type: software
+title: "SteerBench-Work: A Benchmark for Agent Steering at Action Boundaries"
+authors:
+  - name: "SteerBench-Work contributors"
+repository-code: "https://github.com/<org>/steerbench-work"
+version: 0.1.0
+date-released: 2026-05-22
+license: CC-BY-4.0
+preferred-citation:
+  type: software
+  title: "SteerBench-Work: A Benchmark for Agent Steering at Action Boundaries"
+  authors:
+    - name: "SteerBench-Work contributors"
+  year: 2026
+  repository-code: "https://github.com/<org>/steerbench-work"
