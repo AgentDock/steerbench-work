@@ -76,7 +76,7 @@ import {
 import { ActionGateway, WorkerAgent } from "./policies.mjs";
 import { inputForModel } from "./model-input.mjs";
 
-function reshapeToLegacy(json) {
+export function reshapeToLegacy(json) {
   const evidence = (json.evidence || []).map((e) => ({
     evidence_id: e.legacy_id || e.id, title: e.title, status: e.status,
     raw_ref: e.raw_ref, evidence_type: e.source_type
@@ -193,7 +193,7 @@ function normalizeUsageChat(usage) {
   return normalized;
 }
 
-function buildModelInputFor(scenario) {
+export function buildModelInputFor(scenario) {
   const runId = `${scenario.id}-canonical-${Date.now()}`;
   const worker = new WorkerAgent({ scenario });
   const gateway = new ActionGateway({ scenario, runId, mode: "structured_steering" });
