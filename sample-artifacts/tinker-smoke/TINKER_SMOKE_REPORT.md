@@ -43,3 +43,16 @@ step is building one tokenized training datum in memory.
   artifacts regenerate after the three-rater human-gold pass.
 - No Tinker account, API key, or paid training run was used. The only
   network fetch was the public Qwen tokenizer from Hugging Face.
+
+## Replaying this smoke
+
+The exact test is checked in at `integrations/tinker/run_cookbook_smoke.py`;
+its module docstring carries the one-time environment setup and the two
+export commands that produce the inputs. From the repo root:
+
+```bash
+/tmp/tinker-venv/bin/python integrations/tinker/run_cookbook_smoke.py
+```
+
+Exit code 0 with `7 pass / 0 fail` reproduces every row of the results
+table above.
