@@ -100,7 +100,7 @@ test("README files table lists the dataset tooling", () => {
     "`scripts/assign-splits.mjs`",
     "`scripts/export-sft.mjs`",
     "`scripts/export-preferences.mjs`",
-    "`scripts/integrations/tinker/`"
+    "`integrations/tinker/`"
   ];
   for (const entry of entries) {
     assert.ok(readme.includes(entry), `README files table must list ${entry}`);
