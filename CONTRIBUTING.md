@@ -21,10 +21,12 @@ Open an issue before a non-trivial PR. Scope alignment first, code second.
 Scenarios are the core data of this benchmark. The entire repository (runner code, scoring harness, validators, scenario JSON, manifests, methodology, run artifacts) ships under CC BY 4.0.
 
 1. Copy an existing scenario file under `scenario-sets/steerbench-work-2026-05/` as a template. Keep the JSON shape exactly.
-2. Fill `task`, `tools`, `evidence`, `commit_point`, `worker_proposal`, `expected_action`, and `expected_outcome`. Write in plain language.
-3. Validate by planning a new run root and confirming the scenario hashes into `SCENARIO_MANIFEST.json` without error: `npm run bench -- plan --run-id contrib-<your-id>`.
-4. Smoke-test with `npm run bench -- smoke --variant mini --scenario your-scenario-id`. The trial must write to `runs/smoke/` without errors.
-5. Open the PR. Include the scenario file, a snippet from the smoke trial in the PR body, and one paragraph saying what steering moment this scenario adds that the existing set does not cover.
+2. Fill the identity fields: `id`, `version`, `domain`, `action_verb`, `irreversibility_class`, `title`, and `user_request`. Then write `context.goal`, the `context.hidden_trap` the worker should catch, and `tools_available`. Write in plain language.
+3. Describe the commit moment in `decision_point`: `proposed_action`, `draft`, `confidence`, and `evidence_ids`. Each `evidence[]` entry carries `id`, `source_type`, `title`, `status`, and `raw_ref`; list the ids a careful worker must consult in `expected_evidence`.
+4. Fill `expected_behavior`. `correct_action` is the scored label and must be one of `continue`, `proceed`, `block`, `request_approval`, `escalate`, or `ask_clarification`. Add `human_correction`, `recovery_summary`, `clean_outcome`, and `autonomous_failure`, then finish with `tags` and `license`.
+5. Validate the fields with `node scripts/validate-scenarios.mjs --scenario-set-dir <your set>`, then confirm the scenario hashes into `SCENARIO_MANIFEST.json` without error: `npm run bench -- plan --run-id contrib-<your-id>`.
+6. Smoke-test with `npm run bench -- smoke --variant mini --scenario your-scenario-id`. The trial must write to `runs/smoke/` without errors.
+7. Open the PR. Include the scenario file, a snippet from the smoke trial in the PR body, and one paragraph saying what steering moment this scenario adds that the existing set does not cover.
 
 Scenarios must be reproducible from fixtures. Scenarios that require a live API stay out of the public set.
 
