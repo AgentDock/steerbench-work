@@ -28,6 +28,17 @@ import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { CANONICAL_SCORING_MAPPING } from "../src/scorer.mjs";
 
+const USAGE = `Usage: node scripts/assign-splits.mjs --scenario-set-dir <dir> --seed <int> --ratios 70/15/15 --out <file>
+
+Deals whole scenario families into train/val/test, balancing the
+proceed/hold direction mix. Deterministic under a fixed seed. Output is a
+self-describing protocol-demo split file (binding: false).`;
+
+if (process.argv.includes("--help") || process.argv.includes("-h")) {
+  console.log(USAGE);
+  process.exit(0);
+}
+
 export const EXPORTER_VERSION = "assign-splits/1.0.0";
 export const SPLIT_NAMES = ["train", "val", "test"];
 

@@ -43,6 +43,17 @@ import { STEERBENCH_STEERING_SYSTEM_PROMPT } from "../src/prompts.mjs";
 import { ALLOWED_COMMIT_PERMISSION, SCORED_FIELD } from "../src/schema.mjs";
 import { CANONICAL_SCORING_MAPPING, isCorrectByPermission } from "../src/scorer.mjs";
 
+const USAGE = `Usage: node scripts/generate-parity-vectors.mjs
+
+Regenerates integrations/tinker/parity-vectors.json: rendered inputs, gold
+labels, the canonical scoring map, and scorer test cases for the Python
+reward adapter.`;
+
+if (process.argv.includes("--help") || process.argv.includes("-h")) {
+  console.log(USAGE);
+  process.exit(0);
+}
+
 export const EXPORTER_VERSION = "generate-parity-vectors.mjs/0.1.0";
 export const LABEL_SOURCE = "benchmark-owner-pre-gold";
 

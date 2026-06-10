@@ -17,6 +17,18 @@ import { fileURLToPath } from "node:url";
 import { CANONICAL_SCORING_MAPPING, IRREVERSIBILITY_WEIGHTS } from "../src/scorer.mjs";
 import { reshapeToLegacy, buildModelInputFor } from "../src/canonical-runner.mjs";
 
+const USAGE = `Usage: node scripts/validate-scenarios.mjs --scenario-set-dir <dir> [--report <file>]
+
+Validates every scenario JSON in the directory. Scoring-critical gaps
+(missing id or correct_action, unresolvable evidence ids, unknown
+irreversibility class, empty family key, missing license) fail loudly with
+exit 1; enrichment gaps warn only.`;
+
+if (process.argv.includes("--help") || process.argv.includes("-h")) {
+  console.log(USAGE);
+  process.exit(0);
+}
+
 export const VALIDATOR_VERSION = "validate-scenarios/1.0.0";
 
 const KNOWN_ACTIONS = Object.keys(CANONICAL_SCORING_MAPPING);

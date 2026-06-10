@@ -40,6 +40,17 @@ import { reshapeToLegacy, buildModelInputFor } from "../src/canonical-runner.mjs
 import { TRIAL_STATUS } from "../src/trial-store.mjs";
 import { SCORED_FIELD } from "../src/schema.mjs";
 
+const USAGE = `Usage: node scripts/export-preferences.mjs --runs-dir <dir> --scenario-set-dir <dir> [--splits <file> --split <name>] [--max-pairs-per-scenario N] [--seed N] --out <dir>
+
+Mines stored ok-trials into preference pairs (comparison/label JSONL, the
+tinker-cookbook shape; labels A/B only, ties impossible) plus a provenance
+sidecar.`;
+
+if (process.argv.includes("--help") || process.argv.includes("-h")) {
+  console.log(USAGE);
+  process.exit(0);
+}
+
 export const EXPORTER_VERSION = "preference-exporter/0.1.0";
 
 // Labels exported now predate the human-gold pass, so every row says so.

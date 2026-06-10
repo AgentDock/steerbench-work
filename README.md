@@ -266,6 +266,7 @@ with the exact command that produced them.
 | `src/bench-cli.mjs` | Public `bench` CLI (plan / smoke / run / status / validate / aggregate) |
 | `scripts/validate-run.mjs` | Snapshot drift + recompute check; writes `validator-report.json` |
 | `scripts/aggregate-canonical.mjs` | Reshapes a validated run into publish artifacts |
+| `SKILL.md` | Agent skill: lets a coding agent operate the runner (commands, workflows, claim guardrails) |
 | `scripts/validate-scenarios.mjs` | Field-level scenario JSON check for a scenario-set directory |
 | `scripts/assign-splits.mjs` | Assigns scenario families to train / dev / test; writes `splits.json` |
 | `scripts/export-sft.mjs` | Exports SFT training-view rows (pre-gold labels, provenance-stamped) |

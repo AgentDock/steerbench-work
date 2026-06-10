@@ -27,6 +27,16 @@ import { ALLOWED_POLICY_ACTIONS } from "../src/schema.mjs";
 import { CANONICAL_SCORING_MAPPING } from "../src/scorer.mjs";
 import { sha256File } from "../src/manifest.mjs";
 
+const USAGE = `Usage: node scripts/export-sft.mjs --scenario-set-dir <dir> [--splits <file> --split <name>] --out <dir>
+
+Exports supervised training-view rows ({"messages": [...]} JSONL, the
+tinker-cookbook chat shape) plus a provenance sidecar per row.`;
+
+if (process.argv.includes("--help") || process.argv.includes("-h")) {
+  console.log(USAGE);
+  process.exit(0);
+}
+
 export const EXPORTER_VERSION = "sft-exporter/0.1.0";
 
 // Labels exported now predate the human-gold pass, so every row says so.
