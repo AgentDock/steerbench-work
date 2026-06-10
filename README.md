@@ -217,6 +217,39 @@ runs/canonical-multi-trial/<run-id>/
 
 `sample-artifacts/` is a frozen (variant, scenario) cell plus the five run-root snapshot files. A reviewer can inspect canonical output shapes without making any API calls. Start at sample-artifacts/README.md.
 
+## Dataset tooling (exact commands)
+
+The scenario-to-training-view path, end to end. All commands run offline
+against scenario JSON and stored run artifacts; none of them calls a model
+API or starts a training run.
+
+```bash
+# 1. Validate a scenario set. Missing scoring-critical fields exit 1 loudly.
+node scripts/validate-scenarios.mjs --scenario-set-dir scenario-sets/steerbench-work-2026-05
+
+# 2. Assign family-grouped splits (protocol demonstration; the published set
+#    cannot serve as a held-out test, see sample-artifacts/protocol-demo-splits/).
+node scripts/assign-splits.mjs --scenario-set-dir scenario-sets/steerbench-work-2026-05   --seed 1 --ratios 70/15/15 --out /tmp/splits.json
+
+# 3. Export supervised training-view rows (tinker-cookbook chat JSONL shape).
+node scripts/export-sft.mjs --scenario-set-dir scenario-sets/steerbench-work-2026-05   [--splits /tmp/splits.json --split train] --out /tmp/sft
+
+# 4. Export preference pairs from stored trials (A/B labels only, no ties).
+node scripts/export-preferences.mjs --runs-dir runs   --scenario-set-dir scenario-sets/steerbench-work-2026-05   --max-pairs-per-scenario 6 --seed 1 --out /tmp/pairs
+
+# 5. Regenerate the Tinker reward-adapter parity vectors, then self-test the
+#    Python side (260 cases must match the Node scorer).
+node scripts/generate-parity-vectors.mjs
+python3 integrations/tinker/steerbench_env.py
+```
+
+Labels carried by these exports are the benchmark-owner labels
+(`label_source: benchmark-owner-pre-gold` in every provenance sidecar)
+until the three-rater human-gold pass lands; regeneration after that pass
+is one command per artifact. Pair counts and row counts depend on the
+flags and on how many run roots exist locally; cite numbers only together
+with the exact command that produced them.
+
 ## Files
 
 | Path | Role |
