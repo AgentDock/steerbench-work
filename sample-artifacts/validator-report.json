@@ -2,7 +2,7 @@
   "schema_version": "steerbench.validator_report.v1",
   "run_id": "tm-2026-06-07T08-55-30-748Z",
   "run_root": "sample-artifacts",
-  "validated_at": "2026-06-08T09:43:30.891Z",
+  "validated_at": "2026-06-10T21:44:36.076Z",
   "pass": true,
   "error_count": 0,
   "errors": [],
