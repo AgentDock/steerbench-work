@@ -1,0 +1,98 @@
+[
+ {
+  "scenario_id": "account-cancellation-001",
+  "scenario_sha256": "2d4e4efd54749b70920681ca5407357ea1eaa0568910dde1973f86b755d1c6af",
+  "split": null,
+  "label_source": "benchmark-owner-pre-gold",
+  "exporter_version": "sft-exporter/0.1.0",
+  "render_sha256": "d059c0350c39cc05ceaaed2f38e8b2b4c23f6ebbd1c46fceec9c4b19370f61c1"
+ },
+ {
+  "scenario_id": "air-canada-bereavement-policy-promise-realworld-010",
+  "scenario_sha256": "a0f134e7d562148c9bfbcf940d2fb086c5471784de91ab81b99a197a02168dbe",
+  "split": null,
+  "label_source": "benchmark-owner-pre-gold",
+  "exporter_version": "sft-exporter/0.1.0",
+  "render_sha256": "facd3da7d259485b005eb2dbe9174099f10d879b233feb204c136d1874eab480"
+ },
+ {
+  "scenario_id": "amazon-hiring-mirror-advance-candidate-tier-b-005",
+  "scenario_sha256": "cb9dd4812e90a7c8edbda060e58ca6ed28a07749a9c11569501624cb62e56a1f",
+  "split": null,
+  "label_source": "benchmark-owner-pre-gold",
+  "exporter_version": "sft-exporter/0.1.0",
+  "render_sha256": "9957f61a48ce415f14a6dae72edfd03a41447bf211b201606bc8c7b99dccd43b"
+ },
+ {
+  "scenario_id": "angry-customer-escalation-001",
+  "scenario_sha256": "b4bd1e85005e3ee37d4f6164d077b7f8ab840c4b4eec74b64e5aa369c0e18e4e",
+  "split": null,
+  "label_source": "benchmark-owner-pre-gold",
+  "exporter_version": "sft-exporter/0.1.0",
+  "render_sha256": "ed32a454b8d24d043e0a538e8d7b7c57b92fbaa32a3f2298f3b616d0546a7f6b"
+ },
+ {
+  "scenario_id": "apple-card-mirror-credit-extension-tier-b-004",
+  "scenario_sha256": "4015a751b05bcc656668bb4f07386a5f051b952c1039fd4f17cdb3c2839b4cf4",
+  "split": null,
+  "label_source": "benchmark-owner-pre-gold",
+  "exporter_version": "sft-exporter/0.1.0",
+  "render_sha256": "7751cbd65ac2d5baa5d43dbc73ead95b50fa1d453c749044b2603db4ed9bb5bf"
+ },
+ {
+  "scenario_id": "bard-jwst-mirror-fact-checked-claim-tier-b-009",
+  "scenario_sha256": "3248a6a69c874c93c847ba03fec9c343b2e0e77cf8bfbcbaba7ed3330166d552",
+  "split": null,
+  "label_source": "benchmark-owner-pre-gold",
+  "exporter_version": "sft-exporter/0.1.0",
+  "render_sha256": "f3e284ead75bd9fe5326c2bcc5eac908151b735425f44a3d91745ddd7da0f440"
+ },
+ {
+  "scenario_id": "bing-sydney-conversation-end-refusal-tier-a-016",
+  "scenario_sha256": "1cf84eb657536c422dffc7bbbf66cd49011b065345bf9f641a01a31fe3d7147c",
+  "split": null,
+  "label_source": "benchmark-owner-pre-gold",
+  "exporter_version": "sft-exporter/0.1.0",
+  "render_sha256": "3b37a5e48be3427a83064abf649283bf8d229656d2edd76d0305815030448070"
+ },
+ {
+  "scenario_id": "bulk-email-001",
+  "scenario_sha256": "9d6cdf899abe0e738209128426275baf994dd6ecd6df0568f971124e4a7b5b1f",
+  "split": null,
+  "label_source": "benchmark-owner-pre-gold",
+  "exporter_version": "sft-exporter/0.1.0",
+  "render_sha256": "73805430679a0d1de8447dbe690ccf4eec084d56185699320c9b9710aee92a75"
+ },
+ {
+  "scenario_id": "calendar-booking-001",
+  "scenario_sha256": "3a82624ff5433f721ca178f1696e5cbaf6b8001c3ceda7a2ba3219db3037edad",
+  "split": null,
+  "label_source": "benchmark-owner-pre-gold",
+  "exporter_version": "sft-exporter/0.1.0",
+  "render_sha256": "308779a37cd9e900a0444e71c4be01b56a023af06222327ee8023e8c5a223466"
+ },
+ {
+  "scenario_id": "calendar-invite-prompt-injection-004",
+  "scenario_sha256": "76e8789596dc7b17c76b92875a107dcf0c368f3e736b111c2a8d9d054b73824c",
+  "split": null,
+  "label_source": "benchmark-owner-pre-gold",
+  "exporter_version": "sft-exporter/0.1.0",
+  "render_sha256": "986c6f85489b94a03c53af4e2b0dbded7fc79e97c1858a146bd636ad46b3305b"
+ },
+ {
+  "scenario_id": "chatgpt-1200-line-script-refusal-tier-a-008",
+  "scenario_sha256": "a52263924d2194b4d0cc216498f0d361874044f5b8bf548db3b12fe427ac6178",
+  "split": null,
+  "label_source": "benchmark-owner-pre-gold",
+  "exporter_version": "sft-exporter/0.1.0",
+  "render_sha256": "1f09de7ca423ffb3d0994511f1ac847159c3abf9c847d65e40efb83f4c3d34e9"
+ },
+ {
+  "scenario_id": "chatgpt-as-ai-language-model-disclaimer-refusal-tier-a-019",
+  "scenario_sha256": "489b895fbb5d44cee18702d0627e0ff170cf067b899e4d08b04011ac5720d6a3",
+  "split": null,
+  "label_source": "benchmark-owner-pre-gold",
+  "exporter_version": "sft-exporter/0.1.0",
+  "render_sha256": "f07c602098b894c63e50ca83c9793d8fe8f92a8bc3cbc448d31e6ed17483348c"
+ }
+]
