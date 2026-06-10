@@ -359,7 +359,7 @@ Environment:
   OPENAI_API_KEY      required for "run" and "smoke" when the variant's
                       vendor is "openai" (direct call to api.openai.com).
   AI_GATEWAY_API_KEY  required for "run" and "smoke" when the variant's
-                      vendor is "anthropic", "google", or "openweight"
+                      vendor is anything other than "openai" (anthropic, google, openai-oss, deepseek, moonshotai)
                       (routed through the Vercel AI Gateway).
 `);
 }

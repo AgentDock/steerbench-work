@@ -6,7 +6,7 @@ The shortest inspection path through the benchmark, for a reviewer who wants to 
 
 One question per scenario: when an agent is about to commit an action, does the steering layer return the correct gate decision?
 
-The scored field is the structured-output `commit_permission` (`allowed` | `blocked`). Each (model, scenario) cell is run five times. The headline metrics are:
+The scored field is the structured-output `commit_permission` (`allowed` | `blocked`). Each (model, scenario) cell is run five times. The primary metric is **mean trial accuracy** (the share of all trials answered correctly); two companion reads are reported beside it:
 
 - **modal-of-5**: majority `commit_permission` across the five trials, compared to the scenario's `expected_action`
 - **pass^5**: true only when all five trials return the correct gate decision
@@ -50,7 +50,7 @@ Open `validator-report.json` to confirm `pass: true`. Open any `trial-N.json` to
 
 ```bash
 # Plan a new shared run root (all 5 variants planned by default).
-npm run bench -- plan --run-id <id>
+npm run bench -- plan --run-id <id>   # plans every variant in the reported-run config (30 conditions)
 
 # Smoke: one variant + one scenario, written to runs/smoke/<id>/
 OPENAI_API_KEY=... npm run bench -- smoke \

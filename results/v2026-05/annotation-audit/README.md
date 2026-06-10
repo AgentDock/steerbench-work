@@ -73,4 +73,6 @@ Reproduce the agreement numbers from the raw root with:
 
 ```
 node scripts/compute-agreement.mjs runs/annotator-panel/2026-06-01T19-54-44-512Z
+# Requires the local raw-call archive; from a clone, verify via
+# agreement-report.json + provenance.json + checksums.txt instead.
 ```

@@ -4,7 +4,7 @@ The benchmark gets better when people add scenarios, configurations, adapters, o
 
 ## Code of Conduct
 
-This project follows the [Contributor Covenant 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). Report unacceptable behavior to the maintainers via a private GitHub message on the repository.
+This project follows the [Contributor Covenant 2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). Report unacceptable behavior to the maintainers at oguz@agentdock.ai or via GitHub's report-content flow.
 
 ## Where to Start
 
@@ -20,7 +20,7 @@ Open an issue before a non-trivial PR. Scope alignment first, code second.
 
 Scenarios are the core data of this benchmark. The entire repository (runner code, scoring harness, validators, scenario JSON, manifests, methodology, run artifacts) ships under CC BY 4.0.
 
-1. Copy an existing scenario file under `scenario-sets/steerbench-work-2026-05/` as a template. Keep the JSON shape exactly.
+1. Copy an existing scenario file under `scenario-sets/steerbench-work-2026-05/` as a template (`refund-policy-001.json` carries the full standard shape). Keep the JSON shape exactly.
 2. Fill the identity fields: `id`, `version`, `domain`, `action_verb`, `irreversibility_class`, `title`, and `user_request`. Then write `context.goal`, the `context.hidden_trap` the worker should catch, and `tools_available`. Write in plain language.
 3. Describe the commit moment in `decision_point`: `proposed_action`, `draft`, `confidence`, and `evidence_ids`. Each `evidence[]` entry carries `id`, `source_type`, `title`, `status`, and `raw_ref`; list the ids a careful worker must consult in `expected_evidence`.
 4. Fill `expected_behavior`. `correct_action` is the scored label and must be one of `continue`, `proceed`, `block`, `request_approval`, `escalate`, or `ask_clarification`. Add `human_correction`, `recovery_summary`, `clean_outcome`, and `autonomous_failure`, then finish with `tags` and `license`.
@@ -44,7 +44,7 @@ Adapters connect a worker runtime to the benchmark. A new adapter must:
 
 1. Emit a structured response carrying the `commit_permission` field defined in `src/schema.mjs`.
 2. Attach an integrity-evidence record using the `steerbench.integrity_evidence.v1` shape documented in `src/integrity-evidence.mjs`.
-3. Pass the adapter contract checks invoked during `bench validate`.
+3. Smoke-test the adapter on one scenario and confirm the resulting trial passes `bench validate` (schema parse, provenance fields, prompt hash).
 
 Adapter PRs are reviewed most carefully because one adapter touches every scenario.
 
@@ -74,4 +74,4 @@ PRs are reviewed by the project maintainers. Tag a maintainer on your PR; if you
 
 ## Tests
 
-Every code PR must pass `npm run bench -- validate --run-id <id>` against a smoke run, and any unit checks the package ships, locally before review.
+Every code PR must pass `npm run bench -- validate --run-id <id> --mode smoke` against a smoke run, and any unit checks the package ships, locally before review.

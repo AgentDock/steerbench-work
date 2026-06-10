@@ -55,4 +55,5 @@ export commands that produce the inputs. From the repo root:
 ```
 
 Exit code 0 with `7 pass / 0 fail` reproduces every row of the results
-table above.
+table above (the loader and label checks on the pairs file run as one
+combined check in the replay script, so 8 table rows map to 7 records).
