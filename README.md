@@ -235,9 +235,9 @@ runs/canonical-multi-trial/<run-id>/
 | `scripts/aggregate-canonical.mjs` | Reshapes a validated run into publish artifacts |
 | `scripts/validate-scenarios.mjs` | Field-level scenario JSON check for a scenario-set directory |
 | `scripts/assign-splits.mjs` | Assigns scenario families to train / dev / test; writes `splits.json` |
-| `scripts/export-sft.mjs` | Exports SFT training records (pre-gold labels, provenance-stamped) |
+| `scripts/export-sft.mjs` | Exports SFT training-view rows (pre-gold labels, provenance-stamped) |
 | `scripts/export-preferences.mjs` | Exports preference-pair records (pre-gold labels, provenance-stamped) |
-| `scripts/integrations/tinker/` | Tinker training-loop integration for the exported datasets |
+| `integrations/tinker/` | Experimental Tinker reward adapter (exposes the scorer as an RL reward; training runs are future work) |
 | `sample-artifacts/` | One frozen (variant, scenario) cell for offline review |
 
 ## License and citation
