@@ -256,6 +256,26 @@ training reward. Answers append to one JSONL per anonymized rater id, and
 every answer is bound to its queue item by hash, so a regenerated queue can
 never silently absorb stale answers.
 
+The interface ships two layouts over the same items and API: a focused
+card and a two-panel view (content left, question right). Scenario ids,
+variant keys, and source refs stay in a fine-print footer so the rater
+reads only the situation, the model's stated rationale, one fact, and one
+question.
+
+![Step labeling, focused card layout](docs/img/label-web-card.png)
+
+![Step labeling, two-panel layout](docs/img/label-web-panel.png)
+
+Starting the labeling server looks like this:
+
+```text
+$ node scripts/label-web.mjs --queue annotations/step-label-queue.jsonl
+Labeling 42 items from annotations/step-label-queue.jsonl
+Answers append to annotations/step-labels.<rater>.jsonl
+Focused card: http://127.0.0.1:4400/card
+Two-panel:    http://127.0.0.1:4400/panel
+```
+
 Labels carried by these exports are the benchmark-owner labels
 (`label_source: benchmark-owner-pre-gold` in every provenance sidecar)
 until the three-rater human-gold pass lands; regeneration after that pass

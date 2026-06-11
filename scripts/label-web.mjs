@@ -238,9 +238,9 @@ function renderPage(view) {
   .situation { font-family: "IBM Plex Serif", Georgia, serif; font-size: 19px;
                font-weight: 600; line-height: 1.45; }
   .said { line-height: 1.65; padding-left: 16px; border-left: 2px solid var(--ink);
-          white-space: pre-wrap; }
-  .fact { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
-          padding: 14px 0; line-height: 1.55; }
+          white-space: pre-wrap; margin-bottom: 30px; }
+  .fact { border: 1px solid var(--line); background: #fafafa; padding: 18px 20px;
+          line-height: 1.6; font-size: 16.5px; border-radius: 4px; }
   .question { font-family: "IBM Plex Serif", Georgia, serif; font-weight: 600;
               font-size: 19px; margin: 26px 0 16px; }
   button { font: inherit; padding: 10px 24px; border: 1px solid var(--ink);
