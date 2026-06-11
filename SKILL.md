@@ -71,6 +71,8 @@ node scripts/generate-parity-vectors.mjs                       # rebuild the Tin
 python3 integrations/tinker/run_cookbook_smoke.py              # replay the official-loader smoke
 node scripts/build-step-label-queue.mjs --runs-dir runs --scenario-set-dir <dir> --out <file>
 node scripts/label-web.mjs --queue <file> --port 4400          # browser labeling for human raters
+node scripts/label-web.mjs --queue docs/annotation/calibration-queue.jsonl --calibration-key docs/annotation/calibration-key.json
+node scripts/step-label-report.mjs --queue <file>              # agreement + adjudication queue
 ```
 
 ## Common workflows
@@ -104,6 +106,13 @@ hash-bound to their queue items. These human answers are the gold set an
 automated step grader must clear 0.75 Fleiss kappa against before its
 output may serve as a training reward; below that bar it stays
 evaluation-side.
+
+The pass runs the standard quality loop: raters read
+`docs/annotation/ANNOTATION_GUIDELINES.md` (frozen per pass, revised only
+between passes), qualify on the calibration set via `--calibration-key`
+(80% bar; the shipped key is a draft pending owner adjudication), label
+with the flag action available for unjudgeable cards, and finish with
+`step-label-report.mjs` for agreement and the adjudication queue.
 
 ## Guardrails
 

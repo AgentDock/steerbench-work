@@ -264,6 +264,28 @@ question.
 
 ![Step labeling interface, two-panel layout](docs/img/label-web-panel.png)
 
+The annotation component follows the standard quality loop end to end:
+versioned rater guidelines (`docs/annotation/ANNOTATION_GUIDELINES.md`),
+a calibration set with an answer key that the tool scores automatically
+(`--calibration-key`; raters qualify at 80% before real answers count), a
+flag action that routes broken or unjudgeable cards to review instead of
+forcing a guess, and an agreement report that computes exact agreement,
+Fleiss kappa, and the adjudication queue across all rater files:
+
+```bash
+# Qualify a rater on the settled practice set.
+node scripts/label-web.mjs --queue docs/annotation/calibration-queue.jsonl   --calibration-key docs/annotation/calibration-key.json
+
+# After a pass: agreement + adjudication queue across every rater file.
+node scripts/step-label-report.mjs --queue annotations/step-label-queue.jsonl   --out annotations/step-label-report.json
+```
+
+Low agreement is read as guideline ambiguity: the fix is the next
+guidelines version after the pass, never a mid-pass edit. The calibration
+key ships as a draft pending adjudication by both benchmark owners and is
+marked as such; the tool reports provisional scores until the key's status
+is flipped.
+
 Starting the labeling server looks like this:
 
 ```text
@@ -303,7 +325,9 @@ with the exact command that produced them.
 | `scripts/export-sft.mjs` | Exports SFT training-view rows (pre-gold labels, provenance-stamped) |
 | `scripts/export-preferences.mjs` | Exports preference-pair records (pre-gold labels, provenance-stamped) |
 | `scripts/build-step-label-queue.mjs` | Samples (rationale, evidence) pairs from stored trials into a labeling queue |
-| `scripts/label-web.mjs` | Local browser interface for human step-evidence labeling; per-rater JSONL output |
+| `scripts/label-web.mjs` | Local browser interface for human step-evidence labeling; per-rater JSONL output; calibration scoring |
+| `scripts/step-label-report.mjs` | Exact agreement, Fleiss kappa, and the adjudication queue across rater files |
+| `docs/annotation/` | Versioned rater guidelines, calibration queue, and draft answer key |
 | `integrations/tinker/` | Experimental Tinker reward adapter (exposes the scorer as an RL reward; training runs are future work) |
 | `sample-artifacts/` | One frozen (variant, scenario) cell for offline review |
 

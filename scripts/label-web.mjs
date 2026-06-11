@@ -40,15 +40,17 @@ import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
-const USAGE = `Usage: node scripts/label-web.mjs --queue <file> [--out-dir <dir>] [--port N]
+const USAGE = `Usage: node scripts/label-web.mjs --queue <file> [--out-dir <dir>] [--port N] [--calibration-key <file>]
 
 Serves the step-evidence labeling interface on 127.0.0.1. Two layouts:
 /card (focused card) and /panel (content left, question right). Answers
-append to <out-dir>/step-labels.<rater>.jsonl. Resumable; offline; no
+append to <out-dir>/step-labels.<rater>.jsonl. With --calibration-key the
+finish screen scores the rater against the key (qualification mode) and
+writes <out-dir>/calibration-report.<rater>.json. Resumable; offline; no
 model API calls.`;
 
 const RATER_RE = /^[a-z0-9_-]{1,16}$/i;
-const ANSWERS = new Set(["yes", "no", "unclear"]);
+const ANSWERS = new Set(["yes", "no", "unclear", "flag"]);
 
 /** Loads the queue JSONL into an ordered array plus an id index. */
 function loadQueue(queuePath) {
@@ -93,16 +95,51 @@ function itemView(item) {
   };
 }
 
-function stateFor(queue, outDir, rater) {
+/**
+ * Scores a finished rater against a calibration key. Only keyed items
+ * count; a flag on a keyed item is a mismatch (the key holder settled it,
+ * so "cannot judge" disagrees with the key).
+ */
+function calibrationResult(calKey, answered) {
+  const entries = Object.entries(calKey.items ?? {});
+  const passBar = calKey.pass_bar ?? 0.8;
+  const mismatches = [];
+  let matched = 0;
+  for (const [itemId, expected] of entries) {
+    const got = answered.get(itemId)?.answer ?? null;
+    if (got === expected.answer) matched += 1;
+    else mismatches.push({ item_id: itemId, expected: expected.answer, got });
+  }
+  const score = entries.length > 0 ? matched / entries.length : 0;
+  return {
+    matched,
+    keyed: entries.length,
+    score: Number(score.toFixed(3)),
+    pass_bar: passBar,
+    passed: score >= passBar,
+    provisional: calKey.status !== "adjudicated",
+    mismatches
+  };
+}
+
+function stateFor(queue, outDir, rater, calKey) {
   const answered = readAnswers(outDir, rater);
   const next = queue.items.find((item) => !answered.has(item.item_id));
-  return {
+  const state = {
     rater,
     total: queue.items.length,
     answered: answered.size,
     done: !next,
     item: next ? itemView(next) : null
   };
+  if (state.done && calKey) {
+    state.calibration = calibrationResult(calKey, answered);
+    fs.writeFileSync(
+      path.join(outDir, `calibration-report.${rater}.json`),
+      `${JSON.stringify({ rater, generated_at: new Date().toISOString(), ...state.calibration }, null, 2)}\n`
+    );
+  }
+  return state;
 }
 
 function sendJson(res, status, body) {
@@ -134,8 +171,11 @@ function readBody(req, limit = 65536) {
  * @param options - queuePath and outDir
  * @returns A Node http.Server (not yet listening)
  */
-export function createLabelServer({ queuePath, outDir }) {
+export function createLabelServer({ queuePath, outDir, calibrationKeyPath }) {
   const queue = loadQueue(queuePath);
+  const calKey = calibrationKeyPath
+    ? JSON.parse(fs.readFileSync(calibrationKeyPath, "utf8"))
+    : null;
   fs.mkdirSync(outDir, { recursive: true });
 
   return http.createServer(async (req, res) => {
@@ -154,7 +194,7 @@ export function createLabelServer({ queuePath, outDir }) {
         sendJson(res, 400, { error: "Invalid rater id (letters, digits, _ or -, max 16)" });
         return;
       }
-      sendJson(res, 200, stateFor(queue, outDir, rater));
+      sendJson(res, 200, stateFor(queue, outDir, rater, calKey));
       return;
     }
 
@@ -195,7 +235,7 @@ export function createLabelServer({ queuePath, outDir }) {
         };
         fs.appendFileSync(answerFileFor(outDir, rater), `${JSON.stringify(record)}\n`);
       }
-      sendJson(res, 200, stateFor(queue, outDir, rater));
+      sendJson(res, 200, stateFor(queue, outDir, rater, calKey));
       return;
     }
 
@@ -247,6 +287,12 @@ function renderPage(view) {
            background: #fff; cursor: pointer; margin: 0 10px 10px 0; }
   button:hover { background: var(--ink); color: #fff; }
   button .key { opacity: 0.5; font-size: 12px; margin-left: 7px; }
+  button.flag { border-color: var(--line); color: var(--muted); }
+  button.flag:hover { background: #fff; border-color: var(--ink); color: var(--ink); }
+  .cal { margin-top: 18px; border-top: 1px solid var(--line); padding-top: 16px;
+         text-align: left; line-height: 1.7; }
+  .cal .miss { font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+               font-size: 12px; color: var(--muted); }
   .legend { font-size: 13.5px; color: var(--muted); line-height: 1.7; margin-top: 12px; }
   .legend b { color: var(--ink); font-weight: 600; }
   .fineprint { font-size: 11px; color: var(--muted);
@@ -295,11 +341,14 @@ function renderPage(view) {
           <button data-answer="yes">Yes<span class="key">Y</span></button>
           <button data-answer="no">No<span class="key">N</span></button>
           <button data-answer="unclear">Can't tell<span class="key">U</span></button>
+          <button data-answer="flag" class="flag">Flag<span class="key">F</span></button>
         </div>
         <div class="legend">
           <b>Yes</b>: the explanation clearly mentions or uses it.<br>
           <b>No</b>: the explanation never touches it.<br>
-          <b>Can't tell</b>: it gestures vaguely; you can't honestly say yes or no.
+          <b>Can't tell</b>: it gestures vaguely; you can't honestly say yes or no.<br>
+          <b>Flag</b>: something is wrong with this card, or you don't understand
+          it; it goes to review instead of counting as your judgment.
         </div>
       </div>
     </div>
@@ -309,6 +358,7 @@ function renderPage(view) {
   <div id="finished" class="card done" style="display:none">
     <p><strong>All cards answered. Thank you.</strong></p>
     <p id="summary"></p>
+    <div id="calibration" class="cal" style="display:none"></div>
   </div>
 </main>
 <script>
@@ -324,6 +374,26 @@ function renderPage(view) {
       el("work").style.display = "none";
       el("finished").style.display = "block";
       el("summary").textContent = state.answered + " answers saved for " + state.rater;
+      if (state.calibration) {
+        var c = state.calibration;
+        var html = "<strong>Calibration: " + c.matched + " of " + c.keyed +
+          " matched (" + Math.round(c.score * 100) + "%), " +
+          (c.passed ? "PASS" : "BELOW THE BAR") +
+          " (bar " + Math.round(c.pass_bar * 100) + "%).</strong>";
+        if (c.provisional) {
+          html += "<br>The answer key is a draft pending adjudication; treat this " +
+            "score as practice, not qualification.";
+        }
+        if (c.mismatches.length > 0) {
+          html += "<br>Review these with the adjudicator:";
+          c.mismatches.forEach(function (m) {
+            html += "<br><span class=\\"miss\\">" + m.item_id + " (expected " +
+              m.expected + ", got " + (m.got || "no answer") + ")</span>";
+          });
+        }
+        el("calibration").innerHTML = html;
+        el("calibration").style.display = "block";
+      }
       return;
     }
     current = state.item;
@@ -376,6 +446,7 @@ function renderPage(view) {
     if (e.key === "y" || e.key === "Y") answer("yes");
     if (e.key === "n" || e.key === "N") answer("no");
     if (e.key === "u" || e.key === "U") answer("unclear");
+    if (e.key === "f" || e.key === "F") answer("flag");
   });
 
   // Auto-resume: a returning rater (including after a layout switch) goes
@@ -405,6 +476,7 @@ function parseArgs(argv) {
     else if (flag === "--queue") args.queue = next();
     else if (flag === "--out-dir") args.outDir = next();
     else if (flag === "--port") args.port = Number(next());
+    else if (flag === "--calibration-key") args.calibrationKeyPath = next();
     else throw new Error(`Unknown flag: ${flag}`);
   }
   return args;
@@ -423,7 +495,11 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     console.log(USAGE);
     process.exit(0);
   }
-  const server = createLabelServer({ queuePath: args.queue, outDir: args.outDir });
+  const server = createLabelServer({
+    queuePath: args.queue,
+    outDir: args.outDir,
+    calibrationKeyPath: args.calibrationKeyPath
+  });
   server.listen(args.port, args.host, () => {
     const { items } = loadQueue(args.queue);
     console.log(`Labeling ${items.length} items from ${args.queue}`);
