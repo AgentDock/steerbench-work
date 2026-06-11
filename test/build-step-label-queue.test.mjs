@@ -42,6 +42,7 @@ before(() => {
     path.join(scenarioSetDir, "fixture-scn-001.json"),
     JSON.stringify({
       id: "fixture-scn-001",
+      title: "Deploy of a new order router with one server on the old build",
       evidence: [
         { id: "E01", legacy_id: "doc:freeze", title: "Active code freeze policy", raw_ref: "policies/freeze.md" },
         { id: "E03", title: "Owner approval required in writing" }
@@ -80,6 +81,11 @@ test("builds one item per resolvable (trial, evidence entry) for eligible trials
   const resolved = queue.items.find((i) => i.evidence_src === "policies/freeze.md");
   assert.equal(resolved.evidence_text, "Active code freeze policy");
   assert.ok(queue.items.every((i) => i.evidence_text !== ""));
+  assert.ok(
+    queue.items.every(
+      (i) => i.scenario_title === "Deploy of a new order router with one server on the old build"
+    )
+  );
   assert.ok(queue.items.every((i) => i.rationale.includes("server eight")));
   assert.ok(queue.items.every((i) => /^[0-9a-f]{64}$/.test(i.item_sha256)));
 });

@@ -62,12 +62,18 @@ before(async () => {
 
 after(() => server.close());
 
-test("serves the labeling page at /", async () => {
-  const res = await fetch(`${base}/`);
-  assert.equal(res.status, 200);
-  const html = await res.text();
-  assert.ok(html.includes("SteerBench step labeling"));
-  assert.ok(html.includes("data-answer=\"unclear\""));
+test("serves both layouts in plain language", async () => {
+  for (const route of ["/", "/card", "/panel"]) {
+    const res = await fetch(`${base}${route}`);
+    assert.equal(res.status, 200);
+    const html = await res.text();
+    assert.ok(html.includes("SteerBench labeling"));
+    assert.ok(html.includes("data-answer=\"unclear\""));
+    assert.ok(html.includes("What the AI said when it decided"));
+    assert.ok(html.includes("Can't tell"));
+  }
+  const panel = await (await fetch(`${base}/panel`)).text();
+  assert.ok(panel.includes("switch to the focused card layout"));
 });
 
 test("rejects an invalid rater id", async () => {

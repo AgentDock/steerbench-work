@@ -34,7 +34,7 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
-export const GENERATOR_VERSION = 1;
+export const GENERATOR_VERSION = 2;
 
 const USAGE = `Usage: node scripts/build-step-label-queue.mjs --runs-dir <dir> --scenario-set-dir <dir> [--trials-per-scenario N] [--max-scenarios N] [--seed N] [--out <file>]
 
@@ -109,6 +109,7 @@ function loadScenarios(scenarioSetDir) {
         .map((ev) => [ev.id, ev])
     );
     out.set(scenario.id, {
+      title: typeof scenario.title === "string" ? scenario.title : "",
       evidenceUsed: Array.isArray(scenario.evidence_used) ? scenario.evidence_used : [],
       evidenceMissing: Array.isArray(scenario.evidence_missing) ? scenario.evidence_missing : [],
       catalog
@@ -176,6 +177,9 @@ function itemsForTrial(trial, evidence) {
     items.push({
       item_id: `${trial.scenarioId}::${trial.variantKey}::trial-${trial.trial}::${kind}-${idx}`,
       scenario_sha256: trial.scenarioSha256,
+      // Display-only context for the labeling interface; deliberately kept
+      // out of the hashed core so wording fixes never invalidate answers.
+      scenario_title: evidence.title,
       correct: trial.correct,
       ...core,
       item_sha256: sha256Hex(JSON.stringify(core))
