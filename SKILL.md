@@ -69,6 +69,8 @@ node scripts/export-sft.mjs --scenario-set-dir <dir> [--splits <file> --split tr
 node scripts/export-preferences.mjs --runs-dir runs --scenario-set-dir <dir> --seed 1 --out <dir>
 node scripts/generate-parity-vectors.mjs                       # rebuild the Tinker adapter vectors
 python3 integrations/tinker/run_cookbook_smoke.py              # replay the official-loader smoke
+node scripts/build-step-label-queue.mjs --runs-dir runs --scenario-set-dir <dir> --out <file>
+node scripts/label-web.mjs --queue <file> --port 4400          # browser labeling for human raters
 ```
 
 ## Common workflows
@@ -93,6 +95,15 @@ any derived data.
 preference pairs through the official tinker-cookbook dataset builders and
 self-tests the reward adapter against 260 scorer parity cases. Exit 0 means
 the integration claim holds on this machine.
+
+**Collect a step-evidence gold set.** Build a queue from stored trials,
+then serve the browser labeling interface to human raters. Each item is one
+binary question: did this rationale use this evidence item (or flag this
+missing safeguard)? Answers land in one JSONL per anonymized rater id,
+hash-bound to their queue items. These human answers are the gold set an
+automated step grader must clear 0.75 Fleiss kappa against before its
+output may serve as a training reward; below that bar it stays
+evaluation-side.
 
 ## Guardrails
 

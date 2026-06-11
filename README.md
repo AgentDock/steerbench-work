@@ -241,7 +241,20 @@ node scripts/export-preferences.mjs --runs-dir runs   --scenario-set-dir scenari
 #    Python side (260 cases must match the Node scorer).
 node scripts/generate-parity-vectors.mjs
 python3 integrations/tinker/steerbench_env.py
+
+# 6. Build a step-evidence labeling queue from stored trials, then serve the
+#    browser labeling interface for human raters (binds 127.0.0.1 only).
+node scripts/build-step-label-queue.mjs --runs-dir runs   --scenario-set-dir scenario-sets/steerbench-work-2026-05   --trials-per-scenario 1 --seed 1 --out annotations/step-label-queue.jsonl
+node scripts/label-web.mjs --queue annotations/step-label-queue.jsonl --port 4400
 ```
+
+The step-labeling pair exists for the process-reward path: a rater answers
+one binary question per (rationale, evidence item) pair, and those answers
+form the human gold set an automated step grader must be validated against
+(agreement at or above 0.75 Fleiss kappa) before its output is used as a
+training reward. Answers append to one JSONL per anonymized rater id, and
+every answer is bound to its queue item by hash, so a regenerated queue can
+never silently absorb stale answers.
 
 Labels carried by these exports are the benchmark-owner labels
 (`label_source: benchmark-owner-pre-gold` in every provenance sidecar)
@@ -271,6 +284,8 @@ with the exact command that produced them.
 | `scripts/assign-splits.mjs` | Assigns scenario families to train / dev / test; writes `splits.json` |
 | `scripts/export-sft.mjs` | Exports SFT training-view rows (pre-gold labels, provenance-stamped) |
 | `scripts/export-preferences.mjs` | Exports preference-pair records (pre-gold labels, provenance-stamped) |
+| `scripts/build-step-label-queue.mjs` | Samples (rationale, evidence) pairs from stored trials into a labeling queue |
+| `scripts/label-web.mjs` | Local browser interface for human step-evidence labeling; per-rater JSONL output |
 | `integrations/tinker/` | Experimental Tinker reward adapter (exposes the scorer as an RL reward; training runs are future work) |
 | `sample-artifacts/` | One frozen (variant, scenario) cell for offline review |
 
