@@ -262,9 +262,7 @@ variant keys, and source refs stay in a fine-print footer so the rater
 reads only the situation, the model's stated rationale, one fact, and one
 question.
 
-![Step labeling, focused card layout](docs/img/label-web-card.png)
-
-![Step labeling, two-panel layout](docs/img/label-web-panel.png)
+![Step labeling interface, two-panel layout](docs/img/label-web-panel.png)
 
 Starting the labeling server looks like this:
 
