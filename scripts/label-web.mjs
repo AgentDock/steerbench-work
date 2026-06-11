@@ -213,42 +213,50 @@ function renderPage(view) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>SteerBench labeling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
 <style>
-  :root { --blue: #4F6EF7; --ink: #1a1a1a; --muted: #6b7280; --line: #e5e7eb; }
+  :root { --blue: #4F6EF7; --ink: #1a1a1a; --muted: #667085; --line: #e5e7eb; }
   * { box-sizing: border-box; }
-  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-         color: var(--ink); background: #fafafa; font-size: 16px; }
-  main { max-width: ${view === "panel" ? "1080px" : "680px"}; margin: 36px auto; padding: 0 20px; }
-  header { display: flex; justify-content: space-between; align-items: baseline; }
-  h1 { font-size: 17px; font-weight: 600; }
+  body { margin: 0; font-family: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, sans-serif;
+         color: var(--ink); background: #fff; font-size: 16px; }
+  main { max-width: ${view === "panel" ? "1060px" : "660px"}; margin: 44px auto; padding: 0 22px; }
+  header { display: flex; justify-content: space-between; align-items: baseline;
+           border-bottom: 1px solid var(--ink); padding-bottom: 10px; margin-bottom: 28px; }
+  h1 { font-family: "IBM Plex Serif", Georgia, serif; font-size: 21px; font-weight: 600;
+       margin: 0; }
   header a { font-size: 13px; color: var(--blue); text-decoration: none; }
-  .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 26px; }
+  header a:hover { text-decoration: underline; }
+  .card { padding: 0; }
   .progress-row { font-size: 13px; color: var(--muted); margin-bottom: 8px; }
-  .progress { height: 4px; background: var(--line); border-radius: 2px; margin-bottom: 22px; }
-  .progress > div { height: 100%; background: var(--blue); border-radius: 2px; width: 0; }
+  .progress { height: 3px; background: var(--line); margin-bottom: 26px; }
+  .progress > div { height: 100%; background: var(--ink); width: 0; }
   .columns { display: ${view === "panel" ? "grid" : "block"};
-             grid-template-columns: 1fr 1fr; gap: 32px; }
-  .label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em;
-           color: var(--muted); margin: 20px 0 6px; }
+             grid-template-columns: 1fr 1fr; gap: 40px; }
+  .label { font-size: 13px; font-weight: 600; color: var(--muted); margin: 24px 0 6px; }
   .columns > div > .label:first-child { margin-top: 0; }
-  .situation { font-weight: 600; line-height: 1.45; }
-  .said { line-height: 1.6; border-left: 3px solid var(--line); padding-left: 14px;
+  .situation { font-family: "IBM Plex Serif", Georgia, serif; font-size: 19px;
+               font-weight: 600; line-height: 1.45; }
+  .said { line-height: 1.65; padding-left: 16px; border-left: 2px solid var(--ink);
           white-space: pre-wrap; }
-  .fact { border: 1px solid var(--line); border-radius: 6px; padding: 14px 16px;
-          line-height: 1.5; background: #fcfcfc; }
-  .question { font-weight: 600; font-size: 17px; margin: 24px 0 14px; }
-  button { font: inherit; padding: 11px 22px; border-radius: 6px; border: 1px solid var(--line);
+  .fact { border-top: 1px solid var(--line); border-bottom: 1px solid var(--line);
+          padding: 14px 0; line-height: 1.55; }
+  .question { font-family: "IBM Plex Serif", Georgia, serif; font-weight: 600;
+              font-size: 19px; margin: 26px 0 16px; }
+  button { font: inherit; padding: 10px 24px; border: 1px solid var(--ink);
            background: #fff; cursor: pointer; margin: 0 10px 10px 0; }
-  button:hover { border-color: var(--blue); }
-  button .key { color: var(--muted); font-size: 12px; margin-left: 6px; }
-  .legend { font-size: 13px; color: var(--muted); line-height: 1.6; margin-top: 14px; }
+  button:hover { background: var(--ink); color: #fff; }
+  button .key { opacity: 0.5; font-size: 12px; margin-left: 7px; }
+  .legend { font-size: 13.5px; color: var(--muted); line-height: 1.7; margin-top: 12px; }
   .legend b { color: var(--ink); font-weight: 600; }
-  .fineprint { font-size: 11px; color: var(--muted); font-family: ui-monospace, Menlo, monospace;
-               margin-top: 26px; border-top: 1px solid var(--line); padding-top: 10px;
+  .fineprint { font-size: 11px; color: var(--muted);
+               font-family: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+               margin-top: 32px; border-top: 1px solid var(--line); padding-top: 10px;
                word-break: break-all; }
-  #gate input { font: inherit; padding: 9px 11px; border: 1px solid var(--line);
-                border-radius: 6px; margin-right: 10px; }
-  .done { text-align: center; padding: 40px 0; }
+  #gate input { font: inherit; padding: 9px 11px; border: 1px solid var(--ink);
+                margin-right: 10px; }
+  #gate p { line-height: 1.6; }
+  .done { padding: 40px 0; }
 </style>
 </head>
 <body>
@@ -370,7 +378,12 @@ function renderPage(view) {
     if (e.key === "u" || e.key === "U") answer("unclear");
   });
 
-  if (rater) { el("rater-input").value = rater; }
+  // Auto-resume: a returning rater (including after a layout switch) goes
+  // straight back to their next unanswered card, no second Start click.
+  if (rater) {
+    el("rater-input").value = rater;
+    refresh();
+  }
 })();
 </script>
 </body>
