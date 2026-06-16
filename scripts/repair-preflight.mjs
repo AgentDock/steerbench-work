@@ -21,9 +21,7 @@ import { createHash } from "node:crypto";
 
 import { REPORTED_RUN_CONFIG } from "../configs/reported-run.mjs";
 import { STEERBENCH_STEERING_SYSTEM_PROMPT } from "../src/prompts.mjs";
-import { ActionGateway, WorkerAgent } from "../src/policies.mjs";
-import { inputForModel } from "../src/model-input.mjs";
-import { normalizeDomain } from "../src/normalize.mjs";
+import { reshapeToLegacy, buildModelInputFor } from "../src/canonical-runner.mjs";
 
 const RUN_ROOT_BASE = "runs/canonical-multi-trial";
 const SCENARIO_SET_DIR = "scenario-sets/steerbench-work-2026-05";
@@ -163,50 +161,6 @@ const FORBIDDEN = [
   "recovery_summary", "autonomous_failure", "clean_outcome"
 ];
 
-function reshapeToLegacy(json) {
-  const evidence = (json.evidence || []).map((e) => ({
-    evidence_id: e.legacy_id || e.id, title: e.title, status: e.status,
-    raw_ref: e.raw_ref, evidence_type: e.source_type
-  }));
-  const evidenceIds = (json.expected_evidence || []).map((id) =>
-    (json.evidence || []).find((e) => e.id === id)?.legacy_id || id
-  );
-  const action = json.metadata?.legacy_action
-    ? { ...json.metadata.legacy_action, evidence_ids: evidenceIds }
-    : {
-        action_type: json.action_verb,
-        proposed_action: json.decision_point?.proposed_action || json.title || "",
-        draft: json.decision_point?.draft || null,
-        confidence: json.decision_point?.confidence !== undefined ? json.decision_point.confidence : 0.7,
-        reversibility: json.irreversibility_class,
-        evidence_ids: evidenceIds,
-        commit_category: json.action_verb === "external_send" ? "external_communication" : "internal_action",
-        target_scope: "system", durability: "durable",
-        externality: json.action_verb === "external_send" ? "outside_workspace" : "inside_workspace",
-        privilege_level: "normal", cost_level: "none"
-      };
-  const domain = normalizeDomain({
-    taxonomyDomain: json.taxonomy?.domain ?? null,
-    legacyDomain: json.domain ?? null
-  });
-  return {
-    id: json.id, family: json.metadata?.legacy_family || json.domain, title: json.title,
-    goal: json.context?.goal, user_request: json.user_request,
-    quality_tags: json.metadata?.legacy_quality_tags || json.tags || [],
-    hidden_trap: json.context?.hidden_trap, action, evidence,
-    domain, action_verb: json.action_verb, irreversibility_class: json.irreversibility_class
-  };
-}
-
-function currentModelInput(json) {
-  const scenario = reshapeToLegacy(json);
-  const worker = new WorkerAgent({ scenario });
-  const gateway = new ActionGateway({ scenario, runId: `${scenario.id}-preflight`, mode: "structured_steering" });
-  const action = worker.proposeAction();
-  const preflight = gateway.preflight({ action, timeMs: 132000 });
-  return inputForModel({ scenario, event: preflight.event, evidence: preflight.evidence, mode: "structured_steering" });
-}
-
 function frozenUserContent(scenarioId) {
   const dir = path.join(RUN_ROOT_BASE, REFERENCE_RUN, "gemini-pro", scenarioId);
   const trials = fs.readdirSync(dir).filter((f) => /^trial-\d+\.json$/.test(f)).sort();
@@ -224,7 +178,7 @@ function leakGate() {
   const results = [];
   for (const id of SIX) {
     const json = JSON.parse(fs.readFileSync(path.join(SCENARIO_SET_DIR, `${id}.json`), "utf8"));
-    const userContent = `scenario_id: ${id}\n\n${currentModelInput(json)}`;
+    const userContent = `scenario_id: ${id}\n\n${buildModelInputFor(reshapeToLegacy(json)).model_input}`;
     // The full model-facing payload = canonical system prompt + user content.
     // Per-row params (model id, max_tokens, reasoning knob) carry no scenario
     // text, so the leak surface is exactly this payload, identical across rows.
