@@ -6,7 +6,7 @@
  * Pairs sampled trial rationales with their scenario's evidence items so a
  * human rater can answer one binary question per (rationale, evidence) pair:
  * did the rationale actually use this evidence, or flag this missing
- * safeguard? The resulting answers form the human gold set that any
+ * safeguard? The resulting answers form the human-annotated gold labels that any
  * automated step grader must be validated against before its output is
  * trusted as a reward signal.
  *

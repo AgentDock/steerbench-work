@@ -128,7 +128,7 @@ from this repository:
   exports as a trained system or as evidence that training ran.
 - Agreement numbers in the annotation audit (Fleiss kappa 0.937 / 0.623 /
   0.461) are the three-vendor LLM reproducibility audit, not human
-  agreement. Human label authority is the separate gold pass; check each
+  agreement. Human label authority is the separate human validation pass; check each
   export's `label_source` for which labels it carries.
 - Do not edit scenario JSONs inside the locked release set. New or changed
   scenarios belong in a new scenario-set directory with its own manifest.

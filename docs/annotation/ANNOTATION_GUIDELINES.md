@@ -1,8 +1,17 @@
 # Step-Evidence Annotation Guidelines
 
-Version 0.1 (draft). Guidelines are frozen for the duration of a labeling
-pass. Problems found mid-pass are recorded by adjudication and fixed in the
-next version, never by editing this document while a pass is running.
+Version 0.1, pilot-seed draft. The worked examples and glossary below
+derive from the first two adjudicated cards only; the document is rebuilt
+from the owners' pilot round (20-30 cards labeled independently, then
+argued to agreement) before any pass that qualifies raters. Once a pass
+starts, guidelines are frozen: problems found mid-pass are recorded by
+adjudication and fixed in the next version, never by editing this
+document while a pass is running.
+
+This task judges MODEL REASONING. It is not the scenario verdict gold
+pass (`scripts/label.mjs`), which judges whether the scenarios' own
+proceed-or-hold answers are right. See `docs/annotation/README.md` for
+the map of the two.
 
 ## What this task is
 
@@ -105,9 +114,15 @@ New domains add a subsection here in the next guidelines version.
    check, standard practice so that quality is measured continuously, not
    only at the start.
 3. **Agreement is tracked** across raters (exact agreement and Fleiss
-   kappa, a chance-corrected 0-to-1 agreement measure). Persistent low
-   agreement means these guidelines are ambiguous; the fix is a guidelines
-   revision for the next pass, not pressure on raters.
+   kappa, a chance-corrected 0-to-1 agreement measure). The recognized
+   interpretation bands: on the Landis-Koch scale a kappa of 0.61-0.80 is
+   "substantial" and 0.81-1.00 "almost perfect," so 0.61 is the practical
+   trust floor and 0.80 the bar for high-stakes labels; equivalently, on
+   Krippendorff's alpha, 0.80 is reliable, 0.667-0.80 supports tentative
+   conclusions only, and below 0.667 the labels are discarded. Report the
+   metric, the item count, and the unit of analysis with every number.
+   Persistent low agreement means these guidelines are ambiguous; the fix
+   is a guidelines revision for the next pass, not pressure on raters.
 4. **Adjudication.** Every disagreement and every flag goes to a resolver
    who makes the final call and records a one-line reason. Those notes
    seed the next guidelines version.

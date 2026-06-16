@@ -53,7 +53,7 @@ if (process.argv.includes("--help") || process.argv.includes("-h")) {
 
 export const EXPORTER_VERSION = "preference-exporter/0.1.0";
 
-// Labels exported now predate the human-gold pass, so every row says so.
+// Labels exported now predate the human validation pass, so every row says so.
 export const LABEL_SOURCE = "benchmark-owner-pre-gold";
 
 /** Deterministic 32-bit PRNG (mulberry32), same generator assign-splits uses. */
