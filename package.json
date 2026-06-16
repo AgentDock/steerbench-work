@@ -19,6 +19,7 @@
   ],
   "scripts": {
     "bench": "node src/bench-cli.mjs",
+    "review": "node scripts/gold-web.mjs",
     "test": "node --test",
     "validate-sample": "node scripts/validate-run.mjs --run sample-artifacts",
     "generate-manifest-md": "node scripts/generate-scenario-manifest-md.mjs"

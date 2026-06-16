@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SteerBench Decision Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>SteerBench &middot; Decision Review</h1>
+    <span class="progress-row"><button type="button" id="terms-toggle" aria-expanded="false" aria-controls="glossary">Terms (?)</button> &middot; <span id="who"></span></span>
+  </header>
+
+  <div id="glossary" hidden></div>
+
+  <form id="gate">
+    <p>You will read short cases. In each one an AI agent is about to take an
+       action. Judge, from the evidence shown, what the RIGHT call is, not what
+       any model did. A few keypresses per case; everything saves instantly and
+       you can stop and resume anytime.</p>
+    <p>Enter your rater id to begin (e.g. <code>rater_1</code>). Use your
+       assigned id, never your real name.</p>
+    <label for="rater-input">Rater id</label>
+    <input id="rater-input" placeholder="rater_1" autocomplete="off">
+    <button id="start" type="submit">Start</button>
+    <p id="gate-error" role="alert"></p>
+  </form>
+
+  <div id="work" hidden>
+    <div class="progress-row" id="counter"></div>
+    <div class="progress"><div id="bar"></div></div>
+    <div id="card"></div>
+    <div class="question" id="question"></div>
+    <div id="options" role="group" aria-labelledby="question"></div>
+    <p id="work-error" role="alert"></p>
+    <div class="help">&uarr;/&darr; move &middot; Enter choose &middot; number keys pick &middot; F flag a broken or unclear case</div>
+    <div class="fineprint" id="fineprint"></div>
+  </div>
+
+  <div id="finished" class="done" hidden>
+    <p><strong>All cases labeled. Thank you.</strong></p>
+    <p id="summary"></p>
+  </div>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>
