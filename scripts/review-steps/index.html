@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SteerBench labeling</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Serif:wght@600&family=IBM+Plex+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>SteerBench labeling</h1>
+    <a id="layout-link" href="/panel"></a>
+  </header>
+
+  <form id="gate">
+    <p>You will read short cards. Each one shows what an AI said when it made
+       a decision, plus one fact from the situation. You answer a single
+       question: did the AI's explanation use that fact?</p>
+    <p>Enter your rater id to begin (e.g. <code>rater_1</code>). Use your
+       assigned id, not your name.</p>
+    <label for="rater-input">Rater id</label>
+    <input id="rater-input" placeholder="rater_1" autocomplete="off">
+    <button id="start" type="submit">Start</button>
+    <p id="gate-error" role="alert"></p>
+  </form>
+
+  <div id="work" hidden>
+    <div class="progress-row" id="counter"></div>
+    <div class="progress"><div id="bar"></div></div>
+    <div class="columns">
+      <div>
+        <div class="label">The situation</div>
+        <div class="situation" id="situation"></div>
+        <div class="label">What the AI said when it decided</div>
+        <div class="said" id="rationale"></div>
+      </div>
+      <div>
+        <div class="label" id="fact-label"></div>
+        <div class="fact" id="fact-text"></div>
+        <div class="question" id="question"></div>
+        <div id="options">
+          <button data-answer="yes">Yes<span class="key">Y</span></button>
+          <button data-answer="no">No<span class="key">N</span></button>
+          <button data-answer="unclear">Can't tell<span class="key">U</span></button>
+          <button data-answer="flag" class="flag">Flag<span class="key">F</span></button>
+        </div>
+        <div class="legend">
+          <b>Yes</b>: the explanation clearly mentions or uses it.<br>
+          <b>No</b>: the explanation never touches it.<br>
+          <b>Can't tell</b>: it gestures vaguely; you can't honestly say yes or no.<br>
+          <b>Flag</b>: something is wrong with this card, or you don't understand
+          it; it goes to review instead of counting as your judgment.
+        </div>
+        <p id="work-error" role="alert"></p>
+      </div>
+    </div>
+    <div class="fineprint" id="fineprint"></div>
+  </div>
+
+  <div id="finished" class="done" hidden>
+    <p><strong>All cards answered. Thank you.</strong></p>
+    <p id="summary"></p>
+    <div id="calibration" class="cal" hidden></div>
+  </div>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

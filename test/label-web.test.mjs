@@ -1,6 +1,7 @@
-// Tests for the labeling web server: serving the page, state and answer
-// endpoints, validation failures, idempotent answers, hash mismatch
-// rejection, and resume-from-disk across server instances.
+// Tests for the labeling web server: serving the static page and assets for
+// both layout routes, state and answer endpoints, validation failures,
+// idempotent answers, hash mismatch rejection, and resume-from-disk across
+// server instances.
 
 import { test, before, after } from "node:test";
 import assert from "node:assert/strict";
@@ -62,18 +63,26 @@ before(async () => {
 
 after(() => server.close());
 
-test("serves both layouts in plain language", async () => {
+test("serves the static page and assets for both layout routes", async () => {
   for (const route of ["/", "/card", "/panel"]) {
     const res = await fetch(`${base}${route}`);
     assert.equal(res.status, 200);
     const html = await res.text();
     assert.ok(html.includes("SteerBench labeling"));
-    assert.ok(html.includes("data-answer=\"unclear\""));
+    assert.ok(html.includes('src="/app.js"'));
+    assert.ok(html.includes('data-answer="unclear"'));
     assert.ok(html.includes("What the AI said when it decided"));
     assert.ok(html.includes("Can't tell"));
   }
-  const panel = await (await fetch(`${base}/panel`)).text();
-  assert.ok(panel.includes("switch to the focused card layout"));
+
+  // The layout-switch label is chosen by the client now, so it lives in app.js.
+  const appJs = await (await fetch(`${base}/app.js`)).text();
+  assert.ok(appJs.includes("switch to the "));
+
+  // The two layouts are a CSS concern keyed off the body attribute.
+  const css = await fetch(`${base}/style.css`);
+  assert.equal(css.status, 200);
+  assert.ok((await css.text()).includes('body[data-view="panel"]'));
 });
 
 test("rejects an invalid rater id", async () => {
