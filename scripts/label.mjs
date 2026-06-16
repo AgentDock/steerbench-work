@@ -31,20 +31,21 @@ import path from "node:path";
 import readline from "node:readline";
 import { fileURLToPath } from "node:url";
 import { redactScenario } from "../src/annotator-panel.mjs";
+import { loadGoldScenarios, isDiagnostic } from "../src/gold-scenarios.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const runnerRoot = path.join(__dirname, "..");
-const SCENARIO_DIR = path.join(runnerRoot, "scenario-sets", "steerbench-work-2026-05");
 
 /** Gate choices: a human picks one. proceed -> allowed, block -> blocked. */
 const GATE = Object.freeze({ p: { value: "allowed", label: "proceed (the agent SHOULD act)" }, b: { value: "blocked", label: "block / hold for review" } });
 
-/** Mechanism choices (the 4 failure mechanisms + not-applicable). */
+/** Mechanism choices: the 4 failure mechanisms + not-applicable. Values match
+ * the model panel's vocabulary so human-vs-panel agreement aligns. */
 const MECH = Object.freeze({
   1: "lexical-overfitting",
   2: "instruction-hierarchy-confusion",
   3: "missing-information",
-  4: "generic-over-caution",
+  4: "unwarranted-abstention",
   5: "not_applicable"
 });
 
@@ -69,18 +70,15 @@ function parseArgs(argv) {
 }
 
 /**
- * Load the tagged diagnostic scenarios (those carrying a failure mechanism),
- * optionally filtered to an explicit id list.
+ * Load all 106 scenarios (gate + irreversibility apply to every one),
+ * optionally filtered to an explicit id list. Diagnostic vs baseline is
+ * decided later per scenario by {@link isDiagnostic}.
  *
  * @param {string|null} scenariosFile
  * @returns {object[]} raw scenario objects
  */
 function loadScenarios(scenariosFile) {
-  const all = fs
-    .readdirSync(SCENARIO_DIR)
-    .filter((f) => f.endsWith(".json"))
-    .map((f) => JSON.parse(fs.readFileSync(path.join(SCENARIO_DIR, f), "utf8")))
-    .filter((s) => s.taxonomy && s.taxonomy.functional_category);
+  const all = loadGoldScenarios();
   if (!scenariosFile) return all;
   const ids = new Set(JSON.parse(fs.readFileSync(scenariosFile, "utf8")));
   return all.filter((s) => ids.has(s.id));
@@ -186,12 +184,17 @@ async function main() {
     }
     if (gate === "SKIP") { console.log("  skipped (no record written)"); continue; }
 
-    // Q2 mechanism
+    // Q2 mechanism: only the 76 diagnostic scenarios get a mechanism. The 30
+    // baselines are auto-marked not_applicable, never forced into a category.
     let mech = null;
-    while (mech === null) {
-      const a = (await ask("  MECHANISM — 1=lexical 2=hierarchy 3=missing-info 4=generic-over-caution 5=not-applicable: ")).trim();
-      if (MECH[a]) mech = MECH[a];
-      else console.log("  (press 1-5)");
+    if (isDiagnostic(scenario)) {
+      while (mech === null) {
+        const a = (await ask("  MECHANISM — 1=lexical 2=hierarchy 3=missing-info 4=unwarranted-abstention 5=not-applicable: ")).trim();
+        if (MECH[a]) mech = MECH[a];
+        else console.log("  (press 1-5)");
+      }
+    } else {
+      mech = "not_applicable";
     }
 
     // Q3 irreversibility
