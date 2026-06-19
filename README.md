@@ -338,6 +338,6 @@ with the exact command that produced them.
 
 ## License and citation
 
-All Work Product in this repository (runner code, scoring harness, validators, scenario JSON, manifests, methodology, run artifacts) is licensed under CC BY 4.0. See LICENSE, LICENSE-DATA, and CITATION.cff.
+Copyright (c) 2026 SteerBench-Work contributors. All Work Product in this repository (runner code, scoring harness, validators, scenario JSON, manifests, methodology, run artifacts) is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0). See LICENSE, LICENSE-DATA, and CITATION.cff.
 
 See CONTRIBUTING.md to add scenarios. See REVIEW_GUIDE.md for the shortest inspection path.
