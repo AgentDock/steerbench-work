@@ -46,8 +46,31 @@ task-completion benchmark. It isolates the commit-permission gate.
   - `results/v2026-05/annotation-audit/`: the three-vendor LLM label
     reproducibility audit, with leak audit, provenance, and checksums. Not
     leaderboard scoring and not human-annotated gold labels.
+  - `results/v2026-05/human-validation/`: the three-rater human gold — majority
+    labels, adjudication queue, and inter-rater Fleiss kappa + exact agreement
+    per axis.
   - manifests, validator report, and `checksums.txt` for the whole bundle.
 - `runs/`: raw per-trial request/response payloads (hundreds of MB). Git-ignored and kept in a local archive, not committed. Every published number recomputes from the `results/` bundle, so the repo stays small.
+
+## Human validation
+
+Every scenario is labeled by three independent human raters (majority vote plus
+adjudication) and, separately, audited by a three-vendor LLM panel with the
+answer key hidden. The gate decision is the scored axis; irreversibility and
+failure-mechanism are diagnostic metadata, not scored.
+
+| Axis | Human majority vs key | Human inter-rater (Fleiss kappa) | LLM panel vs key | LLM inter-rater (Fleiss kappa) |
+|------|----------------------|----------------------------------|------------------|--------------------------------|
+| Gate (scored) | 87.7% | 0.69 | 97.2% | 0.94 |
+| Irreversibility (metadata) | 62.5% | 0.68 | 76.4% | 0.62 |
+| Mechanism (metadata) | 56.5% | 0.33 | 48.7% | 0.46 |
+
+The human majority is the label authority; the LLM panel is a reproducibility
+check. A deterministic model panel is expected to agree with itself more than
+three people do, and lower human agreement on the subjective metadata axes
+reflects meaningful annotator variation rather than error; both are standard in
+annotation work, which is why the human *majority* (not raw agreement) defines
+the gold. Full per-axis report: `results/v2026-05/human-validation/agreement-report.json`.
 
 ## If you only have five minutes
 
