@@ -131,7 +131,10 @@ function cardBlocks(scenario) {
   if (evidence.length) blocks.push({ kind: "evidence", label: "Evidence on hand", items: evidence });
 
   const ctx = [];
-  if (ev.reversibility) ctx.push(["reversibility", ev.reversibility]);
+  // The model's reversibility field is deliberately not shown: it is the inverse
+  // wording of the tier question ("how hard would this be to undo"), and reading
+  // it off the card biases the rating. Raters judge undo-difficulty from the
+  // action and evidence, using the answer options' own low/medium/high hints.
   if (ev.externality) ctx.push(["externality", String(ev.externality).replace(/_/g, " ")]);
   if (ev.cost_level) ctx.push(["cost", ev.cost_level]);
   if (ev.privilege_level) ctx.push(["privilege", ev.privilege_level]);
