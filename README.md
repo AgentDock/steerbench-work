@@ -9,15 +9,17 @@ send a message, update a record, merge code, charge a card, or touch production
 state. SteerBench-Work asks one question at that boundary: should the action
 proceed, or should the system hold for review?
 
-[Website](https://steerbench.com) ·
-[Leaderboard](https://steerbench.com/leaderboard) ·
-[Matrix](https://steerbench.com/matrix) ·
-[Methodology](https://steerbench.com/methodology) ·
-[Paper](https://steerbench.com/paper) ·
+[Website](https://steerbench.com/preview-2026-06/) ·
+[Leaderboard](https://steerbench.com/preview-2026-06/leaderboard/) ·
+[Matrix](https://steerbench.com/preview-2026-06/matrix/) ·
+[Methodology](https://steerbench.com/preview-2026-06/methodology/) ·
+[Paper](https://steerbench.com/preview-2026-06/paper/) ·
 [Sample artifacts](sample-artifacts/) ·
 [Release bundle](results/v2026-05/) ·
 [Annotation audit](results/v2026-05/annotation-audit/) ·
 [Citation](CITATION.cff)
+
+> During private review the links above resolve under the `/preview-2026-06/` preview build; they move to the site root (`steerbench.com`) at public launch.
 
 This repository contains the scenario set, runner, scoring code, validator,
 release manifests, and sample artifacts for reproducing the benchmark. It is
@@ -49,7 +51,7 @@ task-completion benchmark. It isolates the commit-permission gate.
 
 ## If you only have five minutes
 
-1. Read the benchmark framing on [steerbench.com](https://steerbench.com).
+1. Read the benchmark framing on [steerbench.com/preview-2026-06](https://steerbench.com/preview-2026-06/).
 2. Inspect `sample-artifacts/README.md` for the shape of a scored cell.
 3. Inspect `results/v2026-05/annotation-audit/README.md` for the three-vendor
    label reproducibility audit (not human-annotated gold labels, not leaderboard scoring).
