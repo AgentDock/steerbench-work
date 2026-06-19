@@ -25,6 +25,14 @@ const runsDir = path.join(runnerRoot, "runs", "canonical-new-2026-06-07");
 const MAX_PAIRS = 6;
 const SEED = 1;
 
+// The preference exporter mines real trial files from a canonical run under
+// runs/, which is gitignored and therefore absent on a fresh CI checkout. When
+// the run is not present these tests skip rather than fail; the SFT exporter
+// tests cover the shared render/scoring path from the committed scenario set.
+const hasRun = fs.existsSync(runsDir);
+const skip = hasRun ? false : "requires a local canonical run under runs/ (gitignored; not in CI)";
+const maybe = (name, fn) => test(name, { skip }, fn);
+
 let outDir;
 let lines;
 let provenance;
@@ -58,6 +66,7 @@ function runExport(extra = {}) {
 }
 
 before(() => {
+  if (!hasRun) return;
   const { dir, result } = runExport();
   outDir = dir;
   assert.equal(result.files.length, 1);
@@ -67,7 +76,7 @@ before(() => {
   assert.equal(lines.length, provenance.length);
 });
 
-test("every line is a comparison object labeled A or B, never Tie", () => {
+maybe("every line is a comparison object labeled A or B, never Tie", () => {
   for (const line of lines) {
     const row = JSON.parse(line);
     assert.deepEqual(Object.keys(row), ["comparison", "label"]);
@@ -83,14 +92,14 @@ test("every line is a comparison object labeled A or B, never Tie", () => {
   }
 });
 
-test("completions always differ within a pair", () => {
+maybe("completions always differ within a pair", () => {
   for (const line of lines) {
     const { comparison } = JSON.parse(line);
     assert.notEqual(comparison.completion_A[0].content, comparison.completion_B[0].content);
   }
 });
 
-test("label points at the correct trial, verified against the trial files", () => {
+maybe("label points at the correct trial, verified against the trial files", () => {
   provenance.forEach((p, i) => {
     const row = JSON.parse(lines[i]);
     const correctTrial = loadTrial(p.correct_trial.path);
@@ -114,7 +123,7 @@ test("label points at the correct trial, verified against the trial files", () =
   });
 });
 
-test("prompt conversation matches the canonical scenario render", () => {
+maybe("prompt conversation matches the canonical scenario render", () => {
   provenance.forEach((p, i) => {
     const { prompt_conversation } = JSON.parse(lines[i]).comparison;
     assert.deepEqual(prompt_conversation.map((m) => m.role), ["system", "user"]);
@@ -122,7 +131,7 @@ test("prompt conversation matches the canonical scenario render", () => {
   });
 });
 
-test("provenance rows carry pre-gold honesty fields and respect the cap", () => {
+maybe("provenance rows carry pre-gold honesty fields and respect the cap", () => {
   const perScenario = new Map();
   provenance.forEach((p) => {
     assert.equal(p.label_source, LABEL_SOURCE);
@@ -135,7 +144,7 @@ test("provenance rows carry pre-gold honesty fields and respect the cap", () => 
   }
 });
 
-test("export is deterministic under a fixed seed", () => {
+maybe("export is deterministic under a fixed seed", () => {
   const { result } = runExport();
   const again = fs.readFileSync(result.files[0].jsonlPath, "utf8");
   assert.equal(again, fs.readFileSync(path.join(outDir, "all.jsonl"), "utf8"));
@@ -143,7 +152,7 @@ test("export is deterministic under a fixed seed", () => {
   assert.equal(provAgain, fs.readFileSync(path.join(outDir, "all.provenance.json"), "utf8"));
 });
 
-test("splits file partitions pairs into per-split JSONL files", () => {
+maybe("splits file partitions pairs into per-split JSONL files", () => {
   const scenarioIds = [...new Set(provenance.map((p) => p.scenario_id))].sort();
   assert.ok(scenarioIds.length >= 2, "need at least two paired scenarios to test splits");
   const train = scenarioIds.filter((_, i) => i % 2 === 0);
