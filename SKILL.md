@@ -38,7 +38,7 @@ hold, holding when it was authorized) always visible separately.
 ## Setup
 
 ```bash
-git clone <repo-url> && cd steerbench-work-runner
+git clone https://github.com/AgentDock/steerbench-work.git && cd steerbench-work
 node --version   # Node 20+ recommended; the runner has zero npm dependencies
 cp .env.example .env
 ```
