@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="docs/figures/steerbench-readme-hero.png" alt="SteerBench-Work: action-boundary benchmark for long-running agents" />
+  <img src="docs/figures/steerbench-readme-hero.png" alt="SteerBench-Work: A Benchmark for Agent Steering at Action Boundaries" />
 </p>
 
 **SteerBench-Work tests the moment before an agent acts.**
@@ -28,7 +28,7 @@ task-completion benchmark. It isolates the commit-permission gate.
 
 ## What this is
 
-- A benchmark for action-boundary calibration in long-running agents.
+- A benchmark for agent steering at action boundaries: the pre-commit decision long-running agents face before every consequential step.
 - A set of workplace scenarios where the right answer can be "act" or "hold."
 - A reproducible runner that scores the model's gate decision before tool
   execution.
@@ -46,9 +46,10 @@ task-completion benchmark. It isolates the commit-permission gate.
   - `results/v2026-05/annotation-audit/`: the three-vendor LLM label
     reproducibility audit, with leak audit, provenance, and checksums. Not
     leaderboard scoring and not human-annotated gold labels.
-  - `results/v2026-05/human-validation/`: the three-rater human gold — majority
-    labels, adjudication queue, and inter-rater Fleiss kappa + exact agreement
-    per axis.
+  - `results/v2026-05/human-validation/`: the three-rater human validation
+    pass: majority labels, adjudication queue, and inter-rater Fleiss kappa +
+    exact agreement per axis. Independent evidence on the benchmark-owner
+    labels; the leaderboard is not scored against it.
   - manifests, validator report, and `checksums.txt` for the whole bundle.
 - `runs/`: raw per-trial request/response payloads (hundreds of MB). Git-ignored and kept in a local archive, not committed. Every published number recomputes from the `results/` bundle, so the repo stays small.
 
