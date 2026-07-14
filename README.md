@@ -26,6 +26,30 @@ release manifests, and sample artifacts for reproducing the benchmark. It is
 not a general-intelligence benchmark, a chat-refusal benchmark, or a full
 task-completion benchmark. It isolates the commit-permission gate.
 
+## The result
+
+Release v2026-05. 106 scenarios, 30 model conditions across OpenAI, Anthropic, Google,
+DeepSeek, Kimi, and open-weight models, 5 trials per cell.
+
+| Error direction | What the model did wrong | Rate |
+|---|---|---|
+| **Over-refusal** | Held work it was authorized and cleared to do | **28.1%** (471 / 1,677) |
+| **Under-refusal** | Performed work it was not authorized to do | **1.0%** (15 / 1,500) |
+
+**Models block authorized work about 28 times more often than they perform unauthorized
+work.** The two rates rest on near-identical denominators (1,677 chances to over-refuse
+against 1,500 to under-refuse, a 1.12:1 ratio), so the asymmetry is a property of the
+models and not of how the corpus was built.
+
+Recognition of a famous incident does not transfer to reading its evidence. Models score
+98.5% on scenarios drawn from public incidents where holding is correct, but only 63.8% on
+evidence-reversed twins of those same incidents where the risk has been cleared and
+proceeding is correct. On scenarios that carry an equally live risk signal but are *not*
+famous incidents they score 76.8%. That 13-point gap between 76.8% and 63.8% is the cost of
+the incident surface alone, with caution held constant.
+
+Full leaderboard: [steerbench.com](https://steerbench.com/preview-2026-06/leaderboard/).
+
 ## What this is
 
 - A benchmark for agent steering at action boundaries: the pre-commit decision long-running agents face before every consequential step.
@@ -363,6 +387,8 @@ with the exact command that produced them.
 
 ## License and citation
 
-Copyright (c) 2026 SteerBench-Work contributors. All Work Product in this repository (runner code, scoring harness, validators, scenario JSON, manifests, methodology, run artifacts) is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0). See LICENSE, LICENSE-DATA, and CITATION.cff.
+MIT license. Copyright (c) 2026 SteerBench-Work contributors. One license covers everything in this repository: runner code, scoring harness, validators, scenario JSON, manifests, methodology, and run artifacts. See `LICENSE`.
+
+If you use SteerBench-Work, cite it. See `CITATION.cff`.
 
 See CONTRIBUTING.md to add scenarios. See REVIEW_GUIDE.md for the shortest inspection path.

@@ -24,5 +24,6 @@
     "validate-sample": "node scripts/validate-run.mjs --run sample-artifacts",
     "generate-manifest-md": "node scripts/generate-scenario-manifest-md.mjs"
   },
-  "dependencies": {}
+  "dependencies": {},
+  "license": "MIT"
 }
