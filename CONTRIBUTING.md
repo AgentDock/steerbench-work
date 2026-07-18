@@ -18,7 +18,7 @@ Open an issue before a non-trivial PR. Scope alignment first, code second.
 
 ## Contributing a Scenario
 
-Scenarios are the core data of this benchmark. The entire repository (runner code, scoring harness, validators, scenario JSON, manifests, methodology, run artifacts) ships under CC BY 4.0.
+Scenarios are the core data of this benchmark. The data assets (scenario JSON, manifests, results bundles) ship under CC BY 4.0 (`LICENSE-DATA`); the runner code, scoring harness, and validators ship under MIT (`LICENSE`).
 
 1. Copy an existing scenario file under `scenario-sets/steerbench-work-2026-05/` as a template (`refund-policy-001.json` carries the full standard shape). Keep the JSON shape exactly.
 2. Fill the identity fields: `id`, `version`, `domain`, `action_verb`, `irreversibility_class`, `title`, and `user_request`. Then write `context.goal`, the `context.hidden_trap` the worker should catch, and `tools_available`. Write in plain language.
@@ -50,7 +50,7 @@ Adapter PRs are reviewed most carefully because one adapter touches every scenar
 
 ## Licensing
 
-The entire repository ships under CC BY 4.0. This covers runner code, scoring harness, validators, scenario JSON, manifests, methodology, and run artifacts. See `LICENSE` for the full license text and `LICENSE-DATA` for the data-specific restatement. All contributions agree to CC BY 4.0.
+Two licenses cover this repository. Runner code, scoring harness, and validators ship under MIT (`LICENSE`). Data assets — scenario JSON, manifests, results bundles, annotation and validation reports — ship under CC BY 4.0 (`LICENSE-DATA`). Code contributions agree to MIT; scenario and fixture contributions agree to CC BY 4.0.
 
 ## Review SLA
 

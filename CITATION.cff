@@ -3,7 +3,10 @@ message: "If you use SteerBench-Work, please cite the benchmark."
 type: software
 title: "SteerBench-Work: A Benchmark for Agent Steering at Action Boundaries"
 authors:
-  - name: "SteerBench-Work contributors"
+  - family-names: "Mertayak"
+    given-names: "Cuneyt"
+  - family-names: "Serdar"
+    given-names: "Oguz"
 repository-code: "https://github.com/AgentDock/steerbench-work"
 version: 0.1.0
 date-released: 2026-05-22
@@ -12,6 +15,9 @@ preferred-citation:
   type: software
   title: "SteerBench-Work: A Benchmark for Agent Steering at Action Boundaries"
   authors:
-    - name: "SteerBench-Work contributors"
+    - family-names: "Mertayak"
+      given-names: "Cuneyt"
+    - family-names: "Serdar"
+      given-names: "Oguz"
   year: 2026
   repository-code: "https://github.com/AgentDock/steerbench-work"

@@ -1,0 +1,21 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+This license covers the SteerBench-Work data assets in this repository:
+
+- the scenario sets under scenario-sets/ (including the locked release
+  scenario-sets/steerbench-work-2026-05/), and
+- the results bundles under results/ (leaderboards, per-scenario verdicts,
+  manifests, annotation-audit and human-validation reports).
+
+The runner source code (src/, scripts/, test/, integrations/) is licensed
+separately under the MIT license in LICENSE.
+
+You are free to share and adapt the data for any purpose, including
+commercially, provided you give appropriate credit to SteerBench-Work
+(AgentDock), link to this license, and indicate if changes were made. See the
+citation metadata in CITATION.cff for the preferred attribution.
+
+Full license text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+Except where otherwise noted, the data assets listed above are
+Copyright (c) 2026 AgentDock, licensed under CC BY 4.0.

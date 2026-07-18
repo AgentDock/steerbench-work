@@ -1,5 +1,5 @@
 {
-  "updated": "2026-06-07 (results/v2026-05 rebuild: 6-scenario repair overlay + claude-opus-high)",
+  "updated": "2026-06-10 (results/v2026-05 rebuild: 6-scenario repair overlay; rows added after repair: claude-opus-4.8 high, gpt-5.5 high, kimi-k2.6 off)",
   "version": "2.9.0",
   "rows": [
     {

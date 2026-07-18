@@ -24,7 +24,7 @@ Does this change the action-boundary event shape, the integrity-evidence shape, 
 
 ## Licensing
 
-- Code changes: CC BY 4.0 (see LICENSE).
+- Code changes: MIT (see LICENSE).
 - Scenario or fixture changes: CC BY 4.0 (see LICENSE-DATA).
 
 By opening this PR you agree to license your contribution under the matching license.

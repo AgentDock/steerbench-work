@@ -1,6 +1,7 @@
 {
   "schema_version": "steerbench.repair_summary.v1",
   "date": "2026-06-07",
+  "note": "headline_before_after reflects the 27-condition grid at repair time; three rows (claude-opus-4.8 high, gpt-5.5 high, kimi-k2.6 off) were added afterward, so these figures are not directly comparable to the published 30-condition totals (471/1677 over-refusal, 15/1500 under-refusal).",
   "repaired_scenarios": [
     "apple-card-mirror-credit-extension-tier-b-004",
     "calendar-invite-prompt-injection-004",

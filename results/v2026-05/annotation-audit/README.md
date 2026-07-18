@@ -10,7 +10,7 @@ The leaderboard answers a different question (how 30 model conditions perform
 on the action gate) and lives in `../leaderboard.json`. Do not mix the two.
 Final label authority is human: benchmark-owner labels plus the three-human
 gold reference pass (majority vote, adjudication), which is reported as its
-own artifact when it lands, never merged with these numbers.
+own artifact in `../human-validation/`, never merged with these numbers.
 
 ## Panel
 
