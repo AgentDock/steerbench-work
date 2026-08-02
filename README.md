@@ -47,12 +47,20 @@ work.** The two rates rest on near-identical denominators (1,677 chances to over
 against 1,500 to under-refuse, a 1.12:1 ratio), so the asymmetry is a property of the
 models and not of how the corpus was built.
 
-Recognition of a famous incident does not transfer to reading its evidence. Models score
+The direction holds under sensitivity checks. In 17 of the 106 scenarios the fixture-integrity
+adapter inferred a `success_criterion_change` flag by matching risk keywords (for example `eval`
+inside `.evaluate`, and `score`) in the scenario, action, and evidence text rather than from an
+authored control; excluding those 17 rows gives 19.4% over-refusal against 1.25% under-refusal.
+Relabeling against the unadjudicated three-rater majority gives 41.1% against 0.36%. The
+anchor-to-mirror gap of 34.6 points against the owner key narrows to about 4 points under the
+three-rater majority labels.
+
+On the evidence-reversed mirrors, accuracy falls sharply. Models score
 98.5% on scenarios drawn from public incidents where holding is correct, but only 63.8% on
 evidence-reversed twins of those same incidents where the risk has been cleared and
-proceeding is correct. On scenarios that carry an equally live risk signal but are *not*
-famous incidents they score 76.8%. That 12.9-point gap between 76.8% and 63.8% is the cost of
-the incident surface alone, with caution held constant.
+proceeding is correct. On scenarios that carry a live risk signal but are *not*
+famous incidents they score 76.8%. We report the difference between 76.8% and 63.8%
+descriptively, not as a cause: the two sets are not matched pairs.
 
 Full leaderboard: [steerbench.com](https://steerbench.com/preview-2026-06/leaderboard/).
 
@@ -75,20 +83,21 @@ Full leaderboard: [steerbench.com](https://steerbench.com/preview-2026-06/leader
   - `results/v2026-05/scenarios-detail.json`: per-scenario, per-model verdicts.
   - `results/v2026-05/annotation-audit/`: the three-vendor LLM label
     reproducibility audit, with leak audit, provenance, and checksums. Not
-    leaderboard scoring and not human-annotated gold labels.
-  - `results/v2026-05/human-validation/`: the three-rater human validation
-    pass: majority labels, adjudication queue, and inter-rater Fleiss kappa +
-    exact agreement per axis. Independent evidence on the benchmark-owner
-    labels; the leaderboard is not scored against it.
+    leaderboard scoring and not the benchmark-owner scoring key.
+  - `results/v2026-05/human-validation/`: the three-rater human corroboration
+    pass: majority labels and inter-rater Fleiss kappa + exact agreement per
+    axis. Independent evidence on the benchmark-owner labels; the leaderboard
+    is not scored against it.
   - manifests, validator report, and `checksums.txt` for the whole bundle.
 - `runs/`: raw per-trial request/response payloads (hundreds of MB). Git-ignored and kept in a local archive, not committed. Every published number recomputes from the `results/` bundle, so the repo stays small.
 
-## Human validation
+## Human corroboration
 
-Every scenario is labeled by three independent human raters (majority vote plus
-adjudication) and, separately, audited by a three-model LLM panel (GPT-5.5, Claude Opus 4.8, and Gemini 3.1 Pro) with the
-answer key hidden. The gate decision is the scored axis; irreversibility and
-failure-mechanism are diagnostic metadata, not scored.
+Every scenario is labeled by three independent human raters (majority vote) and,
+separately, audited by a three-model LLM panel (GPT-5.5, Claude Opus 4.8, and Gemini 3.1 Pro) with the
+answer key hidden. The benchmark-owner labels are the scoring key. The gate
+decision is the scored axis; irreversibility and failure-mechanism are diagnostic
+metadata, not scored.
 
 | Axis | Human majority vs key | Human inter-rater (Fleiss kappa) | LLM panel vs key | LLM inter-rater (Fleiss kappa) |
 |------|----------------------|----------------------------------|------------------|--------------------------------|
@@ -96,12 +105,13 @@ failure-mechanism are diagnostic metadata, not scored.
 | Irreversibility (metadata) | 62.5% | 0.68 | 76.4% | 0.62 |
 | Mechanism (metadata) | 56.5% | 0.33 | 48.7% | 0.46 |
 
-The human majority is the label authority; the LLM panel is a reproducibility
-check. A deterministic model panel is expected to agree with itself more than
-three people do, and lower human agreement on the subjective metadata axes
-reflects meaningful annotator variation rather than error; both are standard in
-annotation work, which is why the human *majority* (not raw agreement) defines
-the gold. Full per-axis report: `results/v2026-05/human-validation/agreement-report.json`.
+The benchmark-owner labels are the scoring key; the three-rater majority is
+independent corroboration and label-sensitivity evidence, not the scoring
+authority. It matches the owner key on 87.7% of scenarios (Fleiss kappa 0.686).
+A deterministic model panel is expected to agree with itself more than three
+people do, and lower human agreement on the subjective metadata axes reflects
+meaningful annotator variation rather than error; both are standard in annotation
+work. Full per-axis report: `results/v2026-05/human-validation/agreement-report.json`.
 
 ## If you only have five minutes
 
@@ -259,7 +269,7 @@ runs/canonical-multi-trial/<run-id>/
 - Directional metrics are reported together: under-refusal is allowing an action that should have been blocked; over-refusal is blocking an action that should have been allowed. The benchmark is invalid if only one side is optimized.
 - Directional denominators. An over-refusal *opportunity* is any (scenario, condition) cell whose reference label is proceed; an under-refusal opportunity is any cell whose reference label is hold. Reference labels, not scenario direction tags, define the two pools, so calibration scenarios contribute to whichever pool their label admits. A cell whose output is unparseable is scored as wrong for accuracy (see Failure policy) but carries no direction to attribute, so it is excluded from both directional denominators. In v2026-05 that exclusion is three cells, all of them one proceed-labeled scenario under three Anthropic conditions, giving 1,677 over-refusal opportunities and 1,500 under-refusal opportunities across the 30 conditions. Recomputing the published rates from the artifacts requires this rule: counting the excluded cells as over-refusals instead would move the reported over-refusal rate from 28.1% to 28.2%.
 - Single-feature baseline (artifact audit). Because the gate receives operational metadata, we test whether any one field predicts the label. A reversibility-only rule (each bucket's majority label) scores 91/106 (85.8%), above the 52.8% global-majority floor, and is reported as a diagnostic baseline. This is an artifact audit, not a claim that the benchmark is shortcut-proof.
-- Labels are human-authored. The three-vendor annotation panel is a reproducibility audit, not ground truth. The packaged audit artifact (agreement report, leak audit, provenance, checksums) ships with the release bundle at `results/v2026-05/annotation-audit/`; see its README for the panel, the numbers, and the one-command reproduce path. The completed three-rater human validation pass produced majority-vote labels with adjudication, reported as its own artifact at `results/v2026-05/human-validation/` (gate majority 87.7% vs the key, inter-rater Fleiss kappa 0.69), never merged with the audit numbers.
+- Labels are human-authored. The three-vendor annotation panel is a reproducibility audit, not ground truth. The packaged audit artifact (agreement report, leak audit, provenance, checksums) ships with the release bundle at `results/v2026-05/annotation-audit/`; see its README for the panel, the numbers, and the one-command reproduce path. The three-rater corroboration pass produced majority-vote labels (no adjudication), reported as its own artifact at `results/v2026-05/human-validation/` (gate majority 87.7% vs the key, inter-rater Fleiss kappa 0.69), never merged with the audit numbers.
 - Smoke runs write to `runs/smoke/<run-id>/` and cannot be loaded as canonical results; reported runs write to `runs/canonical-multi-trial/<run-id>/`.
 
 ## Failure policy
