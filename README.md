@@ -44,8 +44,8 @@ versioned release, and this one is never retroactively rewritten.
 
 **Models block authorized work about 28 times more often than they perform unauthorized
 work.** The two rates rest on near-identical denominators (1,677 chances to over-refuse
-against 1,500 to under-refuse, a 1.12:1 ratio), so the asymmetry is a property of the
-models and not of how the corpus was built.
+against 1,500 to under-refuse, a 1.12:1 ratio), so the gap is not a matter of more
+cases pointing one way.
 
 The direction holds under sensitivity checks. In 17 of the 106 scenarios the fixture-integrity
 adapter inferred a `success_criterion_change` flag by matching risk keywords (for example `eval`
@@ -319,7 +319,7 @@ node scripts/label-web.mjs --queue annotations/step-label-queue.jsonl --port 440
 The step-labeling pair exists for the process-reward path: a rater answers
 one binary question per (rationale, evidence item) pair, and those answers
 form the human-annotated gold labels an automated step grader must be validated against
-(agreement at or above 0.75 Fleiss kappa) before its output is used as a
+(at high Fleiss kappa agreement) before its output is used as a
 training reward. Answers append to one JSONL per anonymized rater id, and
 every answer is bound to its queue item by hash, so a regenerated queue can
 never silently absorb stale answers.
@@ -332,7 +332,7 @@ question.
 
 ![Step labeling interface, two-panel layout](docs/img/label-web-panel.png)
 
-Two human passes exist and judge different things: the verdict human validation pass
+Two human passes exist and judge different things: the verdict corroboration pass
 (`scripts/label.mjs`) checks the scenarios' own proceed-or-hold answers;
 the step-evidence pass (this tool) checks whether model rationales used
 specific evidence. The map of the two, the rater runbook, and the
@@ -368,7 +368,7 @@ Two-panel:    http://127.0.0.1:4400/panel
 
 Labels carried by these exports are the benchmark-owner labels
 (`label_source: benchmark-owner-pre-gold` in every provenance sidecar)
-until the three-rater human validation pass lands; regeneration after that pass
+until the three-rater corroboration pass lands; regeneration after that pass
 is one command per artifact. Pair counts and row counts depend on the
 flags and on how many run roots exist locally; cite numbers only together
 with the exact command that produced them.

@@ -8,9 +8,11 @@ they recover the benchmark-owner labels?
 
 The leaderboard answers a different question (how 30 model conditions perform
 on the action gate) and lives in `../leaderboard.json`. Do not mix the two.
-Final label authority is human: benchmark-owner labels plus the three-human
-gold reference pass (majority vote, adjudication), which is reported as its
-own artifact in `../human-validation/`, never merged with these numbers.
+The benchmark-owner labels are the scoring key. The separate three-rater
+majority is unadjudicated corroboration and label-sensitivity evidence, not
+scoring authority; no adjudication was performed on the release verdict
+labels. It is reported as its own artifact in `../human-validation/`, never
+merged with these numbers.
 
 ## Panel
 
@@ -47,11 +49,11 @@ baselines carry no functional category by design.
 - `gate_state`: primary evaluation label and training target. The audit
   strongly reproduces it.
 - `irreversibility_tier`: human-authored severity metadata for weighted miss.
-  It becomes a training reward weight only if the human-gold pass confirms
+  It is a candidate training reward weight only where human raters reach high
   agreement on this axis.
 - `functional_category`: diagnostic metadata only. Lower agreement here
-  identifies adjudication work for the human-gold pass; it is never a score,
-  ranking column, or training target.
+  keeps the axis diagnostic; it is never a score, ranking column, or training
+  target.
 
 ## Integrity
 
@@ -59,8 +61,9 @@ baselines carry no functional category by design.
   `leaked_prompts: 0`, `pass: true`. An earlier combined-prompt run that left
   answer-key fields visible was discarded and is not part of this artifact.
 - `agreement-report.json`: full per-axis agreement, canonical alignment, and
-  the adjudication queue (every row where the panel majority disagrees with
-  the benchmark-owner label).
+  a disagreement list stored under the legacy field name
+  `adjudication_queue` (every row where the panel majority disagrees with the
+  benchmark-owner label). No release verdict was adjudicated from this list.
 - `run-summary.json`: raw runner artifact, included verbatim. Caveat: the
   runner overwrites it on every resumed invocation, so it records only the
   final invocation (one retried call that failed), not the cumulative run.

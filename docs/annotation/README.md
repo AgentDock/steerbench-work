@@ -3,16 +3,16 @@
 Two different things in this project get checked by humans, because two
 different things can be wrong. Do not confuse them.
 
-| | Verdict validation pass | Step-evidence gold set |
+| | Verdict corroboration pass | Step-evidence gold set |
 |---|---|---|
 | What is judged | The scenarios themselves: is proceed-or-hold the right answer for each one? | Model outputs: did a model's written rationale use a specific evidence item? |
 | Tool | `scripts/label.mjs` (terminal) | `scripts/label-web.mjs` (browser) |
 | Raters | Three, anonymized ids | Three, anonymized ids |
-| What it protects | The benchmark's own answer keys | The process-reward path: an automated step grader is trusted only after it matches these human answers at 0.75 Fleiss kappa or better |
+| What it checks | The benchmark-owner answer keys, as independent corroboration | The process-reward path: an automated step grader is trusted only after it matches these human answers at high Fleiss kappa agreement |
 
 The three-vendor model panel (`scripts/run-annotators.mjs`) is neither of
 these. It is the cheap reproducibility check that runs beside the human
-passes: humans are the authority, the panel measures whether labels are
+passes: the benchmark-owner labels are the scoring authority, the human passes are corroboration, and the panel measures whether labels are
 independently derivable at scale. The same division applies to steps: the
 human-annotated gold labels are the reference, and a model-based step grader,
 once validated against them, does the high-volume grading. That grader uses the

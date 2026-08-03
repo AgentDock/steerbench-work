@@ -15,9 +15,9 @@ and leaderboard numbers are generated from here.
 - `release-manifest.json` — scenario hashes, prompt hash, row roster.
 - `annotation-audit/` — the three-vendor LLM annotation reproducibility audit
   (agreement report, leak audit, provenance, own checksums). Validation
-  evidence for the labels, not leaderboard scoring and not human gold; the
-  three-human gold pass is reported as a separate artifact when it lands. See
-  `annotation-audit/README.md`.
+  evidence for the labels, not leaderboard scoring or label authority. The
+  separate three-rater majority is reported as unadjudicated corroboration in
+  `human-validation/`. See `annotation-audit/README.md`.
 - `checksums.txt` — sha256 of every file in this bundle, including the
   `annotation-audit/` files.
 

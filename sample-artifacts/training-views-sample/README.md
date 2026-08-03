@@ -9,5 +9,5 @@ What this is: a format demonstration of the scenario-to-training-view path.
 What this is not: a training dataset, a training result, or a claim that
 any model was trained. Labels carry label_source
 "benchmark-owner-pre-gold" in the provenance sidecar; rows regenerate with
-one command after the three-rater human validation pass lands. No partition of
+one command after the three-rater corroboration pass lands. No partition of
 the published v2026-05 set functions as a held-out test set.

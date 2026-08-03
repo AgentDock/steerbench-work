@@ -40,7 +40,7 @@ step is building one tokenized training datum in memory.
   and LAST_ASSISTANT_MESSAGE select the same tokens. A future training run
   should still set train_on_what explicitly.
 - Labels in all inputs are pre-gold (label_source benchmark-owner-pre-gold);
-  artifacts regenerate after the three-rater human validation pass.
+  artifacts regenerate after the three-rater corroboration pass.
 - No Tinker account, API key, or paid training run was used. The only
   network fetch was the public Qwen tokenizer from Hugging Face.
 

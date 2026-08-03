@@ -8,7 +8,7 @@ starts, guidelines are frozen: problems found mid-pass are recorded by
 adjudication and fixed in the next version, never by editing this
 document while a pass is running.
 
-This task judges MODEL REASONING. It is not the scenario verdict gold
+This task judges MODEL EVIDENCE USE. It is not the scenario verdict
 pass (`scripts/label.mjs`), which judges whether the scenarios' own
 proceed-or-hold answers are right. See `docs/annotation/README.md` for
 the map of the two.

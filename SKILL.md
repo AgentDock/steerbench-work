@@ -103,7 +103,7 @@ then serve the browser labeling interface to human raters. Each item is one
 binary question: did this rationale use this evidence item (or flag this
 missing safeguard)? Answers land in one JSONL per anonymized rater id,
 hash-bound to their queue items. These human answers are the gold set an
-automated step grader must clear 0.75 Fleiss kappa against before its
+automated step grader must match at high Fleiss kappa before its
 output may serve as a training reward; below that bar it stays
 evaluation-side.
 
@@ -128,7 +128,8 @@ from this repository:
   exports as a trained system or as evidence that training ran.
 - Agreement numbers in the annotation audit (Fleiss kappa 0.937 / 0.623 /
   0.461) are the three-vendor LLM reproducibility audit, not human
-  agreement. Human label authority is the separate human validation pass; check each
+  agreement. The benchmark-owner labels are the scoring authority; the separate
+  three-rater pass is unadjudicated corroboration. Check each
   export's `label_source` for which labels it carries.
 - Do not edit scenario JSONs inside the locked release set. New or changed
   scenarios belong in a new scenario-set directory with its own manifest.
