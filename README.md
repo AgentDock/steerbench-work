@@ -140,6 +140,20 @@ For taxonomy, scenario count, and source lineage, see
 `scenario-sets/steerbench-work-2026-05/MANIFEST.md`, `TAXONOMY.md`, and
 `CATEGORY_LINEAGE.md`.
 
+### Scenario texts and named companies
+
+Scenario texts are **constructed**. Several scenario identifiers and texts refer
+to named companies and to publicly reported incidents. Those references point to
+the public record, such as court rulings, regulator actions, incident reports,
+and press coverage, and they **carry no claim about any organization's current
+systems, products, or practices**.
+
+Incident-mirror scenarios in particular are deliberately counterfactual: they
+keep the surface of a reported incident and reverse the verification state, so
+the correct action becomes proceed. A mirror describes a situation that did not
+happen. Nothing in this release supports a claim about the safety of any
+deployed agent system.
+
 Training releases must not use the same examples for supervision and final lift
 claims. A future expanded corpus adds a documented `SPLIT_POLICY.md`,
 generated `splits.json`, and validator checks so scenario families are assigned
