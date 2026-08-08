@@ -8,7 +8,7 @@ authors:
   - family-names: "Serdar"
     given-names: "Oguz"
 repository-code: "https://github.com/AgentDock/steerbench-work"
-version: 0.1.0
+version: "2026-05"
 date-released: 2026-05-22
 license: CC-BY-4.0
 preferred-citation:
