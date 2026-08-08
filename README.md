@@ -9,7 +9,7 @@ send a message, update a record, merge code, charge a card, or touch production
 state. SteerBench-Work asks one question at that boundary: should the action
 proceed, or should the system hold for review?
 
-[Website](https://steerbench.com/work/) ·
+[Website](https://steerbench.com) ·
 [Leaderboard](https://steerbench.com/work/leaderboard/) ·
 [Matrix](https://steerbench.com/work/matrix/) ·
 [Methodology](https://steerbench.com/work/methodology/) ·
@@ -60,7 +60,7 @@ proceeding is correct. On scenarios that carry a live risk signal but are *not*
 famous incidents they score 76.8%. We report the difference between 76.8% and 63.8%
 descriptively, not as a cause: the two sets are not matched pairs.
 
-Full leaderboard: [steerbench.com/work](https://steerbench.com/work/leaderboard/).
+Full leaderboard: [steerbench.com/work/leaderboard](https://steerbench.com/work/leaderboard/).
 
 ## What this is
 
@@ -113,7 +113,7 @@ work. Full per-axis report: `results/v2026-05/human-validation/agreement-report.
 
 ## If you only have five minutes
 
-1. Read the benchmark framing on [steerbench.com/work](https://steerbench.com/work/).
+1. Read the benchmark framing on [steerbench.com](https://steerbench.com).
 2. Inspect `sample-artifacts/README.md` for the shape of a scored cell.
 3. Inspect `results/v2026-05/annotation-audit/README.md` for the three-vendor
    label reproducibility audit (not human-annotated gold labels, not leaderboard scoring).
