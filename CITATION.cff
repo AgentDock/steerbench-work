@@ -15,9 +15,9 @@ preferred-citation:
   type: software
   title: "SteerBench-Work: A Benchmark for Agent Steering at Action Boundaries"
   authors:
-    - family-names: "Mertayak"
-      given-names: "Cuneyt"
     - family-names: "Serdar"
       given-names: "Oguz"
+    - family-names: "Mertayak"
+      given-names: "Cuneyt"
   year: 2026
   repository-code: "https://github.com/AgentDock/steerbench-work"
