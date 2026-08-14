@@ -240,11 +240,15 @@ source files and published scored artifacts must agree on the scenario hashes.
 
 For v2026-05, six scenario JSON files were edited during a pre-release
 site/readability pass. `integrity-audit/scenario-drift-report.json` records that
-the rendered model-facing inputs and scored labels were unchanged. The repair is
-to rerun only those six scenarios under the current frozen source files, across
-the published model rows, and publish the regenerated artifacts after validator
-pass. The original locked roots remain on disk for audit history; repair roots
-must be saved separately and never overwrite them.
+the rendered model-facing inputs and scored labels were unchanged. The repair was
+executed on 2026-06-07: those six scenarios were rerun under the current frozen
+source files across the published model rows, and the regenerated artifacts were
+published after a validator pass. See `results/v2026-05/repair-summary.json`
+(`rows_repaired: 27`, `pending_rows: []`) and
+`results/v2026-05/overlay-validator-report.json` (`pass: true`); every published
+cell's scenario hash matches the current source file. The original locked roots
+remain on disk for audit history; repair roots are saved separately and never
+overwrite them.
 
 ## Run-root layout
 
