@@ -14,6 +14,7 @@ proceed, or should the system hold for review?
 [Matrix](https://steerbench.com/work/matrix/) ·
 [Methodology](https://steerbench.com/work/methodology/) ·
 [Paper](https://steerbench.com/work/paper/) ·
+[arXiv](https://arxiv.org/abs/2608.12654) ·
 [Sample artifacts](sample-artifacts/) ·
 [Release bundle](results/v2026-05/) ·
 [Annotation audit](results/v2026-05/annotation-audit/) ·

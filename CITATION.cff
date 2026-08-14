@@ -12,7 +12,7 @@ version: "2026-05"
 date-released: 2026-05-22
 license: CC-BY-4.0
 preferred-citation:
-  type: software
+  type: article
   title: "SteerBench-Work: A Benchmark for Agent Steering at Action Boundaries"
   authors:
     - family-names: "Serdar"
@@ -20,4 +20,8 @@ preferred-citation:
     - family-names: "Mertayak"
       given-names: "Cuneyt"
   year: 2026
-  repository-code: "https://github.com/AgentDock/steerbench-work"
+  url: "https://arxiv.org/abs/2608.12654"
+  identifiers:
+    - type: other
+      value: "arXiv:2608.12654"
+      description: "arXiv preprint"
