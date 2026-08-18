@@ -1,8 +1,15 @@
-# Sample artifacts
+# Frozen v1 sample artifacts
 
-One real (variant, scenario) cell extracted from a current validated repair
+One real (variant, scenario) cell extracted from the frozen v1 validated repair
 root, plus the five snapshot files needed to validate it as a one-scenario
-sample. A reviewer can read the on-disk shapes without making any API calls.
+historical sample. Its request bodies intentionally retain the v1 descriptive
+`scenario_id` format. They are not evidence of the current v2 renderer. A
+reviewer can read the frozen on-disk shapes without making any API calls.
+
+For current v2 model-visible shapes, inspect
+`integrations/tinker/parity-vectors.json` and
+`sample-artifacts/training-views-sample/sft.sample.jsonl`; both are regenerated
+from the shared opaque-ID renderer.
 
 ## Layout
 
@@ -56,13 +63,12 @@ The per-cell record summarizes the five trials in the cell:
 | `first_k_all_correct` | `{ "1", "3", "5": bool }`: order-dependent metadata only; never publish as `pass^k` |
 | `direction`, `functional_category`, `domain`, `source_provenance`, `irreversibility_class`, `integrity_flags` | Scenario taxonomy fields carried for breakdown aggregation |
 
-## Reproducing
+## Historical validation
 
 ```bash
-OPENAI_API_KEY=... npm run bench -- smoke \
-  --variant mini --scenario patient-records-employer-disclosure-002
+npm run validate-sample
 ```
 
-This creates a fresh smoke tree under `runs/smoke/<run-id>/`. The sample in
-this directory is an offline inspection artifact; it is not used as a published
-leaderboard row.
+This checks the frozen v1 sample's internal schema and provenance. It does not
+certify current v2 request bytes. The sample is an offline inspection artifact;
+it is not used as a current leaderboard row.

@@ -300,7 +300,11 @@ runs/canonical-multi-trial/<run-id>/
 
 ## Offline review
 
-`sample-artifacts/` is a frozen (variant, scenario) cell plus the five run-root snapshot files. A reviewer can inspect canonical output shapes without making any API calls. Start at sample-artifacts/README.md.
+`sample-artifacts/` is a frozen v1 (variant, scenario) cell plus the five v1
+run-root snapshot files. It validates historical internal consistency, not the
+current v2 request shape. Inspect `integrations/tinker/parity-vectors.json` or
+`sample-artifacts/training-views-sample/sft.sample.jsonl` for current opaque-ID
+model-visible shapes. Start at `sample-artifacts/README.md`.
 
 ## Dataset tooling (exact commands)
 
@@ -396,6 +400,8 @@ with the exact command that produced them.
 |---|---|
 | `configs/reported-run.mjs` | Default scenario set, trials per cell, scoring field, variant grid, output roots |
 | `src/prompts.mjs` | Canonical steering system prompt bytes the planner snapshots into `PROMPT.txt` |
+| `ID_MAP.json` | Frozen descriptive-to-opaque scenario and evidence join map used for every model-visible reference |
+| `scripts/generate-id-map.mjs` | Fail-closed deterministic generator for `ID_MAP.json` |
 | `src/schema.mjs` | Structured-output parsing + validation against the allowed enum |
 | `src/scorer.mjs` | `isCorrectByPermission`, modal-of-N, all-trials-correct (pure, no I/O) |
 | `src/manifest.mjs` | Scenario manifest builder (file hash + taxonomy fields) |

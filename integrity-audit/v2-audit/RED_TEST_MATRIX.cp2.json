@@ -1,0 +1,34 @@
+{
+  "schema_version": "steerbench.red-test-matrix.partial.v1",
+  "checkpoint": 2,
+  "receipt_sha256": "941dce3707fa23d5fae82ddabe81d4a1128de08ef7d55966b292aaa9d65ba8d7",
+  "rows": [
+    {
+      "finding_id": 1,
+      "owning_checkpoint": 2,
+      "receipt_sha256": "941dce3707fa23d5fae82ddabe81d4a1128de08ef7d55966b292aaa9d65ba8d7",
+      "known_bad_fixture": "reconstructed v1 wire with descriptive scenario/evidence identifiers and raw_ref-derived path suffixes",
+      "expected_gate_failure": "identifier-opacity gate rejects the v1 wire corpus",
+      "corrected_fixture": "canonical opaque scenario/evidence references with source metadata suppressed",
+      "expected_pass": "zero descriptive scenario-reference failures"
+    },
+    {
+      "finding_id": 4,
+      "owning_checkpoint": 2,
+      "receipt_sha256": "941dce3707fa23d5fae82ddabe81d4a1128de08ef7d55966b292aaa9d65ba8d7",
+      "known_bad_fixture": "reconstructed v1 identifier-derived warnings, hidden-note-derived warnings, and safe-status protected warnings",
+      "expected_gate_failure": "exact historical 5, 6, and 7 affected sets plus the safe-status warning set reproduce",
+      "corrected_fixture": "identifier and hidden-note invariant renderer with warning-free safe-status control",
+      "expected_pass": "zero affected rows and no safe-status integrity warning"
+    },
+    {
+      "finding_id": 13,
+      "owning_checkpoint": 2,
+      "receipt_sha256": "941dce3707fa23d5fae82ddabe81d4a1128de08ef7d55966b292aaa9d65ba8d7",
+      "known_bad_fixture": "v1 direct-copy reversibility fallback across all 68 fallback rows",
+      "expected_gate_failure": "61 rows differ from the explicit conversion, including 36 proceed-labeled rows",
+      "corrected_fixture": "explicit irreversibility-to-reversibility conversion across all 68 fallback rows",
+      "expected_pass": "every fallback row matches the frozen conversion"
+    }
+  ]
+}

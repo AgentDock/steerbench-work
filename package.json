@@ -6,6 +6,7 @@
   "files": [
     "src",
     "scripts",
+    "ID_MAP.json",
     "scenario-sets",
     "sample-artifacts",
     "configs",

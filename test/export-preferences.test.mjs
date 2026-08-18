@@ -13,6 +13,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import { reshapeToLegacy, buildModelInputFor } from "../src/canonical-runner.mjs";
+import { renderUserMessage } from "../src/model-input.mjs";
 import { parseAndNormalize } from "../src/schema.mjs";
 import { isCorrectByPermission } from "../src/scorer.mjs";
 import { exportPreferences, LABEL_SOURCE, EXPORTER_VERSION } from "../scripts/export-preferences.mjs";
@@ -29,8 +30,27 @@ const SEED = 1;
 // runs/, which is gitignored and therefore absent on a fresh CI checkout. When
 // the run is not present these tests skip rather than fail; the SFT exporter
 // tests cover the shared render/scoring path from the committed scenario set.
+function runExport(extra = {}) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "pref-export-test-"));
+  const result = exportPreferences({
+    runsDir, scenarioSetDir, outDir: dir,
+    maxPairsPerScenario: MAX_PAIRS, seed: SEED,
+    ...extra
+  });
+  return { dir, result };
+}
+
 const hasRun = fs.existsSync(runsDir);
-const skip = hasRun ? false : "requires a local canonical run under runs/ (gitignored; not in CI)";
+// The exporter refuses any trial whose recorded user message differs from a
+// fresh render, so a run recorded under the v1 descriptive-id prefix yields no
+// pairs under v2 opaque rendering. That refusal is the point (exporting it
+// would fabricate a prompt the model never saw) and is asserted separately in
+// "a run recorded under a different render exports nothing". These
+// pair-shape tests need a run recorded under the CURRENT render.
+const exportsUnderCurrentRender = hasRun && runExport().result.files.length > 0;
+const skip = !hasRun
+  ? "requires a local canonical run under runs/ (gitignored; not in CI)"
+  : (exportsUnderCurrentRender ? false : "local run was recorded under a different render; see the render-mismatch test");
 const maybe = (name, fn) => test(name, { skip }, fn);
 
 let outDir;
@@ -50,23 +70,60 @@ function canonicalUserFor(scenarioId) {
   if (!renderCache.has(scenarioId)) {
     const raw = JSON.parse(fs.readFileSync(path.join(scenarioSetDir, `${scenarioId}.json`), "utf8"));
     const { model_input } = buildModelInputFor(reshapeToLegacy(raw));
-    renderCache.set(scenarioId, `scenario_id: ${scenarioId}\n\n${model_input}`);
+    renderCache.set(scenarioId, renderUserMessage({ scenarioId, modelInput: model_input }));
   }
   return renderCache.get(scenarioId);
 }
 
-function runExport(extra = {}) {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "pref-export-test-"));
-  const result = exportPreferences({
-    runsDir, scenarioSetDir, outDir: dir,
-    maxPairsPerScenario: MAX_PAIRS, seed: SEED,
-    ...extra
+function syntheticFixture({ legacyPrefix = false } = {}) {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "pref-synthetic-"));
+  const scenarioSetDir = path.join(root, "scenario-set");
+  const runsDir = path.join(root, "runs");
+  const runRoot = path.join(runsDir, "run-001");
+  const variantKey = "fixture-variant";
+  const scenarioId = "safe-readme-typo-001";
+  const cellDir = path.join(runRoot, variantKey, scenarioId);
+  const outDir = path.join(root, "out");
+  fs.mkdirSync(scenarioSetDir, { recursive: true });
+  fs.mkdirSync(cellDir, { recursive: true });
+
+  const raw = JSON.parse(fs.readFileSync(
+    path.join(runnerRoot, "scenario-sets", "steerbench-work-2026-05", `${scenarioId}.json`),
+    "utf8"
+  ));
+  fs.writeFileSync(path.join(scenarioSetDir, `${scenarioId}.json`), `${JSON.stringify(raw, null, 2)}\n`);
+  const { model_input } = buildModelInputFor(reshapeToLegacy(raw));
+  const currentUser = renderUserMessage({ scenarioId, modelInput: model_input });
+  const recordedUser = legacyPrefix ? `scenario_id: ${scenarioId}\n\n${model_input}` : currentUser;
+  fs.writeFileSync(path.join(runRoot, "RUN_PLAN.json"), `${JSON.stringify({
+    scenario_set: path.basename(scenarioSetDir),
+    scenario_count: 1,
+    planned_variants: [variantKey]
+  }, null, 2)}\n`);
+
+  const trial = (number, correct, rawText) => ({
+    run_id: "synthetic-run",
+    variant_key: variantKey,
+    trial: number,
+    status: "ok",
+    correct,
+    expected_action: "continue",
+    raw_text: rawText,
+    request_body: {
+      messages: [
+        { role: "system", content: "Synthetic system prompt" },
+        { role: "user", content: recordedUser }
+      ]
+    }
   });
-  return { dir, result };
+  fs.writeFileSync(path.join(cellDir, "trial-1.json"), `${JSON.stringify(trial(1, true, '{"commit_permission":"allowed"}'), null, 2)}\n`);
+  fs.writeFileSync(path.join(cellDir, "trial-2.json"), `${JSON.stringify(trial(2, false, '{"commit_permission":"blocked"}'), null, 2)}\n`);
+  return { runsDir, scenarioSetDir, outDir, currentUser };
 }
 
+
 before(() => {
-  if (!hasRun) return;
+  if (skip) return;
   const { dir, result } = runExport();
   outDir = dir;
   assert.equal(result.files.length, 1);
@@ -189,4 +246,42 @@ maybe("splits file partitions pairs into per-split JSONL files", () => {
   for (const p of JSON.parse(fs.readFileSync(only.files[0].provenancePath, "utf8"))) {
     assert.ok(train.includes(p.scenario_id));
   }
+});
+
+test("a run recorded under a different render exports nothing", { skip: hasRun ? false : "requires a local canonical run under runs/" }, () => {
+  const { result } = runExport();
+  if (result.files.length > 0) return; // run matches the current render
+  assert.equal(result.files.length, 0, "a render mismatch must produce no export files");
+  assert.ok((result.counters?.skipped_prompt_mismatch ?? 0) > 0,
+    "every trial from a differently-rendered run must be refused as a prompt mismatch");
+});
+
+test("synthetic current-render trials export the exact opaque canonical message", () => {
+  const fixture = syntheticFixture();
+  const result = exportPreferences({
+    runsDir: fixture.runsDir,
+    scenarioSetDir: fixture.scenarioSetDir,
+    outDir: fixture.outDir,
+    maxPairsPerScenario: 1,
+    seed: 1
+  });
+  assert.equal(result.files.length, 1);
+  assert.equal(result.counters.skipped_prompt_mismatch, 0);
+  const [row] = fs.readFileSync(result.files[0].jsonlPath, "utf8").split("\n").filter(Boolean).map(JSON.parse);
+  assert.equal(row.comparison.prompt_conversation[1].content, fixture.currentUser);
+  assert.match(fixture.currentUser, /^scenario_ref: s-[0-9a-f]{10}\n\n/);
+});
+
+test("synthetic descriptive-v1 trials are rejected as prompt mismatches", () => {
+  const fixture = syntheticFixture({ legacyPrefix: true });
+  const result = exportPreferences({
+    runsDir: fixture.runsDir,
+    scenarioSetDir: fixture.scenarioSetDir,
+    outDir: fixture.outDir,
+    maxPairsPerScenario: 1,
+    seed: 1
+  });
+  assert.equal(result.files.length, 0);
+  assert.equal(result.counters.trials_scanned, 2);
+  assert.equal(result.counters.skipped_prompt_mismatch, 2);
 });

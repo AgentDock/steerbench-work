@@ -74,15 +74,41 @@ import {
 
 // Reuse the existing scenario reshape + model-input rendering pipeline.
 import { ActionGateway, WorkerAgent } from "./policies.mjs";
-import { inputForModel } from "./model-input.mjs";
+import { inputForModel, renderUserMessage } from "./model-input.mjs";
+
+const REVERSIBILITY_BY_IRREVERSIBILITY = Object.freeze({
+  none: "high",
+  low: "high",
+  soft_to_reverse: "high",
+  medium: "medium",
+  high: "low",
+  hard_to_reverse: "low"
+});
+
+/**
+ * Convert the corpus's irreversibility class into the runtime reversibility
+ * field. The two concepts point in opposite directions.
+ *
+ * @param {string} irreversibilityClass - Corpus-side irreversibility label.
+ * @returns {"low"|"medium"|"high"} Runtime reversibility.
+ * @throws Error for an unknown or missing class.
+ */
+export function reversibilityFromIrreversibility(irreversibilityClass) {
+  const value = REVERSIBILITY_BY_IRREVERSIBILITY[irreversibilityClass];
+  if (!value) throw new Error(`unknown irreversibility class: ${JSON.stringify(irreversibilityClass)}`);
+  return value;
+}
 
 export function reshapeToLegacy(json) {
   const evidence = (json.evidence || []).map((e) => ({
     evidence_id: e.legacy_id || e.id, title: e.title, status: e.status,
-    raw_ref: e.raw_ref, evidence_type: e.source_type
+    raw_ref: e.raw_ref, source_type: e.source_type
   }));
-  const evidenceIds = (json.expected_evidence || []).map((id) =>
-    (json.evidence || []).find((e) => e.id === id)?.legacy_id || id
+  // The decision-point list is the evidence available at the commit moment.
+  // expected_evidence belongs to the answer key and must never select what the
+  // model sees.
+  const evidenceIds = (json.decision_point?.evidence_ids || []).map((id) =>
+    (json.evidence || []).find((e) => e.id === id || e.legacy_id === id)?.legacy_id || id
   );
   const action = json.metadata?.legacy_action
     ? { ...json.metadata.legacy_action, evidence_ids: evidenceIds }
@@ -91,7 +117,7 @@ export function reshapeToLegacy(json) {
         proposed_action: json.decision_point?.proposed_action || json.title || "",
         draft: json.decision_point?.draft || null,
         confidence: json.decision_point?.confidence !== undefined ? json.decision_point.confidence : 0.7,
-        reversibility: json.irreversibility_class,
+        reversibility: reversibilityFromIrreversibility(json.irreversibility_class),
         evidence_ids: evidenceIds,
         commit_category: json.action_verb === "external_send" ? "external_communication" : "internal_action",
         target_scope: "system", durability: "durable",
@@ -106,7 +132,8 @@ export function reshapeToLegacy(json) {
     id: json.id, family: json.metadata?.legacy_family || json.domain, title: json.title,
     goal: json.context?.goal, user_request: json.user_request,
     quality_tags: json.metadata?.legacy_quality_tags || json.tags || [],
-    hidden_trap: json.context?.hidden_trap, action, evidence,
+    action, evidence,
+    integrity_evidence: json.integrity_evidence,
     human_correction: json.expected_behavior?.human_correction,
     recovery_summary: json.expected_behavior?.recovery_summary,
     autonomous_failure: json.expected_behavior?.autonomous_failure,
@@ -193,16 +220,33 @@ function normalizeUsageChat(usage) {
   return normalized;
 }
 
-export function buildModelInputFor(scenario) {
+/**
+ * Build the canonical model-facing scenario body.
+ *
+ * @param {object} scenario - Reshaped scenario record.
+ * @param {object} [options] - Structural-render overrides.
+ * @param {(scenarioId: string) => string} [options.scenarioIdFor]
+ *   Optional scenario-reference renderer used only by offline validators.
+ * @param {(scenarioId: string, evidenceId: string) => string} [options.evidenceIdFor]
+ *   Optional evidence-reference renderer used only by offline validators.
+ * @returns {{model_input: string, integrity_flags: string[]}} Rendered body and flags.
+ */
+export function buildModelInputFor(scenario, { scenarioIdFor, evidenceIdFor } = {}) {
   const runId = `${scenario.id}-canonical-${Date.now()}`;
   const worker = new WorkerAgent({ scenario });
-  const gateway = new ActionGateway({ scenario, runId, mode: "structured_steering" });
+  const gateway = new ActionGateway({
+    scenario,
+    runId,
+    mode: "structured_steering",
+    scenarioIdFor,
+    evidenceIdFor
+  });
   const action = worker.proposeAction();
   const preflight = gateway.preflight({ action, timeMs: 132000 });
   return {
     model_input: inputForModel({
       scenario, event: preflight.event,
-      evidence: preflight.evidence, mode: "structured_steering"
+      evidence: preflight.evidence, mode: "structured_steering", evidenceIdFor
     }),
     integrity_flags: preflight.event.integrity_evidence?.integrity_flags || []
   };
@@ -226,7 +270,7 @@ function buildOpenAIRequestBody({ variantConfig, modelInput, prompt, scenarioId 
     model: variantConfig.model,
     input: [
       { role: "system", content: prompt },
-      { role: "user", content: `scenario_id: ${scenarioId}\n\n${modelInput}` }
+      { role: "user", content: renderUserMessage({ scenarioId, modelInput }) }
     ],
     max_output_tokens: variantConfig.max_output_tokens
   };
@@ -252,7 +296,7 @@ function buildGatewayChatRequestBody({ variantConfig, modelInput, prompt, scenar
     model: variantConfig.gateway_model || `${variantConfig.vendor}/${variantConfig.model}`,
     messages: [
       { role: "system", content: prompt },
-      { role: "user", content: `scenario_id: ${scenarioId}\n\n${modelInput}` }
+      { role: "user", content: renderUserMessage({ scenarioId, modelInput }) }
     ],
     max_tokens: variantConfig.max_output_tokens
   };

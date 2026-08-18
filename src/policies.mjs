@@ -70,8 +70,26 @@ export class EvidenceCollector {
 
 /** Converts a proposed action and its evidence into a runtime event record. */
 export class RuntimeAdapter {
+  /**
+   * @param {object} [options]
+   * @param {(scenarioId: string) => string} [options.scenarioIdFor]
+   *   Scenario-reference renderer. Production uses the frozen ID map.
+   * @param {(scenarioId: string, evidenceId: string) => string} [options.evidenceIdFor]
+   *   Evidence-reference renderer. Production uses the frozen ID map.
+   */
+  constructor({ scenarioIdFor, evidenceIdFor } = {}) {
+    this.scenarioIdFor = scenarioIdFor;
+    this.evidenceIdFor = evidenceIdFor;
+  }
+
   toRuntimeEvent({ runId, scenario, action, evidence, timeMs }) {
-    const integrityEvidence = buildIntegrityEvidence({ scenario, action, evidence });
+    const integrityEvidence = buildIntegrityEvidence({
+      scenario,
+      action,
+      evidence,
+      scenarioIdFor: this.scenarioIdFor,
+      evidenceIdFor: this.evidenceIdFor
+    });
     return {
       event_id: `evt_${String(timeMs).padStart(6, "0")}`,
       run_id: runId,
@@ -229,12 +247,22 @@ export function buildGatewayAuthorization({ event, policyAction, mode }) {
  * to evaluate one proposed action.
  */
 export class ActionGateway {
-  constructor({ scenario, runId, mode }) {
+  /**
+   * @param {object} options
+   * @param {object} options.scenario - Reshaped scenario record.
+   * @param {string} options.runId - Stable run identifier.
+   * @param {string} options.mode - Steering mode.
+   * @param {(scenarioId: string) => string} [options.scenarioIdFor]
+   *   Optional structural-validator renderer. Production uses the frozen map.
+   * @param {(scenarioId: string, evidenceId: string) => string} [options.evidenceIdFor]
+   *   Optional structural-validator renderer. Production uses the frozen map.
+   */
+  constructor({ scenario, runId, mode, scenarioIdFor, evidenceIdFor }) {
     this.scenario = scenario;
     this.runId = runId;
     this.mode = mode;
     this.collector = new EvidenceCollector({ scenario });
-    this.adapter = new RuntimeAdapter();
+    this.adapter = new RuntimeAdapter({ scenarioIdFor, evidenceIdFor });
     this.detector = new RiskDetector();
     this.policy = new SteeringPolicy();
   }

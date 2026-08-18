@@ -26,6 +26,7 @@ import { STEERBENCH_STEERING_SYSTEM_PROMPT } from "../src/prompts.mjs";
 import { ALLOWED_POLICY_ACTIONS } from "../src/schema.mjs";
 import { CANONICAL_SCORING_MAPPING } from "../src/scorer.mjs";
 import { sha256File } from "../src/manifest.mjs";
+import { renderUserMessage } from "../src/model-input.mjs";
 
 const USAGE = `Usage: node scripts/export-sft.mjs --scenario-set-dir <dir> [--splits <file> --split <name>] --out <dir>
 
@@ -101,7 +102,7 @@ export function messagesFor(rawScenario) {
   const { model_input } = buildModelInputFor(reshapeToLegacy(rawScenario));
   return [
     { role: "system", content: STEERBENCH_STEERING_SYSTEM_PROMPT },
-    { role: "user", content: `scenario_id: ${rawScenario.id}\n\n${model_input}` },
+    { role: "user", content: renderUserMessage({ scenarioId: rawScenario.id, modelInput: model_input }) },
     { role: "assistant", content: JSON.stringify(goldResponseFor(rawScenario.expected_behavior)) }
   ];
 }

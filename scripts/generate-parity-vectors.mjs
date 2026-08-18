@@ -8,7 +8,8 @@
 //   1. Rendered model inputs for every scenario in the set, produced by the
 //      same reshapeToLegacy + buildModelInputFor pipeline the benchmark runner
 //      uses, in the exact wire format the runner sends (system prompt plus a
-//      "scenario_id: <id>" user header). Python reads these; it never renders.
+//      opaque "scenario_ref: <token>" user header). Python reads these; it
+//      never renders.
 //
 //   2. The scoring vocabulary (allowed commit_permission values) and the
 //      canonical expected_action -> required commit_permission mapping, read
@@ -42,6 +43,7 @@ import { reshapeToLegacy, buildModelInputFor } from "../src/canonical-runner.mjs
 import { STEERBENCH_STEERING_SYSTEM_PROMPT } from "../src/prompts.mjs";
 import { ALLOWED_COMMIT_PERMISSION, SCORED_FIELD } from "../src/schema.mjs";
 import { CANONICAL_SCORING_MAPPING, isCorrectByPermission } from "../src/scorer.mjs";
+import { renderUserMessage } from "../src/model-input.mjs";
 
 const USAGE = `Usage: node scripts/generate-parity-vectors.mjs
 
@@ -192,7 +194,7 @@ export function buildParityVectors() {
       required_commit_permission: required,
       // Exact user-message bytes the benchmark runner sends. The system
       // prompt is shared and hoisted to the top level of this file.
-      user_input: `scenario_id: ${entry.id}\n\n${model_input}`
+      user_input: renderUserMessage({ scenarioId: entry.id, modelInput: model_input })
     });
   }
 

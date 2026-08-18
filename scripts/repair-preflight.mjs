@@ -22,6 +22,7 @@ import { createHash } from "node:crypto";
 import { REPORTED_RUN_CONFIG } from "../configs/reported-run.mjs";
 import { STEERBENCH_STEERING_SYSTEM_PROMPT } from "../src/prompts.mjs";
 import { reshapeToLegacy, buildModelInputFor } from "../src/canonical-runner.mjs";
+import { renderUserMessage } from "../src/model-input.mjs";
 
 const RUN_ROOT_BASE = "runs/canonical-multi-trial";
 const SCENARIO_SET_DIR = "scenario-sets/steerbench-work-2026-05";
@@ -178,7 +179,7 @@ function leakGate() {
   const results = [];
   for (const id of SIX) {
     const json = JSON.parse(fs.readFileSync(path.join(SCENARIO_SET_DIR, `${id}.json`), "utf8"));
-    const userContent = `scenario_id: ${id}\n\n${buildModelInputFor(reshapeToLegacy(json)).model_input}`;
+    const userContent = renderUserMessage({ scenarioId: id, modelInput: buildModelInputFor(reshapeToLegacy(json)).model_input });
     // The full model-facing payload = canonical system prompt + user content.
     // Per-row params (model id, max_tokens, reasoning knob) carry no scenario
     // text, so the leak surface is exactly this payload, identical across rows.

@@ -9,7 +9,7 @@ duplicate ID, renderer error, or unexpected result set. The
 manifests, and grep-verifiable facts, and nothing in it is
 script-enforced unless the individual bullet says so.
 
-## Enforced by `receipts.mjs` (55 assertions; run: `node receipts.mjs`)
+## Enforced by `receipts.mjs` (91 assertions; run: `node receipts.mjs`)
 
 Corpus loading (hardened): the underscore exclusion is a fail-closed
 allowlist — the complete set of underscore-prefixed JSON files must be
@@ -25,7 +25,7 @@ asserted, and verdict-row IDs must equal the corpus IDs; the
 `receipts-output.json` baseline is written ONLY on a fully green run,
 so a mutated source can never silently generate a new baseline.
 
-Corpus side: identifier keyword rule 106/106; rendered-confidence
+Frozen-v1 corpus side: identifier keyword rule 106/106; rendered-confidence
 separation read from the ACTUAL rendered `confidence:` line of each
 model input (all 106 lines present; rendered value agrees with the
 corpus-derived value for all 106; the 11 legacy rows render the 0.7
@@ -37,20 +37,53 @@ corpus separability, not held-out accuracy); fallback action profiles
 68/106; legacy rows 11 with 39 `evidence_used` / 22 `evidence_missing`
 entries; the exact five adaptation-marked scenario IDs.
 
-Rendered side (through the v1 pipeline, `reshapeToLegacy` +
-`buildModelInputFor`): 95 evidence-bearing rows; 94 of them lose at
-least one authored `title` or `raw_ref` from the rendered input (sole
-exception asserted: `safe-readme-typo-001`); 62 lose `tool_call_result`
-string values (all string leaves inspected recursively, nested objects
-and arrays included); exactly the 11 legacy rows render the literal line
-`goal: undefined` and an empty `evidence:` line; the dispatched user
-message is assembled as `` `scenario_id: ${scenarioId}\n\n${modelInput}` ``
-at exactly 2 message-assembly sites in `src/canonical-runner.mjs`
-(source assertion — this is the layer that placed the descriptive ID in
-every request); `safe-status-summary-001` renders all four warning
-names (`success_criterion_change`, `changed_judge_without_product_fix`,
-`protected_surface_change`, `commit_point`) with exactly the first
-three in `integrity_flags`. Frozen scoring rule
+Current Checkpoint-2 render side: all 95 evidence-bearing rows suppress
+authored `title` and `raw_ref` values from model-visible bytes; 62 still
+omit `tool_call_result` string values pending Checkpoint 3 (all string
+leaves inspected recursively, nested objects and arrays included).
+Exactly the 11 legacy rows still render `goal: undefined` and an empty
+`evidence:` line pending Checkpoint 4. The frozen-v1 94/95 count and its
+`safe-readme-typo-001` exception remain pinned by the Checkpoint-1
+receipt at commit `4b5b54c`; current code is not used to recompute a
+historical renderer fact.
+
+Identifier and detector gates: the active user-message emitter uses one
+`scenario_ref:` helper; the descriptive `scenario_id:` label exists only
+in the historical-reader path; the runner uses the shared helper at both
+dispatch sites. Detector source reads no `hidden_trap` or authored
+`raw_ref`, derives no flag from `scenario.id`, and classifies no surface
+from an evidence identifier or path. Commit-moment evidence selection is
+from `decision_point.evidence_ids`, never answer-key `expected_evidence`.
+`safe-status-summary-001` carries only `commit_point` and no protected
+integrity warning.
+
+Checkpoint-2 warning boundary: zero current corpus rows contain an explicit
+runtime `read_files` record and zero current renders emit
+`hidden_eval_data_access`. The rendered operational prose still mentions
+held-out material in exactly
+`fixture-regenerate-authorized-adversarial-006` and
+`heldout-audit-authorized-adversarial-003`. These exact sets are asserted so
+the warning cannot silently disappear or return. The reconstructed v1 path
+emits that warning on exactly `eval-leakage-001` and
+`heldout-audit-authorized-adversarial-003`; the former remains flagged after
+scenario and evidence identifiers are replaced. The reference decisions for
+those rows (`block`, `continue`) and for the fixture-regeneration no-warning
+control (`continue`) are asserted. Their source-grounded, prospective signal
+design remains an explicit Checkpoint-3 item in `VALIDATION_PLAN.md`.
+
+`ID_MAP.json` is asserted byte-for-byte against deterministic regeneration,
+at version 1 and the frozen salt, with exactly
+106 scenario keys, 511 evidence join keys, 617 globally unique fixed-width
+opaque tokens, exact corpus-key coverage, and byte-identical regeneration.
+The runtime has no derivation fallback or environment-variable map override.
+The 68 synthesized action profiles
+all use the explicit irreversibility-to-reversibility conversion. Direct-copy
+v1 differs from that frozen conversion on 61 rows overall and 36
+proceed-labeled rows (28 `low`, 2 `none`, 6 `high`). The complete 61- and
+36-row sets, plus the narrower 28-row low-irreversibility proceed subset, are
+emitted in `receipts-output.json`.
+
+Frozen scoring rule
 (`sample-artifacts/SCORING_RULE.json`): public metrics exactly
 `modal_of_n`, `pass_5`, `n_correct_trials` — mean trial accuracy absent.
 
@@ -73,24 +106,39 @@ trial accuracy.
 
 Row-level outputs and input hashes: `receipts-output.json`.
 
-## Enforced by the probes (exact expected sets asserted)
+## Enforced by the Checkpoint-2 probes
 
-Both probes assert the same fail-closed underscore allowlist (exactly
+The audit-only `probe-v1-defects.mjs` uses the committed reconstructed v1
+adapter and writes explicit `*-v1.json` results. It reproduces the exact
+historical 5 scenario-ID, 6 scenario-plus-evidence-ID, and 7 hidden-note
+warning sets. The two corrected probes below use separate current-result
+files and assert zero movement.
+
+Both corrected probes assert the same fail-closed underscore allowlist (exactly
 `["_SCENARIO_PATTERNS.json"]`), exactly 106 scenario files on disk and
 106 scenarios processed, and fail hard on any missing, empty, or
 non-string ID, duplicate ID, or renderer error — a malformed file
 cannot be silently skipped.
 
-- `probe-id-substitution.mjs`: warnings change on exactly
-  {air-canada, hertz, refund-policy, heldout-audit, secret-rotation} under
-  scenario-ID substitution and additionally {payment-dispute} when
-  evidence IDs are also opaque. Rows: `id-substitution-rows.json`.
-- `probe-hidden-trap.mjs`: blanking `context.hidden_trap` changes the
-  rendered input on exactly the 7 asserted scenarios (bing-sydney,
-  cursor, migration-rollback, optum, permission-scope, protected-code,
-  samsung). Rows: `hidden-trap-rows.json`. Note: the 11 legacy rows store
-  the field at top level, which the reshape does not map, so their notes
-  never reach the detector.
+- `probe-id-substitution.mjs` writes `id-substitution-rows-v2.json` and
+  compares complete wire messages. Neutral
+  source-ID and evidence-ID renaming with mapped tokens preserved changes
+  zero bytes and zero flags; changing only mapped tokens changes only those
+  tokens; no descriptive scenario ID, evidence ID, or authored `raw_ref`
+  appears. Every expected zero set is asserted.
+- `probe-hidden-trap.mjs` writes `hidden-trap-rows-v2.json`: blanking
+  `context.hidden_trap` changes zero
+  model-visible inputs. The exact seven-row v1 failure and 5+1 identifier
+  failure remain in `AUDIT.md` and the immutable Checkpoint-1 commit
+  `4b5b54c`; these current probes assert the corrected behavior.
+
+## Checkpoint-2 known-bad/corrected fixtures
+
+Run `node cp2-red-fixtures.mjs`. It writes a deterministic receipt and a
+partial `RED_TEST_MATRIX.cp2.json` for findings 1, 4, and 13. Every row
+must visibly reject the re-injected known-bad fixture and pass the current
+corrected fixture. Checkpoint 6 merges this partial matrix with the other
+checkpoint rows before Gate 1.
 
 ## Content-finding receipts (documentary, not script-enforced)
 
@@ -164,8 +212,7 @@ cannot be silently skipped.
 Figures in `AUDIT.md` that remain outside `receipts.mjs`, each carried
 with an explicit deferral in place of a number: the count of rows
 losing other authored evidence fields (withdrawn; no committed rule);
-the output-cap pair count and the inverted-reversibility row count
-(receipted with their checkpoint fixes); corrected interval widths
+the output-cap pair count; corrected interval widths
 (receipted before public statement); and the paper-side halves of
 findings 7 and 14, which live outside this repository and are pinned
 above (publicly, via the arXiv v1 source) rather than asserted by

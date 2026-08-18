@@ -1,0 +1,815 @@
+{
+  "version": 1,
+  "salt": "steerbench-work-v2-id-map",
+  "scenarios": {
+    "account-cancellation-001": "s-6b87d053cb",
+    "air-canada-bereavement-policy-promise-realworld-010": "s-46c71fe602",
+    "amazon-hiring-mirror-advance-candidate-tier-b-005": "s-23419d72b4",
+    "angry-customer-escalation-001": "s-8dcd5ad66f",
+    "apple-card-mirror-credit-extension-tier-b-004": "s-127922f51e",
+    "bard-jwst-mirror-fact-checked-claim-tier-b-009": "s-50620220e0",
+    "bing-sydney-conversation-end-refusal-tier-a-016": "s-487c4cc2a9",
+    "bulk-email-001": "s-3612a71f50",
+    "calendar-booking-001": "s-bafd956b5a",
+    "calendar-invite-prompt-injection-004": "s-dfcd8d4671",
+    "chatgpt-1200-line-script-refusal-tier-a-008": "s-c60d4ea188",
+    "chatgpt-as-ai-language-model-disclaimer-refusal-tier-a-019": "s-a773e542b8",
+    "chatgpt-ctf-direct-answer-refusal-tier-a-013": "s-cc84610db8",
+    "chatgpt-election-candidate-image-refusal-tier-a-015": "s-2fd9bb106c",
+    "chatgpt-mammogram-pregnancy-refusal-tier-a-018": "s-3ed00048e5",
+    "chatgpt-teams-write-code-refusal-tier-a-006": "s-9d1f967142",
+    "claude-april-2026-aup-surge-class-refusal-tier-a-020": "s-bfad0de99e",
+    "claude-opus-cyber-exemption-ignored-refusal-tier-a-005": "s-4204e6ba85",
+    "claude-opus-malware-check-annotation-refusal-tier-a-001": "s-fdcb987b64",
+    "claude-opus-pdf-toy-ad-aup-refusal-tier-a-004": "s-36a14f61cc",
+    "claude-opus-russian-prompts-aup-refusal-tier-a-002": "s-645e5426df",
+    "claude-opus-structural-biology-pdb-refusal-tier-a-003": "s-dcc476431c",
+    "claude-sonnet-scientific-discourse-refusal-tier-a-017": "s-b0dfaf65a5",
+    "clearview-ai-scrape-faces-eu-citizens-high-impact-016": "s-80250f653d",
+    "cloudflare-regex-mirror-dry-run-deploy-tier-b-016": "s-91a10512e7",
+    "codemod-broad-touch-adversarial-001": "s-40b07581cc",
+    "codex-git-commit-flipflop-refusal-tier-a-012": "s-cc245a94d7",
+    "codex-sandbox-network-refusal-tier-a-003": "s-2a134576e5",
+    "codex-vscode-network-danger-full-access-refusal-tier-a-011": "s-ae41f16048",
+    "copilot-security-review-pattern-refusal-tier-a-004": "s-55f03008b9",
+    "crowdstrike-mirror-staged-sensor-update-tier-b-015": "s-8ec65788b7",
+    "cruise-incident-omitted-detail-disclosure-high-impact-009": "s-34249995cc",
+    "cursor-line-count-cap-refusal-tier-a-001": "s-43655500cc",
+    "customer-data-export-001": "s-99a6b55cc4",
+    "data-deletion-001": "s-e1151d6aa7",
+    "deposition-statute-of-limitations-003": "s-ee7cb7ee61",
+    "destructive-migration-001": "s-9e4730175b",
+    "dpd-chatbot-open-persona-realworld-011": "s-84ee490b12",
+    "equifax-mirror-emergency-patch-tier-b-012": "s-7892a9a27d",
+    "eval-leakage-001": "s-fa6c302d23",
+    "executive-impersonation-wire-fraud-005": "s-01711e2942",
+    "executive-report-001": "s-52ca6f0594",
+    "facebook-bgp-mirror-canaried-config-tier-b-014": "s-8f09e25aa1",
+    "fixture-regenerate-authorized-adversarial-006": "s-e53fe11e07",
+    "flash-crash-mass-sell-program-high-impact-015": "s-621e5e7761",
+    "gemini-image-ethnicity-refusal-tier-a-014": "s-327d1f0cc9",
+    "generated-code-unrelated-001": "s-d685d3d3f4",
+    "google-bard-demo-marketing-claim-high-impact-020": "s-47683422d5",
+    "gpt4-academic-translation-refusal-tier-a-009": "s-1ee8eb65db",
+    "gpt4-browser-code-generation-refusal-tier-a-007": "s-b73ee07abb",
+    "gpt4-lazy-translate-refusal-tier-a-002": "s-8ecb5f5dbe",
+    "gpt4o-swedish-bulgarian-translation-refusal-tier-a-010": "s-8ab5463b4c",
+    "hawaii-alert-mirror-two-person-rule-tier-b-018": "s-ce82c23d69",
+    "heldout-audit-authorized-adversarial-003": "s-87c5dfb6a8",
+    "hertz-stolen-vehicle-police-report-high-impact-008": "s-24460c01cf",
+    "horizon-mirror-reconciled-adjustment-tier-b-011": "s-ed165f2530",
+    "horizon-shortfall-prosecution-recommend-high-impact-003": "s-b82575efab",
+    "identity-change-001": "s-cbd80b3a21",
+    "itutorgroup-applicant-birthdate-screen-high-impact-019": "s-182704ac1b",
+    "knight-capital-trading-deploy-realworld-007": "s-00d7ab6f2a",
+    "legal-boundary-001": "s-e4e77c6b09",
+    "licensed-professional-medical-refusal-tier-a-005": "s-b98ac93117",
+    "lockfile-drift-001": "s-2db57315de",
+    "mata-avianca-fabricated-citation-realworld-008": "s-8b7c0bd432",
+    "medical-boundary-001": "s-6586bd2a77",
+    "metric-rename-equivalent-adversarial-005": "s-6f2c16deef",
+    "migration-rollback-pre-approved-adversarial-007": "s-bbfc745f0c",
+    "nyc-chatbot-mirror-compliant-answer-tier-b-006": "s-e6ac971cc4",
+    "optum-health-need-cost-proxy-deployment-high-impact-018": "s-359176e178",
+    "orbench-illegal-bypass-rate-limit-tier-c-015": "s-9807f821cb",
+    "orbench-privacy-public-record-lookup-tier-c-014": "s-70970ae6b8",
+    "patient-records-employer-disclosure-002": "s-46de512c66",
+    "payment-dispute-001": "s-cd019c304e",
+    "permission-scope-001": "s-e54a1791fe",
+    "policy-update-is-the-task-adversarial-004": "s-08f319b1ff",
+    "pr-review-blocker-001": "s-217a6493b9",
+    "production-deploy-001": "s-2a6abb6041",
+    "protected-code-001": "s-7eb7ebd2f9",
+    "refund-policy-001": "s-544d621ef4",
+    "replit-production-freeze-violation-realworld-006": "s-f0481c6076",
+    "robodebt-income-averaging-debt-notice-high-impact-004": "s-b8c0225972",
+    "robodebt-mirror-eligible-notice-tier-b-010": "s-1fcc37f9b2",
+    "safe-changelog-entry-001": "s-4043b8a7da",
+    "safe-internal-note-001": "s-5168f7d971",
+    "safe-readme-typo-001": "s-93f56d7a98",
+    "safe-shipping-status-001": "s-9babd63d2a",
+    "safe-status-summary-001": "s-173288169f",
+    "samsung-chatgpt-source-code-paste-high-impact-013": "s-3e69afd1a6",
+    "secret-exposure-001": "s-d78e12e889",
+    "secret-rotation-in-vault-adversarial-008": "s-84ad70561f",
+    "telehealth-marketing-pixel-disclosure-001": "s-5b5d866f83",
+    "tesla-autopilot-fsd-claim-confirm-high-impact-010": "s-4cab1ab00b",
+    "tesla-autopilot-mirror-lane-change-tier-b-008": "s-7d41ed7c82",
+    "test-rewrite-001": "s-a4a3fe0c0f",
+    "test-was-stale-adversarial-002": "s-5a17bcafe7",
+    "therac25-mirror-interlock-cleared-tier-b-020": "s-cd5920669c",
+    "unitedhealth-nhpredict-care-denial-high-impact-011": "s-37724be323",
+    "unsafe-shell-001": "s-67deee9b2b",
+    "vendor-payment-001": "s-2b619bfc6f",
+    "wadsworth-walmart-hallucinated-citation-high-impact-012": "s-a654109570",
+    "warranty-exception-001": "s-e3755038fd",
+    "workday-applicant-auto-reject-realworld-009": "s-800888f3c4",
+    "xstest-homonym-kill-process-tier-c-011": "s-5452c36da0",
+    "xstest-safe-context-exploit-in-ctf-tier-c-013": "s-7eff75a4b3",
+    "xstest-safe-target-destroy-fixtures-tier-c-012": "s-3e2fc5434d",
+    "zillow-ibuyer-algorithm-purchase-cap-high-impact-002": "s-07c72d7947"
+  },
+  "evidence": {
+    "account-cancellation-001": {
+      "doc:cancellation_policy_2025": "e-9574a38ba1",
+      "E01": "e-bc5c4ab6f4",
+      "doc:cancellation_policy_2026": "e-1a526216b4",
+      "E02": "e-6295a3bc77"
+    },
+    "amazon-hiring-mirror-advance-candidate-tier-b-005": {
+      "cmd:bias_audit_score_within_band": "e-2489f042f2",
+      "E01": "e-4b5a1d97e6",
+      "cmd:candidate_blinding_attest": "e-95a45c1ae1",
+      "E02": "e-b2f81f21da",
+      "cmd:four_fifths_monitor_evaluate": "e-f5817dc443",
+      "E03": "e-e584693e33"
+    },
+    "angry-customer-escalation-001": {
+      "ticket:angry_customer": "e-3f2cc837a6",
+      "E01": "e-f98c9be3b0",
+      "doc:concession_policy": "e-c00cbf8d45",
+      "E02": "e-102100a918"
+    },
+    "apple-card-mirror-credit-extension-tier-b-004": {
+      "cmd:disparate_impact_audit_evaluate": "e-373a709a6c",
+      "E01": "e-e31e89149b",
+      "cmd:ecoa_explainability_list_factors": "e-9d1c2a9645",
+      "E02": "e-923f7cd28f",
+      "cmd:protected_class_blinding_attest": "e-5cf4bc2039",
+      "E03": "e-180ca372bb"
+    },
+    "bard-jwst-mirror-fact-checked-claim-tier-b-009": {
+      "cmd:fact_check_service_support_lookup": "e-b9a4969eb4",
+      "E01": "e-8c42ec469d",
+      "cmd:source_citation_service_allowlist_check": "e-33b7816415",
+      "E02": "e-5fefcbe91e",
+      "cmd:claim_novelty_check_supersession_status": "e-ce3799c786",
+      "E03": "e-c01e3cb2d9"
+    },
+    "bing-sydney-conversation-end-refusal-tier-a-016": {
+      "E01": "e-5907c8cc50",
+      "E02": "e-64ae70d3fb",
+      "E03": "e-d5787c2851",
+      "E04": "e-64efb6eb43",
+      "E05": "e-1c838b9baf",
+      "E06": "e-c705ed6a4f"
+    },
+    "bulk-email-001": {
+      "file:segment_import.csv": "e-3cb822da2d",
+      "E01": "e-2330317322",
+      "doc:email_consent_policy": "e-e1ad3ca53c",
+      "E02": "e-d4a8c77a13"
+    },
+    "calendar-booking-001": {
+      "crm:customer_timezone_old": "e-59ff90ed01",
+      "E01": "e-a78b9e8af9",
+      "crm:customer_timezone_current": "e-d4086f39be",
+      "E02": "e-66d8b49d8a"
+    },
+    "chatgpt-1200-line-script-refusal-tier-a-008": {
+      "E01": "e-6c67fa92f9",
+      "E02": "e-b8fb020cd3",
+      "E03": "e-08b01a4337",
+      "E04": "e-88ae333599",
+      "E05": "e-eb61d348fb",
+      "E06": "e-f21d038148"
+    },
+    "chatgpt-as-ai-language-model-disclaimer-refusal-tier-a-019": {
+      "E01": "e-1caf6ea072",
+      "E02": "e-9dfa0e82be",
+      "E03": "e-86ba75692e",
+      "E04": "e-e90a5ca278",
+      "E05": "e-b8053b9e23",
+      "E06": "e-7bf517adfa"
+    },
+    "chatgpt-ctf-direct-answer-refusal-tier-a-013": {
+      "E01": "e-269ce1abd4",
+      "E02": "e-53fa02a588",
+      "E03": "e-fa68c7454f",
+      "E04": "e-9cf34e84e2",
+      "E05": "e-47e8e2b7a7",
+      "E06": "e-44039b658a"
+    },
+    "chatgpt-election-candidate-image-refusal-tier-a-015": {
+      "E01": "e-73948d5cc6",
+      "E02": "e-2da37a78e8",
+      "E03": "e-1e95cc7622",
+      "E04": "e-3502ccbdb5",
+      "E05": "e-d48d8555db",
+      "E06": "e-332f9e76f9"
+    },
+    "chatgpt-mammogram-pregnancy-refusal-tier-a-018": {
+      "E01": "e-4e76b3ebad",
+      "E02": "e-c6eae5cbd2",
+      "E03": "e-8bc6e85971",
+      "E04": "e-86c5a30609",
+      "E05": "e-fba0f1ff5d",
+      "E06": "e-b6882eafc9"
+    },
+    "chatgpt-teams-write-code-refusal-tier-a-006": {
+      "E01": "e-46371c8ebe",
+      "E02": "e-935553b16f",
+      "E03": "e-148573a47b",
+      "E04": "e-b39118d96f",
+      "E05": "e-2194ec4046",
+      "E06": "e-c05c6e2132"
+    },
+    "claude-april-2026-aup-surge-class-refusal-tier-a-020": {
+      "E01": "e-189a1a455a",
+      "E02": "e-b1538596b7",
+      "E03": "e-cacaf2c176",
+      "E04": "e-eb734698c1",
+      "E05": "e-6cff179954",
+      "E06": "e-b363c65f2f"
+    },
+    "claude-opus-cyber-exemption-ignored-refusal-tier-a-005": {
+      "E01": "e-676db38598",
+      "E02": "e-7936bfc0e9",
+      "E03": "e-7b1539baf9",
+      "E04": "e-f97e954f04",
+      "E05": "e-da7a8af4ec",
+      "E06": "e-50c873965c"
+    },
+    "claude-opus-malware-check-annotation-refusal-tier-a-001": {
+      "E01": "e-b31223ff57",
+      "E02": "e-da9116c68d",
+      "E03": "e-5104e94c0d",
+      "E04": "e-d5f99c449a",
+      "E05": "e-8550ff3389",
+      "E06": "e-76501806f4"
+    },
+    "claude-opus-pdf-toy-ad-aup-refusal-tier-a-004": {
+      "E01": "e-ee7f723772",
+      "E02": "e-efdb3c0775",
+      "E03": "e-b2162080fa",
+      "E04": "e-9623880179",
+      "E05": "e-0a415c525c",
+      "E06": "e-d5c08914da"
+    },
+    "claude-opus-russian-prompts-aup-refusal-tier-a-002": {
+      "E01": "e-34ac89f809",
+      "E02": "e-3bb8b3b7c3",
+      "E03": "e-b620494e50",
+      "E04": "e-152e6194e4",
+      "E05": "e-215f7e5f89",
+      "E06": "e-722f4be694"
+    },
+    "claude-opus-structural-biology-pdb-refusal-tier-a-003": {
+      "E01": "e-a73ec87c51",
+      "E02": "e-ee08bb979e",
+      "E03": "e-b8a13f93a8",
+      "E04": "e-cc48ede661",
+      "E05": "e-8f3bbaf038",
+      "E06": "e-7d6545ec32"
+    },
+    "claude-sonnet-scientific-discourse-refusal-tier-a-017": {
+      "E01": "e-3b9685bd6f",
+      "E02": "e-69a7c29f77",
+      "E03": "e-d80d0833cf",
+      "E04": "e-9173c5052d",
+      "E05": "e-4ee569a5e9",
+      "E06": "e-a5f5183318",
+      "E07": "e-02666f61e1"
+    },
+    "clearview-ai-scrape-faces-eu-citizens-high-impact-016": {
+      "E01": "e-38b579e5c6",
+      "E02": "e-d59db1ea4c",
+      "E03": "e-bf1f996333",
+      "E04": "e-c6dd31db74",
+      "E05": "e-3a91ee71d6"
+    },
+    "cloudflare-regex-mirror-dry-run-deploy-tier-b-016": {
+      "cmd:dry_run_service_shadow_traffic_pass": "e-b03d4ec3cb",
+      "E01": "e-9913743652",
+      "cmd:regex_complexity_analyzer_scan": "e-29a15f5e96",
+      "E02": "e-a70401962d",
+      "cmd:staged_deploy_service_ring_plan_with_cpu_halt": "e-8fa16fc299",
+      "E03": "e-232ae51e65"
+    },
+    "codemod-broad-touch-adversarial-001": {
+      "doc:codemod_request": "e-d79f3f13eb",
+      "E01": "e-72f9c3511a",
+      "cmd:codemod_run_log": "e-24ce7dac6a",
+      "E02": "e-09abb7e410",
+      "file:codemod_diff_sample": "e-e99a94144f",
+      "E03": "e-d57634cd3c"
+    },
+    "codex-git-commit-flipflop-refusal-tier-a-012": {
+      "E01": "e-878223123f",
+      "E02": "e-d4b7141640",
+      "E03": "e-0031d90ab1",
+      "E04": "e-5b4b5b0c5f",
+      "E05": "e-09425bfb34",
+      "E06": "e-3195732bcf"
+    },
+    "codex-sandbox-network-refusal-tier-a-003": {
+      "doc:sandbox_egress_policy": "e-3d5888d5ee",
+      "E01": "e-aa852a0580",
+      "file:regen_sdk_script": "e-0c1fa3de50",
+      "E02": "e-336cd4495d",
+      "cmd:sandbox_attest_current_profile": "e-a918a2eded",
+      "E03": "e-2752cc6684"
+    },
+    "codex-vscode-network-danger-full-access-refusal-tier-a-011": {
+      "E01": "e-feafbcda1a",
+      "E02": "e-1695aa9b6b",
+      "E03": "e-dcecb09a41",
+      "E04": "e-b6c9e4af4a",
+      "E05": "e-d434579ae7",
+      "E06": "e-132379eeb2"
+    },
+    "copilot-security-review-pattern-refusal-tier-a-004": {
+      "cmd:ticket_tracker_get_ticket": "e-b3ca7532ca",
+      "E01": "e-b2971c792d",
+      "cmd:git_blame_rate_limiter": "e-d63d7f4ba5",
+      "E02": "e-fe7b7dbc30",
+      "cmd:test_runner_read_config": "e-fef89472d3",
+      "E03": "e-19c3fa24f6"
+    },
+    "crowdstrike-mirror-staged-sensor-update-tier-b-015": {
+      "cmd:canary_fleet_service_canary_pass": "e-557b5930d6",
+      "E01": "e-e00aecab18",
+      "cmd:kernel_load_validation_service_payload_parse_check": "e-50e579de8f",
+      "E02": "e-f5d64381e0",
+      "cmd:staged_rollout_service_ring_plan": "e-6884f1ba96",
+      "E03": "e-a9dd870d1e"
+    },
+    "cruise-incident-omitted-detail-disclosure-high-impact-009": {
+      "E01": "e-5c100ca02e",
+      "E02": "e-1c1244329b",
+      "E03": "e-386117a8c6",
+      "E04": "e-2eb8916d26",
+      "E05": "e-24382af660"
+    },
+    "cursor-line-count-cap-refusal-tier-a-001": {
+      "cmd:issue_tracker_get_issue": "e-955bd10261",
+      "E01": "e-5a2eb7dd02",
+      "file:target_module": "e-5d08e73490",
+      "E02": "e-5fc99cff9a",
+      "cmd:git_blame_summary": "e-9467ae8ca3",
+      "E03": "e-0e0f55084e",
+      "cmd:git_diff_stat": "e-21efc89c94",
+      "E04": "e-a07e86f9ea"
+    },
+    "customer-data-export-001": {
+      "ticket:export_request": "e-b4d70fa1e2",
+      "E01": "e-bd4c27767d",
+      "doc:data_export_policy": "e-c47c8c0007",
+      "E02": "e-1ab70a0492"
+    },
+    "data-deletion-001": {
+      "ticket:data_deletion": "e-fd57f72d96",
+      "E01": "e-1bf1c34657",
+      "doc:data_retention_policy": "e-2d06f29576",
+      "E02": "e-46c1345e43"
+    },
+    "destructive-migration-001": {
+      "file:migration_drop_notes": "e-faaf75e2a0",
+      "E01": "e-a68965040e",
+      "doc:migration_safety_policy": "e-05e4393016",
+      "E02": "e-bd99f2a9a4"
+    },
+    "equifax-mirror-emergency-patch-tier-b-012": {
+      "cmd:cve_match_service_affected_range": "e-8111e2a024",
+      "E01": "e-11cb9833a6",
+      "cmd:patch_verification_service_vendor_signature": "e-67be3f28da",
+      "E02": "e-612048f062",
+      "cmd:emergency_cab_service_expedited_approval": "e-2cb5f74df4",
+      "E03": "e-5890095132"
+    },
+    "eval-leakage-001": {
+      "score:leaked_eval_084": "e-23184df3ae",
+      "E01": "e-45776814af",
+      "score:clean_eval_062": "e-37a2bc7326",
+      "E02": "e-2817879ab5",
+      "doc:held_out_split_warning": "e-c487018bd9",
+      "E03": "e-bd977fd095"
+    },
+    "executive-report-001": {
+      "metric:trial_churn_snapshot": "e-b890898ba5",
+      "E01": "e-dfd94368e7",
+      "doc:metric_lag_note": "e-7e514e4a37",
+      "E02": "e-2a70695ad8"
+    },
+    "facebook-bgp-mirror-canaried-config-tier-b-014": {
+      "cmd:canary_deploy_service_canary_status": "e-1223565e1f",
+      "E01": "e-f11f1b5df5",
+      "cmd:rollback_armed_service_prior_config_staged": "e-587205be7d",
+      "E02": "e-217551caca",
+      "cmd:oob_recovery_service_path_reachable": "e-8ca74ee761",
+      "E03": "e-fdc546f835"
+    },
+    "fixture-regenerate-authorized-adversarial-006": {
+      "doc:regen_request": "e-3bc1604038",
+      "E01": "e-d7e4a80fe0",
+      "file:regen_script": "e-9e14d6af10",
+      "E02": "e-9776813c16",
+      "cmd:row_count_check": "e-4a665b5f62",
+      "E03": "e-03e8cf9e1f"
+    },
+    "flash-crash-mass-sell-program-high-impact-015": {
+      "E01": "e-4295efa802",
+      "E02": "e-71df9e4b4f",
+      "E03": "e-840fe6721a",
+      "E04": "e-d2e51c31a6",
+      "E05": "e-2b77581b9e"
+    },
+    "gemini-image-ethnicity-refusal-tier-a-014": {
+      "E01": "e-a09218bffa",
+      "E02": "e-1181e55bff",
+      "E03": "e-d5a2e6bbf4",
+      "E04": "e-11c79da151",
+      "E05": "e-2c936329af",
+      "E06": "e-c3158377bc"
+    },
+    "generated-code-unrelated-001": {
+      "file:broad_patch_diff": "e-df86add479",
+      "E01": "e-75023eacae",
+      "doc:change_scope_policy": "e-8905b6fa5f",
+      "E02": "e-bc360915e9"
+    },
+    "google-bard-demo-marketing-claim-high-impact-020": {
+      "E01": "e-72dfc049f9",
+      "E02": "e-10d9e802aa",
+      "E03": "e-b0aa747bf1",
+      "E04": "e-7ae0ce7ffd",
+      "E05": "e-318689de4d"
+    },
+    "gpt4-academic-translation-refusal-tier-a-009": {
+      "E01": "e-11a05918b3",
+      "E02": "e-3a0ab1fae5",
+      "E03": "e-f351b05c05",
+      "E04": "e-db9a3d1e50",
+      "E05": "e-a54d5be963",
+      "E06": "e-f6703bc53b"
+    },
+    "gpt4-browser-code-generation-refusal-tier-a-007": {
+      "E01": "e-e1c3df9741",
+      "E02": "e-0ddaf217ce",
+      "E03": "e-ad31f89501",
+      "E04": "e-18f647fd25",
+      "E05": "e-bbcf90b14d",
+      "E06": "e-24398d07d3"
+    },
+    "gpt4-lazy-translate-refusal-tier-a-002": {
+      "cmd:pipeline_read_manifest": "e-012b2f23fb",
+      "E01": "e-081883e2d5",
+      "doc:translation_contract": "e-38e2e5e03a",
+      "E02": "e-42dab73956",
+      "file:source_transcript": "e-2fa064d2c5",
+      "E03": "e-08fec8b827"
+    },
+    "gpt4o-swedish-bulgarian-translation-refusal-tier-a-010": {
+      "E01": "e-2e2b9ba300",
+      "E02": "e-8a109d210d",
+      "E03": "e-735128c979",
+      "E04": "e-c7e6381a72",
+      "E05": "e-b28d5869ed",
+      "E06": "e-812b244333"
+    },
+    "hawaii-alert-mirror-two-person-rule-tier-b-018": {
+      "cmd:alert_classification_service_event_matches_threshold": "e-b7e8b01dcb",
+      "E01": "e-2ff3fd6f2f",
+      "cmd:two_person_rule_service_second_actor_approval": "e-de6ed641e5",
+      "E02": "e-229110c84e",
+      "cmd:live_mode_confirmation_service_affirmative_clearance": "e-45bbe17a9f",
+      "E03": "e-922fd72261"
+    },
+    "heldout-audit-authorized-adversarial-003": {
+      "doc:audit_authorization": "e-37ea45e15a",
+      "E01": "e-cd88d06a42",
+      "doc:audit_scope_4_ids": "e-1c902334c0",
+      "E02": "e-a323066084",
+      "file:heldout_split": "e-8952d6cdc1",
+      "E03": "e-24ff79e4f0",
+      "cmd:research_admin_api_get_audit": "e-dc56ba140e",
+      "E04": "e-bf9024453f"
+    },
+    "hertz-stolen-vehicle-police-report-high-impact-008": {
+      "E01": "e-bd9be18363",
+      "E02": "e-a00a7527fc",
+      "E03": "e-fc9be1cb3d",
+      "E04": "e-56e6611192",
+      "E05": "e-118aecdd9c"
+    },
+    "horizon-mirror-reconciled-adjustment-tier-b-011": {
+      "cmd:reconciliation_service_multi_source_match": "e-e785909f92",
+      "E01": "e-83c7207d54",
+      "cmd:audit_trail_service_keystroke_chain": "e-737dc1cebd",
+      "E02": "e-695af97b3d",
+      "cmd:dual_control_service_second_actor_approval": "e-678ead9e05",
+      "E03": "e-3be0b0e7cd"
+    },
+    "horizon-shortfall-prosecution-recommend-high-impact-003": {
+      "E01": "e-71b5f91205",
+      "E02": "e-fd933f354a",
+      "E03": "e-0931d783d7",
+      "E04": "e-cc28af8a87",
+      "E05": "e-836eccbdcc"
+    },
+    "identity-change-001": {
+      "ticket:email_change_request": "e-349580b38e",
+      "E01": "e-44319b0fe8",
+      "doc:identity_verification_policy": "e-d12789d722",
+      "E02": "e-d10b7a0466"
+    },
+    "itutorgroup-applicant-birthdate-screen-high-impact-019": {
+      "E01": "e-4dbff1e2ff",
+      "E02": "e-33062371ab",
+      "E03": "e-86d818bc83",
+      "E04": "e-cd951c18e8",
+      "E05": "e-b577979a62"
+    },
+    "legal-boundary-001": {
+      "ticket:contract_language": "e-b8654bbab8",
+      "E01": "e-afd7c77382",
+      "doc:legal_escalation_policy": "e-06baab7b2b",
+      "E02": "e-dcc361aab5"
+    },
+    "licensed-professional-medical-refusal-tier-a-005": {
+      "cmd:ehr_get_message_signature": "e-9d28441d3c",
+      "E01": "e-81ea7780b8",
+      "cmd:iam_get_agent_role": "e-c8cfa343b0",
+      "E02": "e-bc3ae94df8",
+      "cmd:ehr_get_patient_consent": "e-87545f13a1",
+      "E03": "e-2a760bbff6"
+    },
+    "lockfile-drift-001": {
+      "file:pnpm_lock_diff": "e-ccabef07b1",
+      "E01": "e-b8cb273e62",
+      "cmd:dependency_tests_failed": "e-39c2763faf",
+      "E02": "e-8a817b70cc"
+    },
+    "medical-boundary-001": {
+      "ticket:medical_question": "e-c4b305ad5b",
+      "E01": "e-724a483ab6",
+      "doc:medical_deflection_policy": "e-187f10da9c",
+      "E02": "e-1d9136313e"
+    },
+    "metric-rename-equivalent-adversarial-005": {
+      "doc:pr_1129_refactor_spec": "e-7c19684fa8",
+      "E01": "e-8121106528",
+      "file:grader_thresholds": "e-d5c1658bd9",
+      "E02": "e-6df9520ded",
+      "doc:units_equivalence_note": "e-f0caff07ca",
+      "E03": "e-f8e945dbd9"
+    },
+    "migration-rollback-pre-approved-adversarial-007": {
+      "doc:incident_inc_3091": "e-fbde55a164",
+      "E01": "e-76f2dd9528",
+      "file:rollback_migration_sql": "e-8377acfd7b",
+      "E02": "e-61cee909ac",
+      "doc:change_window_token": "e-c8cedc1f48",
+      "E03": "e-a6db2f0c76",
+      "cmd:incident_api_get_active": "e-ad728ea1b6",
+      "E04": "e-98ae4e50a9",
+      "cmd:change_window_api_verify_token": "e-15fc6f98fb",
+      "E05": "e-2ccb213b66"
+    },
+    "nyc-chatbot-mirror-compliant-answer-tier-b-006": {
+      "cmd:regulation_lookup_current_section": "e-9db7f9235a",
+      "E01": "e-7a6b77e9a6",
+      "cmd:legal_content_review_consistency": "e-e0f280cebf",
+      "E02": "e-3d1966a331",
+      "cmd:jurisdictional_match_scope": "e-36a205ebf4",
+      "E03": "e-7373614fe7"
+    },
+    "optum-health-need-cost-proxy-deployment-high-impact-018": {
+      "E01": "e-ae1062efff",
+      "E02": "e-6702a6c6d5",
+      "E03": "e-f2cadd9686",
+      "E04": "e-4c624be1c8",
+      "E05": "e-ba5be64893"
+    },
+    "orbench-illegal-bypass-rate-limit-tier-c-015": {
+      "cmd:iam_get_service_ownership": "e-5519e82507",
+      "E01": "e-30f650bf18",
+      "cmd:admin_api_read_contract": "e-b929bc600c",
+      "E02": "e-49350c54d6",
+      "cmd:change_calendar_lookup_window": "e-97ad2d67f8",
+      "E03": "e-31fc836fde"
+    },
+    "orbench-privacy-public-record-lookup-tier-c-014": {
+      "cmd:statute_lookup_is_public_record": "e-d80bbba6a8",
+      "E01": "e-c41b917c90",
+      "cmd:compliance_registry_lookup_workflow": "e-04801657a4",
+      "E02": "e-cdb14a2b37",
+      "cmd:data_source_attest_official": "e-48d8cb685c",
+      "E03": "e-554aa1af62"
+    },
+    "payment-dispute-001": {
+      "score:billing_ledger_conflict": "e-8188d0f887",
+      "E01": "e-4920909be2",
+      "doc:refund_review_policy": "e-332c5f2579",
+      "E02": "e-2323bd8a33"
+    },
+    "permission-scope-001": {
+      "file:oauth_scope_diff": "e-327014da7f",
+      "E01": "e-064c317929",
+      "doc:integration_scope_policy": "e-dda2dfe30f",
+      "E02": "e-6c4d31ab90"
+    },
+    "policy-update-is-the-task-adversarial-004": {
+      "doc:sec_204_ticket": "e-8b5c67fabe",
+      "E01": "e-2ea53aacf1",
+      "file:permissions_source": "e-1f63bf9859",
+      "E02": "e-184c7404d8",
+      "file:permissions_test_target": "e-1e0b554738",
+      "E03": "e-d1f7c7c324",
+      "cmd:security_approvals_api_get_pending": "e-11292e05ce",
+      "E04": "e-b2aaee737a",
+      "cmd:codeowners_api_verify_actor": "e-173d50f09e",
+      "E05": "e-4a521ef3ef"
+    },
+    "pr-review-blocker-001": {
+      "doc:unresolved_security_thread": "e-e3c760337e",
+      "E01": "e-ed707cd1fc",
+      "cmd:unit_tests_passed": "e-f7ed5294a2",
+      "E02": "e-b3493eba31"
+    },
+    "production-deploy-001": {
+      "cmd:deploy_ready_check": "e-6eff12124b",
+      "E01": "e-0f24d3e2c9",
+      "doc:deploy_policy": "e-ef7ff2deee",
+      "E02": "e-62c75d9c8f"
+    },
+    "protected-code-001": {
+      "file:apps/dashboard/auth.ts": "e-679d2cc2b4",
+      "E01": "e-ec6b5682bd",
+      "cmd:test-ui": "e-47ecd1bda6",
+      "E02": "e-5dfce03e5e"
+    },
+    "refund-policy-001": {
+      "doc:refund_policy_2025": "e-56f9a35b68",
+      "E01": "e-578a450778",
+      "doc:refund_policy_2026": "e-1a7298607a",
+      "E02": "e-9c108e7a60"
+    },
+    "robodebt-income-averaging-debt-notice-high-impact-004": {
+      "E01": "e-9e60bdf6d4",
+      "E02": "e-bae8e66609",
+      "E03": "e-166133f1f6",
+      "E04": "e-5cce0540c1",
+      "E05": "e-647609d4d3"
+    },
+    "robodebt-mirror-eligible-notice-tier-b-010": {
+      "cmd:statutory_basis_service_current_authority": "e-5ce23e12b1",
+      "E01": "e-32d5d6e7d5",
+      "cmd:eligibility_match_service_records_satisfy_test": "e-732ecdd2d9",
+      "E02": "e-4a19bfba60",
+      "cmd:due_process_service_notice_and_contestability": "e-eeed6fc1f8",
+      "E03": "e-62e1da630f"
+    },
+    "safe-changelog-entry-001": {
+      "doc:changelog_note": "e-ad14148e1a",
+      "E01": "e-d6b80789b0"
+    },
+    "safe-internal-note-001": {
+      "doc:team_checkin_notes": "e-afea34242f",
+      "E01": "e-8b73ad7b8a"
+    },
+    "safe-readme-typo-001": {
+      "file:readme_typo": "e-a3b054f2ee",
+      "E01": "e-b2d1584817"
+    },
+    "safe-shipping-status-001": {
+      "tracker:shipping_status": "e-22b375362d",
+      "E01": "e-c76b26c2bb"
+    },
+    "safe-status-summary-001": {
+      "tracker:weekly_status": "e-88b0007787",
+      "E01": "e-567ce40d13"
+    },
+    "samsung-chatgpt-source-code-paste-high-impact-013": {
+      "E01": "e-b0393dc58d",
+      "E02": "e-3ce89947aa",
+      "E03": "e-5847171758",
+      "E04": "e-9a4e7bfe99",
+      "E05": "e-87913c5a78"
+    },
+    "secret-exposure-001": {
+      "file:deploy_log_with_secret": "e-f935afb051",
+      "E01": "e-980ed15a4f",
+      "doc:secret_handling_policy": "e-2f70f78a9f",
+      "E02": "e-a6c4f9f662"
+    },
+    "secret-rotation-in-vault-adversarial-008": {
+      "doc:rotation_runbook": "e-84310619d1",
+      "E01": "e-5e0567a7f2",
+      "file:rotation_script": "e-423fb48b95",
+      "E02": "e-ad3660fc61",
+      "doc:rotation_cadence_policy": "e-fd2158504e",
+      "E03": "e-2442bffc75",
+      "cmd:rotation_dry_run_log": "e-54384bb8f4",
+      "E04": "e-b70a3bd7e8",
+      "cmd:scheduler_current_invocation_context": "e-1b106fd82b",
+      "E05": "e-93da24cc95",
+      "cmd:vault_sdk_verify_scope": "e-3822f288eb",
+      "E06": "e-34d5329012"
+    },
+    "tesla-autopilot-fsd-claim-confirm-high-impact-010": {
+      "E01": "e-26d91bda50",
+      "E02": "e-b94ff90726",
+      "E03": "e-4c2050b0ce",
+      "E04": "e-e1ca39a879",
+      "E05": "e-7ef90d37ba"
+    },
+    "tesla-autopilot-mirror-lane-change-tier-b-008": {
+      "cmd:odd_attestation_service_scene_in_envelope": "e-f9336d111d",
+      "E01": "e-80db759a3f",
+      "cmd:driver_attention_monitor_attest": "e-685e0eec9b",
+      "E02": "e-2c3ddd956f",
+      "cmd:surround_perception_service_target_lane_clear": "e-d213890ef5",
+      "E03": "e-ee4f66e8b2"
+    },
+    "test-rewrite-001": {
+      "file:checkout_test_diff": "e-155f3f082c",
+      "E01": "e-671966d797",
+      "cmd:checkout_test_failure": "e-a06060f662",
+      "E02": "e-d884200c77"
+    },
+    "test-was-stale-adversarial-002": {
+      "file:checkout_test_current": "e-792d9c4a50",
+      "E01": "e-20b0bee76c",
+      "doc:api_rename_commit_log": "e-2d9ea3711d",
+      "E02": "e-97aa88a742",
+      "file:checkout_source_current": "e-e17a8078a2",
+      "E03": "e-13dc614bc5",
+      "cmd:ci_api_get_status_for_file": "e-16bcb23b8b",
+      "E04": "e-949ae310b0",
+      "cmd:codeowners_api_verify_commit": "e-13d8bfe69e",
+      "E05": "e-d8e0d24e45"
+    },
+    "therac25-mirror-interlock-cleared-tier-b-020": {
+      "cmd:interlock_state_service_all_engaged": "e-6aba2d37e1",
+      "E01": "e-21b123d46a",
+      "cmd:dose_calculation_service_config_match": "e-5f3727e959",
+      "E02": "e-0bdacfe8f8",
+      "cmd:dosimeter_attest_service_zero_baseline": "e-ea0492abdc",
+      "E03": "e-d8a6a881d0"
+    },
+    "unitedhealth-nhpredict-care-denial-high-impact-011": {
+      "E01": "e-6411efe7bb",
+      "E02": "e-c739beaca5",
+      "E03": "e-70657fc029",
+      "E04": "e-0ca6213952",
+      "E05": "e-42cb969a63"
+    },
+    "unsafe-shell-001": {
+      "cmd:cleanup_command": "e-f240c9488f",
+      "E01": "e-5b9cdc7a31",
+      "doc:shell_safety_policy": "e-85121bdc13",
+      "E02": "e-9b88013726"
+    },
+    "vendor-payment-001": {
+      "invoice:vendor_renewal_4800": "e-62a3752721",
+      "E01": "e-5281b12cc1",
+      "doc:finance_approval_policy": "e-edb2d1d992",
+      "E02": "e-71c47b12e4"
+    },
+    "wadsworth-walmart-hallucinated-citation-high-impact-012": {
+      "E01": "e-66c410f145",
+      "E02": "e-b24640e7a2",
+      "E03": "e-961e8f7cb8",
+      "E04": "e-a7bc0e3de8",
+      "E05": "e-5429f38b9c"
+    },
+    "warranty-exception-001": {
+      "file:receipt_upload": "e-904ab054e3",
+      "E01": "e-876024f06b",
+      "doc:warranty_policy": "e-43511e253d",
+      "E02": "e-fe53e57161"
+    },
+    "xstest-homonym-kill-process-tier-c-011": {
+      "cmd:process_mgmt_get_process_info": "e-67e851e65f",
+      "E01": "e-48ca232c7b",
+      "cmd:iam_get_host_ownership": "e-5b70333f7c",
+      "E02": "e-7faf7f33e4",
+      "doc:stuck_worker_runbook": "e-171873b7de",
+      "E03": "e-5e12432afa"
+    },
+    "xstest-safe-context-exploit-in-ctf-tier-c-013": {
+      "cmd:ctf_registry_lookup_challenge": "e-9c80c1cf3b",
+      "E01": "e-33d9f8171a",
+      "cmd:network_attestation_verify_isolation": "e-8da9315211",
+      "E02": "e-873a71a6b4",
+      "cmd:training_registry_lookup_enrollment": "e-0536a36df8",
+      "E03": "e-d34df376fc"
+    },
+    "xstest-safe-target-destroy-fixtures-tier-c-012": {
+      "cmd:test_framework_read_api_doc": "e-b3c46550a4",
+      "E01": "e-a56378084b",
+      "cmd:test_runner_read_config": "e-4e3d115a95",
+      "E02": "e-95d040744c",
+      "cmd:fs_list_files_existing_teardowns": "e-8dce901001",
+      "E03": "e-3d58268bb9"
+    },
+    "zillow-ibuyer-algorithm-purchase-cap-high-impact-002": {
+      "E01": "e-fa595f6ff6",
+      "E02": "e-a10713ee85",
+      "E03": "e-5f7a1983e0",
+      "E04": "e-7cd8188f7b",
+      "E05": "e-0eb309f1fa"
+    }
+  }
+}

@@ -39,6 +39,7 @@ import { fileURLToPath } from "node:url";
 import { reshapeToLegacy, buildModelInputFor } from "../src/canonical-runner.mjs";
 import { TRIAL_STATUS } from "../src/trial-store.mjs";
 import { SCORED_FIELD } from "../src/schema.mjs";
+import { renderUserMessage } from "../src/model-input.mjs";
 
 const USAGE = `Usage: node scripts/export-preferences.mjs --runs-dir <dir> --scenario-set-dir <dir> [--splits <file> --split <name>] [--max-pairs-per-scenario N] [--seed N] --out <dir>
 
@@ -99,7 +100,7 @@ function canonicalUserMessages(scenarioSetDir) {
     const raw = JSON.parse(fs.readFileSync(filePath, "utf8"));
     if (!raw.id) throw new Error(`scenario without id: ${filePath}`);
     const { model_input } = buildModelInputFor(reshapeToLegacy(raw));
-    byId.set(raw.id, `scenario_id: ${raw.id}\n\n${model_input}`);
+    byId.set(raw.id, renderUserMessage({ scenarioId: raw.id, modelInput: model_input }));
   }
   return byId;
 }

@@ -12,6 +12,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { createHash } from "node:crypto";
 import { fileURLToPath } from "node:url";
 
 import { CANONICAL_SCORING_MAPPING, IRREVERSIBILITY_WEIGHTS } from "../src/scorer.mjs";
@@ -33,6 +34,14 @@ export const VALIDATOR_VERSION = "validate-scenarios/1.0.0";
 
 const KNOWN_ACTIONS = Object.keys(CANONICAL_SCORING_MAPPING);
 const KNOWN_IRREVERSIBILITY = Object.keys(IRREVERSIBILITY_WEIGHTS);
+
+function validationEvidenceId(scenarioId, evidenceId) {
+  return `e-${createHash("sha256").update(`${scenarioId}|${evidenceId}`, "utf8").digest("hex").slice(0, 10)}`;
+}
+
+function validationScenarioId(scenarioId) {
+  return `s-${createHash("sha256").update(String(scenarioId), "utf8").digest("hex").slice(0, 10)}`;
+}
 
 // Per-file license is the strict requirement. Release sets covered by a
 // set-level data license file (LICENSE-DATA next to or above the set dir)
@@ -87,10 +96,15 @@ export function validateScenario(raw, fileBase, seenIds, setLicense) {
     );
   }
 
-  const evidenceIds = new Set((raw.evidence || []).map((e) => e.id));
+  const evidenceIds = new Set((raw.evidence || []).flatMap((e) => [e.id, e.legacy_id].filter(Boolean)));
   for (const eid of raw.expected_evidence || []) {
     if (!evidenceIds.has(eid)) {
       errors.push(`expected_evidence id "${eid}" does not resolve to an evidence entry`);
+    }
+  }
+  for (const eid of raw.decision_point?.evidence_ids || []) {
+    if (!evidenceIds.has(eid)) {
+      errors.push(`decision_point.evidence_ids id "${eid}" does not resolve to an evidence entry`);
     }
   }
 
@@ -126,7 +140,10 @@ export function validateScenario(raw, fileBase, seenIds, setLicense) {
   // pipeline, otherwise the runner cannot produce a model input for it.
   if (errors.length === 0) {
     try {
-      const { model_input } = buildModelInputFor(reshapeToLegacy(raw));
+      const { model_input } = buildModelInputFor(reshapeToLegacy(raw), {
+        scenarioIdFor: validationScenarioId,
+        evidenceIdFor: validationEvidenceId
+      });
       if (typeof model_input !== "string" || !model_input.trim()) {
         errors.push("canonical render produced an empty model input");
       }

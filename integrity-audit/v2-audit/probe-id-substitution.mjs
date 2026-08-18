@@ -1,81 +1,168 @@
+// Identifier-opacity probe (v2). Asserts the fixed behaviour that replaced the
+// v1 defect: derived surfaces and rendered bytes must not move when a source
+// identifier is renamed, and the only byte that may move when a mapped token
+// changes is that token.
+//
+// The v1 defect this replaced (warnings changed on 5 scenarios under scenario-ID
+// substitution and 1 more under evidence-ID substitution) is recorded in
+// AUDIT.md and frozen in git history at commit 4b5b54c.
+//
+// Variants:
+//   A  source ids renamed, mapped tokens preserved  -> rendered bytes identical
+//   B  mapped tokens changed, source ids preserved  -> only the token differs
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
+const { renderUserMessage } = await import(path.join(ROOT, "src/model-input.mjs"));
 const { reshapeToLegacy, buildModelInputFor } = await import(path.join(ROOT, "src/canonical-runner.mjs"));
+const { opaqueIdResolversForMap } = await import(path.join(ROOT, "src/id-map.mjs"));
 const SET = path.join(ROOT, "scenario-sets/steerbench-work-2026-05");
+const BASE_MAP = JSON.parse(fs.readFileSync(path.join(ROOT, "ID_MAP.json"), "utf8"));
 
 const allEntries = fs.readdirSync(SET);
-const underscoreJson = allEntries.filter(f => f.endsWith(".json") && f.startsWith("_")).sort();
+const underscoreJson = allEntries.filter((f) => f.endsWith(".json") && f.startsWith("_")).sort();
 if (JSON.stringify(underscoreJson) !== JSON.stringify(["_SCENARIO_PATTERNS.json"])) {
   console.error("FAIL: underscore-json allowlist violated:", underscoreJson); process.exit(1);
 }
-const files = allEntries.filter(f => f.endsWith(".json") && !f.startsWith("_")).sort();
+const files = allEntries.filter((f) => f.endsWith(".json") && !f.startsWith("_")).sort();
 if (files.length !== 106) { console.error(`FAIL: expected 106 scenario files, found ${files.length}`); process.exit(1); }
-const rows = [];
+
+const scenarios = [];
 const seenIds = new Set();
 for (const f of files) {
   const json = JSON.parse(fs.readFileSync(path.join(SET, f), "utf8"));
   if (typeof json.id !== "string" || json.id.length === 0) { console.error(`FAIL: missing/empty/non-string id in ${f}`); process.exit(1); }
   if (seenIds.has(json.id)) { console.error("FAIL: duplicate scenario id", json.id); process.exit(1); }
   seenIds.add(json.id);
-  const base = reshapeToLegacy(json);
-  const expected = json.expected_behavior?.correct_action ?? null;
-
-  const asIs = buildModelInputFor(base);
-
-  // Variant A: opaque scenario id only
-  const opaqueId = { ...base, id: "sw-0000" };
-  const aOnly = buildModelInputFor(opaqueId);
-
-  // Variant B: opaque scenario id + opaque evidence ids
-  const opaqueBoth = {
-    ...opaqueId,
-    evidence: base.evidence.map((e, i) => ({ ...e, evidence_id: `E${String(i+1).padStart(2,"0")}` })),
-    action: { ...base.action, evidence_ids: base.evidence.map((_, i) => `E${String(i+1).padStart(2,"0")}`) }
-  };
-  const bBoth = buildModelInputFor(opaqueBoth); // renderer errors must fail the probe, not be swallowed
-
-  rows.push({
-    id: json.id, expected,
-    flags_asis: asIs.integrity_flags.slice().sort(),
-    flags_opaqueid: aOnly.integrity_flags.slice().sort(),
-    flags_opaqueboth: bBoth.integrity_flags.slice().sort(),
-    len_asis: asIs.model_input.length,
-    input_asis: asIs.model_input
-  });
+  scenarios.push(json);
 }
 
-const eq = (a,b) => JSON.stringify(a) === JSON.stringify(b);
-const flippedId = rows.filter(r => !eq(r.flags_asis, r.flags_opaqueid));
-const flippedBoth = rows.filter(r => !eq(r.flags_asis, r.flags_opaqueboth));
+// Variant A map: every source id renamed, every token preserved.
+const neutralScenarioIds = new Map(scenarios.map((json, index) => [json.id, `q-${String(index + 1).padStart(4, "0")}`]));
+const renamedEvidenceIds = new Map();
+const RENAME = (id) => neutralScenarioIds.get(id);
+const mapA = { ...BASE_MAP, scenarios: {}, evidence: {} };
+for (const [id, token] of Object.entries(BASE_MAP.scenarios)) mapA.scenarios[RENAME(id)] = token;
+for (const json of scenarios) {
+  const table = BASE_MAP.evidence[json.id] || {};
+  const renamed = {};
+  const keyMap = new Map();
+  for (const [index, item] of (json.evidence || []).entries()) {
+    const oldKey = item.legacy_id || item.id;
+    const newKey = `r-${String(index + 1).padStart(3, "0")}`;
+    keyMap.set(item.id, newKey);
+    keyMap.set(oldKey, newKey);
+    renamed[newKey] = table[oldKey];
+  }
+  renamedEvidenceIds.set(json.id, keyMap);
+  if (Object.keys(renamed).length) mapA.evidence[RENAME(json.id)] = renamed;
+}
 
-console.log(`scenarios analyzed: ${rows.length}`);
-console.log(`\n=== A) integrity_flags CHANGE when scenario.id is opaque: ${flippedId.length} ===`);
-for (const r of flippedId) {
-  console.log(`  ${r.id} [exp=${r.expected}]`);
-  console.log(`     as-is : ${r.flags_asis.join(", ") || "(none)"}`);
-  console.log(`     opaque: ${r.flags_opaqueid.join(", ") || "(none)"}`);
+// Variant B map: source ids preserved, every token replaced by a fixed marker.
+const B_TOKEN = (token) => `${token[0]}-${[...token.slice(2)]
+  .map((digit) => (15 - Number.parseInt(digit, 16)).toString(16))
+  .join("")}`;
+const mapB = { ...BASE_MAP, scenarios: {}, evidence: {} };
+for (const [id, token] of Object.entries(BASE_MAP.scenarios)) mapB.scenarios[id] = B_TOKEN(token);
+for (const [id, table] of Object.entries(BASE_MAP.evidence)) {
+  mapB.evidence[id] = Object.fromEntries(Object.entries(table).map(([k, v]) => [k, B_TOKEN(v)]));
 }
-console.log(`\n=== B) integrity_flags CHANGE when scenario.id AND evidence_id are opaque: ${flippedBoth.length} ===`);
-for (const r of flippedBoth) {
-  console.log(`  ${r.id} [exp=${r.expected}]`);
-  console.log(`     as-is : ${r.flags_asis.join(", ") || "(none)"}`);
-  console.log(`     opaque: ${r.flags_opaqueboth.join(", ") || "(none)"}`);
+
+const renameScenario = (json) => {
+  const copy = structuredClone(json);
+  copy.id = RENAME(json.id);
+  const keyMap = renamedEvidenceIds.get(json.id);
+  for (const item of copy.evidence || []) {
+    const newKey = keyMap.get(item.legacy_id || item.id);
+    item.id = newKey;
+    if (item.legacy_id) item.legacy_id = newKey;
+  }
+  if (Array.isArray(copy.decision_point?.evidence_ids)) {
+    copy.decision_point.evidence_ids = copy.decision_point.evidence_ids.map((e) => keyMap.get(e));
+  }
+  return copy;
+};
+
+async function renderAll(candidateMap, transform) {
+  const { scenarioIdFor, evidenceIdFor } = opaqueIdResolversForMap(candidateMap);
+  const out = new Map();
+  for (const json of scenarios) {
+    const subject = transform ? transform(json) : json;
+    const r = buildModelInputFor(reshapeToLegacy(subject), { scenarioIdFor, evidenceIdFor });
+    out.set(json.id, {
+      input: renderUserMessage({ scenarioId: subject.id, modelInput: r.model_input, scenarioIdFor }),
+      flags: r.integrity_flags.slice().sort()
+    });
+  }
+  return out;
 }
-if (rows.length !== 106) { console.error(`FAIL: expected 106 scenarios, got ${rows.length}`); process.exit(1); }
-const eqf = (a,b) => JSON.stringify(a) === JSON.stringify(b);
-const idOnly = rows.filter(r => !eqf(r.flags_asis, r.flags_opaqueid)).map(r => r.id).sort();
-const both = rows.filter(r => !eqf(r.flags_asis, r.flags_opaqueboth)).map(r => r.id).sort();
-const EXP_ID_ONLY = [
-  "air-canada-bereavement-policy-promise-realworld-010",
-  "heldout-audit-authorized-adversarial-003",
-  "hertz-stolen-vehicle-police-report-high-impact-008",
-  "refund-policy-001",
-  "secret-rotation-in-vault-adversarial-008",
-];
-const EXP_BOTH = [...EXP_ID_ONLY, "payment-dispute-001"].sort();
-if (!eqf(idOnly, EXP_ID_ONLY)) { console.error("FAIL: id-only set differs", idOnly); process.exit(1); }
-if (!eqf(both, EXP_BOTH)) { console.error("FAIL: both-opaque set differs", both); process.exit(1); }
-console.log("EXACT SETS PASS: id-only=5, both=6");
-fs.writeFileSync(fileURLToPath(new URL("./id-substitution-rows.json", import.meta.url)), JSON.stringify(rows, null, 2));
+
+const base = await renderAll(BASE_MAP, null);
+const varA = await renderAll(mapA, renameScenario);
+const varB = await renderAll(mapB, null);
+
+const eq = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const flagsMovedA = [], bytesMovedA = [], flagsMovedB = [], bytesUnexpectedB = [];
+const absentTokensB = [], absentEvidenceTokensB = [];
+
+for (const json of scenarios) {
+  const b = base.get(json.id), a = varA.get(json.id), c = varB.get(json.id);
+  if (!eq(a.flags, b.flags)) flagsMovedA.push(json.id);
+  if (a.input !== b.input) bytesMovedA.push(json.id);
+  if (!eq(c.flags, b.flags)) flagsMovedB.push(json.id);
+  const baseToken = BASE_MAP.scenarios[json.id];
+  const changedToken = B_TOKEN(baseToken);
+  if (!b.input.includes(baseToken) || !c.input.includes(changedToken)) absentTokensB.push(json.id);
+  for (const [evidenceId, token] of Object.entries(BASE_MAP.evidence[json.id] || {})) {
+    if (b.input.includes(token) && !c.input.includes(B_TOKEN(token))) {
+      absentEvidenceTokensB.push(`${json.id}/${evidenceId}`);
+    }
+  }
+  // Variant B may differ only by mapped tokens: normalizing every token back
+  // must restore the base bytes exactly.
+  let normalized = c.input;
+  for (const [, token] of Object.entries(BASE_MAP.scenarios)) normalized = normalized.split(B_TOKEN(token)).join(token);
+  for (const table of Object.values(BASE_MAP.evidence)) {
+    for (const token of Object.values(table)) normalized = normalized.split(B_TOKEN(token)).join(token);
+  }
+  if (normalized !== b.input) bytesUnexpectedB.push(json.id);
+}
+
+// No descriptive source identifier may appear anywhere in a rendered input.
+const leaked = [];
+for (const json of scenarios) {
+  const input = base.get(json.id).input;
+  const descriptive = [
+    json.id,
+    ...(json.evidence || []).flatMap((e) => [e.legacy_id, e.id, e.raw_ref].filter(Boolean))
+  ];
+  for (const d of descriptive) if (String(d).length > 3 && input.includes(d)) leaked.push(`${json.id}:${d}`);
+}
+
+const rows = {
+  flagsMovedA,
+  bytesMovedA,
+  flagsMovedB,
+  absentTokensB,
+  absentEvidenceTokensB,
+  bytesUnexpectedB,
+  leaked
+};
+fs.writeFileSync(fileURLToPath(new URL("./id-substitution-rows-v2.json", import.meta.url)), `${JSON.stringify(rows, null, 2)}\n`);
+
+let bad = false;
+const must = (name, actual) => {
+  if (actual.length) { console.error(`FAIL ${name}:`, actual.slice(0, 5), `(${actual.length} total)`); bad = true; }
+  else console.log(`PASS ${name}: 0`);
+};
+must("A: derived flags invariant under source-id rename", flagsMovedA);
+must("A: rendered bytes invariant under source-id rename", bytesMovedA);
+must("B: derived flags invariant under token change", flagsMovedB);
+must("B: old and new mapped tokens occur in the full wire message", absentTokensB);
+must("B: every visible evidence token has its mapped replacement", absentEvidenceTokensB);
+must("B: only the mapped token differs", bytesUnexpectedB);
+must("no descriptive identifier appears in rendered bytes", leaked);
+if (bad) process.exit(1);
+console.log("IDENTIFIER OPACITY: all invariants hold across 106 scenarios");

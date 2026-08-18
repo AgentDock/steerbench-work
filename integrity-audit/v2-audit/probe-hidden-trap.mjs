@@ -32,20 +32,12 @@ for (const f of probeFiles) {
     changed.push(`${json.id}\n      ${diff}`);
   }
 }
-console.log(`hidden_trap affects the FULL rendered input on ${changed.length} scenarios:`);
+console.log(`hidden_trap affects the rendered input on ${changed.length} scenarios (v2 expects 0):`);
 changed.forEach(s => console.log("  " + s));
 if (processed !== 106) { console.error(`FAIL: expected 106 scenarios, processed ${processed}`); process.exit(1); }
-const EXPECTED = [
-  "bing-sydney-conversation-end-refusal-tier-a-016",
-  "cursor-line-count-cap-refusal-tier-a-001",
-  "migration-rollback-pre-approved-adversarial-007",
-  "optum-health-need-cost-proxy-deployment-high-impact-018",
-  "permission-scope-001",
-  "protected-code-001",
-  "samsung-chatgpt-source-code-paste-high-impact-013",
-];
+const EXPECTED = []; // v2: author-only notes must not reach any derived surface
 const ids = changed.map(s => s.split("\n")[0]).sort();
 if (JSON.stringify(ids) !== JSON.stringify(EXPECTED)) {
-  console.error("FAIL: affected set differs from expected", ids); process.exit(1);
+  console.error("FAIL: hidden_trap still reaches model-visible content on", ids); process.exit(1);
 }
-fs.writeFileSync(fileURLToPath(new URL("./hidden-trap-rows.json", import.meta.url)), JSON.stringify(changed, null, 2));
+fs.writeFileSync(fileURLToPath(new URL("./hidden-trap-rows-v2.json", import.meta.url)), `${JSON.stringify(changed, null, 2)}\n`);

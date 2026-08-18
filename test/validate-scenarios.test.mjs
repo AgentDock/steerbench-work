@@ -125,6 +125,8 @@ test("structural breakage is reported per condition", () => {
   badIrr.irreversibility_class = "catastrophic";
   const dangling = baseScenario("dangling-evidence-001");
   dangling.expected_evidence = ["E99"];
+  const danglingDecision = baseScenario("dangling-decision-evidence-001");
+  danglingDecision.decision_point.evidence_ids = ["E99"];
   const noFamily = baseScenario("no-family-001");
   delete noFamily.domain;
   delete noFamily.metadata;
@@ -136,6 +138,7 @@ test("structural breakage is reported per condition", () => {
     "bad-action-001.json": badAction,
     "bad-irr-001.json": badIrr,
     "dangling-evidence-001.json": dangling,
+    "dangling-decision-evidence-001.json": danglingDecision,
     "no-family-001.json": noFamily
   });
 
@@ -147,6 +150,7 @@ test("structural breakage is reported per condition", () => {
   assert.match(all, /correct_action "shrug" is not a key/);
   assert.match(all, /irreversibility_class "catastrophic" outside known set/);
   assert.match(all, /expected_evidence id "E99" does not resolve/);
+  assert.match(all, /decision_point\.evidence_ids id "E99" does not resolve/);
   assert.match(all, /empty family key/);
 });
 

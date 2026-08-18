@@ -20,6 +20,7 @@ import { STEERBENCH_STEERING_SYSTEM_PROMPT } from "../src/prompts.mjs";
 import { ALLOWED_COMMIT_PERMISSION, SCORED_FIELD } from "../src/schema.mjs";
 import { CANONICAL_SCORING_MAPPING } from "../src/scorer.mjs";
 import { sha256File } from "../src/manifest.mjs";
+import { renderUserMessage } from "../src/model-input.mjs";
 import {
   strictCommitPermission,
   scoreResponseCase,
@@ -77,7 +78,7 @@ test("every stored user_input matches a fresh render byte for byte", () => {
     const { model_input } = buildModelInputFor(reshapeToLegacy(rawJson));
     assert.equal(
       s.user_input,
-      `scenario_id: ${s.id}\n\n${model_input}`,
+      renderUserMessage({ scenarioId: s.id, modelInput: model_input }),
       `${s.id} rendered input drifted from the exported bytes`
     );
   }

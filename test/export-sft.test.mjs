@@ -86,6 +86,25 @@ test("provenance rows carry the pre-gold label source and verifiable hashes", ()
   });
 });
 
+test("tracked Tinker sample is the current opaque-render first twelve rows", () => {
+  const sampleDir = path.join(runnerRoot, "sample-artifacts", "training-views-sample");
+  const sampleLines = fs.readFileSync(path.join(sampleDir, "sft.sample.jsonl"), "utf8")
+    .split("\n").filter(Boolean);
+  const sampleProvenance = JSON.parse(fs.readFileSync(
+    path.join(sampleDir, "sft.sample.provenance.json"),
+    "utf8"
+  ));
+  assert.equal(sampleLines.length, 12, "tracked sample must contain twelve rows");
+  assert.equal(sampleProvenance.length, sampleLines.length);
+  assert.deepEqual(sampleLines, lines.slice(0, sampleLines.length));
+  assert.deepEqual(sampleProvenance, provenance.slice(0, sampleLines.length));
+  sampleProvenance.forEach((row, index) => {
+    const user = JSON.parse(sampleLines[index]).messages[1].content;
+    assert.match(user, /^scenario_ref: s-[0-9a-f]{10}\n\n/);
+    assert.ok(!user.includes(row.scenario_id));
+  });
+});
+
 test("splits file filters rows and stamps the split name", () => {
   const ids = provenance.slice(0, 3).map((r) => r.scenario_id);
   const splitDir = fs.mkdtempSync(path.join(os.tmpdir(), "sft-split-test-"));

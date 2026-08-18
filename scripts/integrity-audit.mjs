@@ -33,9 +33,8 @@ import path from "node:path";
 import { createHash } from "node:crypto";
 
 import { sha256File, buildScenarioManifest } from "../src/manifest.mjs";
-import { ActionGateway, WorkerAgent } from "../src/policies.mjs";
-import { inputForModel } from "../src/model-input.mjs";
-import { normalizeDomain } from "../src/normalize.mjs";
+import { reshapeToLegacy, buildModelInputFor } from "../src/canonical-runner.mjs";
+import { stripUserMessagePrefix } from "../src/model-input.mjs";
 
 const SCENARIO_SET = "steerbench-work-2026-05";
 const SCENARIO_SET_DIR = `scenario-sets/${SCENARIO_SET}`;
@@ -89,8 +88,7 @@ function frozenModelInput(runRoot, variantDir, scenarioId) {
     if (!Array.isArray(msgs)) continue;
     const user = msgs.find((m) => m.role === "user");
     if (!user || typeof user.content !== "string") continue;
-    const prefix = `scenario_id: ${scenarioId}\n\n`;
-    return user.content.startsWith(prefix) ? user.content.slice(prefix.length) : user.content;
+    return stripUserMessagePrefix({ scenarioId, content: user.content });
   }
   return null;
 }
@@ -104,57 +102,11 @@ function firstVariantDir(runRoot) {
 
 // === CURRENT layer: render from the live scenario file ===
 
-// Mirror of canonical-runner.reshapeToLegacy: turn an incident-format scenario
-// into the runtime shape the policy stack consumes. Kept in sync with the
-// runner; only the fields inputForModel actually reads matter here.
-function reshapeToLegacy(json) {
-  const evidence = (json.evidence || []).map((e) => ({
-    evidence_id: e.legacy_id || e.id, title: e.title, status: e.status,
-    raw_ref: e.raw_ref, evidence_type: e.source_type
-  }));
-  const evidenceIds = (json.expected_evidence || []).map((id) =>
-    (json.evidence || []).find((e) => e.id === id)?.legacy_id || id
-  );
-  const action = json.metadata?.legacy_action
-    ? { ...json.metadata.legacy_action, evidence_ids: evidenceIds }
-    : {
-        action_type: json.action_verb,
-        proposed_action: json.decision_point?.proposed_action || json.title || "",
-        draft: json.decision_point?.draft || null,
-        confidence: json.decision_point?.confidence !== undefined ? json.decision_point.confidence : 0.7,
-        reversibility: json.irreversibility_class,
-        evidence_ids: evidenceIds,
-        commit_category: json.action_verb === "external_send" ? "external_communication" : "internal_action",
-        target_scope: "system", durability: "durable",
-        externality: json.action_verb === "external_send" ? "outside_workspace" : "inside_workspace",
-        privilege_level: "normal", cost_level: "none"
-      };
-  const domain = normalizeDomain({
-    taxonomyDomain: json.taxonomy?.domain ?? null,
-    legacyDomain: json.domain ?? null
-  });
-  return {
-    id: json.id, family: json.metadata?.legacy_family || json.domain, title: json.title,
-    goal: json.context?.goal, user_request: json.user_request,
-    quality_tags: json.metadata?.legacy_quality_tags || json.tags || [],
-    hidden_trap: json.context?.hidden_trap, action, evidence,
-    domain, action_verb: json.action_verb,
-    irreversibility_class: json.irreversibility_class
-  };
-}
-
-// Mirror of canonical-runner.buildModelInputFor, with a fixed runId. runId does
-// not enter the rendered model input (verified: inputForModel reads no event id
-// field), so the render is deterministic and comparable to the frozen bytes.
+// Render through the canonical path. The audit must not maintain a second
+// reshape or detector implementation: that duplication previously let
+// answer-key evidence selection and author-only fields drift back in here.
 function currentModelInput(json) {
-  const scenario = reshapeToLegacy(json);
-  const worker = new WorkerAgent({ scenario });
-  const gateway = new ActionGateway({ scenario, runId: `${scenario.id}-audit`, mode: "structured_steering" });
-  const action = worker.proposeAction();
-  const preflight = gateway.preflight({ action, timeMs: 132000 });
-  return inputForModel({
-    scenario, event: preflight.event, evidence: preflight.evidence, mode: "structured_steering"
-  });
+  return buildModelInputFor(reshapeToLegacy(json)).model_input;
 }
 
 // === audit ===

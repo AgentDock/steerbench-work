@@ -51,12 +51,14 @@ a plan.
    Under identifier substitution, rendered warnings change on 5 scenarios
    via the scenario identifier (air-canada, hertz, refund-policy,
    heldout-audit, secret-rotation) and 1 more via evidence identifiers
-   (payment-dispute); probe committed. Private `context.hidden_trap`
+   (payment-dispute); the audit-only v1 reconstruction and exact row outputs
+   are committed as `probe-v1-defects.mjs` and `*-v1.json`. Private
+   `context.hidden_trap`
    author notes affected the derived model-visible warning surface in 7 of
-   106 v1 inputs (enumerated in RECEIPTS.md; mutation probe committed).
+   106 v1 inputs (enumerated in the same v1 probe output).
    The note text was not rendered verbatim; it changed derived warnings.
-   The current source still contains this code path; `VALIDATION_PLAN.md`
-   removes it at Checkpoint 2.
+   The frozen v1 source contains this code path; Checkpoint 2 removes it
+   under `VALIDATION_PLAN.md`.
 5. **Eleven legacy-format rows rendered incompletely.** They are not
    evidence-free: together they carry 39 old-format `evidence_used` and 22
    `evidence_missing` entries that the current adapter fails to map, so
@@ -150,10 +152,13 @@ a plan.
     predictive accuracy. Consequence: restoring evidence payloads without
     a nuisance-feature audit would create new shortcuts.
 13. A generic fallback action profile was synthesized for the 68/106 rows
-    lacking `metadata.legacy_action` (receipt). The fallback's
-    reversibility wording is inverted on a subset of proceed-labeled rows;
-    the enumerated count is receipted with the Checkpoint 2 fix and is not
-    asserted here.
+    lacking `metadata.legacy_action` (receipt). Copying
+    `irreversibility_class` directly into `reversibility` changes direction
+    under the corrected conversion on 61/68 rows overall and 36 proceed-labeled
+    rows (28 `low`, 2 `none`, 6 `high`). The previously reported 28 is the
+    narrower low-irreversibility proceed subset, not the complete affected
+    set. The complete sets and the Checkpoint 2 conversion are asserted and
+    enumerated in the executable receipt.
 14. Table 1 of the published paper (arXiv:2608.12654v1) is an inline
     literal table with no tracked generator (main.tex:94-109 of the
     arXiv-submitted source), although the same file states at line 180
