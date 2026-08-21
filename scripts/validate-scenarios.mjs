@@ -17,6 +17,7 @@ import { fileURLToPath } from "node:url";
 
 import { CANONICAL_SCORING_MAPPING, IRREVERSIBILITY_WEIGHTS } from "../src/scorer.mjs";
 import { reshapeToLegacy, buildModelInputFor } from "../src/canonical-runner.mjs";
+import { prepareRuntimeEvidence } from "../src/evidence-rendering.mjs";
 
 const USAGE = `Usage: node scripts/validate-scenarios.mjs --scenario-set-dir <dir> [--report <file>]
 
@@ -102,10 +103,10 @@ export function validateScenario(raw, fileBase, seenIds, setLicense) {
       errors.push(`expected_evidence id "${eid}" does not resolve to an evidence entry`);
     }
   }
-  for (const eid of raw.decision_point?.evidence_ids || []) {
-    if (!evidenceIds.has(eid)) {
-      errors.push(`decision_point.evidence_ids id "${eid}" does not resolve to an evidence entry`);
-    }
+  try {
+    prepareRuntimeEvidence(raw.evidence || [], raw.decision_point?.evidence_ids || []);
+  } catch (error) {
+    errors.push(`evidence render contract: ${error.message}`);
   }
 
   if (!(raw.metadata?.legacy_family || raw.domain)) {

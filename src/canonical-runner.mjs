@@ -75,6 +75,7 @@ import {
 // Reuse the existing scenario reshape + model-input rendering pipeline.
 import { ActionGateway, WorkerAgent } from "./policies.mjs";
 import { inputForModel, renderUserMessage } from "./model-input.mjs";
+import { prepareRuntimeEvidence } from "./evidence-rendering.mjs";
 
 const REVERSIBILITY_BY_IRREVERSIBILITY = Object.freeze({
   none: "high",
@@ -100,23 +101,20 @@ export function reversibilityFromIrreversibility(irreversibilityClass) {
 }
 
 export function reshapeToLegacy(json) {
-  const evidence = (json.evidence || []).map((e) => ({
-    evidence_id: e.legacy_id || e.id, title: e.title, status: e.status,
-    raw_ref: e.raw_ref, source_type: e.source_type
-  }));
   // The decision-point list is the evidence available at the commit moment.
   // expected_evidence belongs to the answer key and must never select what the
   // model sees.
-  const evidenceIds = (json.decision_point?.evidence_ids || []).map((id) =>
-    (json.evidence || []).find((e) => e.id === id || e.legacy_id === id)?.legacy_id || id
+  const { evidence, evidenceIds } = prepareRuntimeEvidence(
+    json.evidence || [],
+    json.decision_point?.evidence_ids || []
   );
-  const action = json.metadata?.legacy_action
-    ? { ...json.metadata.legacy_action, evidence_ids: evidenceIds }
+  const { confidence: _authoredInputConfidence, ...legacyAction } = json.metadata?.legacy_action || {};
+  const action = Object.keys(legacyAction).length
+    ? { ...legacyAction, evidence_ids: evidenceIds }
     : {
         action_type: json.action_verb,
         proposed_action: json.decision_point?.proposed_action || json.title || "",
         draft: json.decision_point?.draft || null,
-        confidence: json.decision_point?.confidence !== undefined ? json.decision_point.confidence : 0.7,
         reversibility: reversibilityFromIrreversibility(json.irreversibility_class),
         evidence_ids: evidenceIds,
         commit_category: json.action_verb === "external_send" ? "external_communication" : "internal_action",
@@ -124,6 +122,9 @@ export function reshapeToLegacy(json) {
         externality: json.action_verb === "external_send" ? "outside_workspace" : "inside_workspace",
         privilege_level: "normal", cost_level: "none"
       };
+  if (json.decision_point?.proposed_accesses !== undefined) {
+    action.proposed_accesses = structuredClone(json.decision_point.proposed_accesses);
+  }
   const domain = normalizeDomain({
     taxonomyDomain: json.taxonomy?.domain ?? null,
     legacyDomain: json.domain ?? null
@@ -229,7 +230,8 @@ function normalizeUsageChat(usage) {
  *   Optional scenario-reference renderer used only by offline validators.
  * @param {(scenarioId: string, evidenceId: string) => string} [options.evidenceIdFor]
  *   Optional evidence-reference renderer used only by offline validators.
- * @returns {{model_input: string, integrity_flags: string[]}} Rendered body and flags.
+ * @returns {{model_input:string,integrity_flags:string[],warnings:object[],boundary_markers:string[],proposed_accesses:object[]}}
+ *   Rendered body plus structured boundary state and audit-only legacy flags.
  */
 export function buildModelInputFor(scenario, { scenarioIdFor, evidenceIdFor } = {}) {
   const runId = `${scenario.id}-canonical-${Date.now()}`;
@@ -248,7 +250,10 @@ export function buildModelInputFor(scenario, { scenarioIdFor, evidenceIdFor } = 
       scenario, event: preflight.event,
       evidence: preflight.evidence, mode: "structured_steering", evidenceIdFor
     }),
-    integrity_flags: preflight.event.integrity_evidence?.integrity_flags || []
+    integrity_flags: preflight.event.integrity_evidence?.integrity_flags || [],
+    warnings: structuredClone(preflight.event.warnings),
+    boundary_markers: [...preflight.event.boundary_markers],
+    proposed_accesses: structuredClone(preflight.event.proposed_accesses)
   };
 }
 

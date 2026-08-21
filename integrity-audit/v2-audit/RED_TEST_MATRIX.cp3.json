@@ -1,0 +1,444 @@
+{
+  "schema_version": "steerbench.red-test-matrix.partial.v1",
+  "checkpoint": 3,
+  "required_subtest_count": 43,
+  "receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541",
+  "aggregate": {
+    "unique_subtest_ids": true,
+    "all_required_subtests_present": true,
+    "all_bad_fixtures_blocked": true,
+    "all_corrected_fixtures_passed": true
+  },
+  "rows": [
+    {
+      "subtest_id": "cp3-f02-decision-confidence-only",
+      "finding_id": 2,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "decision-point confidence only: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "decision-point confidence only: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f02-legacy-action-confidence-only",
+      "finding_id": 2,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "legacy-action confidence only: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "legacy-action confidence only: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f02-joint-confidence-mutation-deletion",
+      "finding_id": 2,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "joint confidence mutation and deletion: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "joint confidence mutation and deletion: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f02-derived-threshold-warning-restored",
+      "finding_id": 2,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "former confidence warning restoration: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "former confidence warning restoration: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f03-selected-evidence-exact-once-order",
+      "finding_id": 3,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "selected evidence count and order: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "selected evidence count and order: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f03-tool-payload-recursive-deep-equal",
+      "finding_id": 3,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "recursive tool payload equality: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "recursive tool payload equality: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f03-evidence-bearing-row-census",
+      "finding_id": 3,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "evidence-bearing row census: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "evidence-bearing row census: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f03-source-key-census-reserved-provenance",
+      "finding_id": 3,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "source-key census and reserved provenance: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "source-key census and reserved provenance: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f03-forbidden-source-fields-opaque",
+      "finding_id": 3,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "forbidden evidence metadata opacity: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "forbidden evidence metadata opacity: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f03-unknown-top-level-rejected",
+      "finding_id": 3,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "unknown top-level evidence key: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "unknown top-level evidence key: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f03-wrong-type-rejected",
+      "finding_id": 3,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "wrong evidence type: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "wrong evidence type: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f03-nested-payload-unknown-keys-allowed",
+      "finding_id": 3,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "nested payload extension preservation: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "nested payload extension preservation: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f03-recursive-object-key-sorting",
+      "finding_id": 3,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "recursive canonical object sorting: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "recursive canonical object sorting: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f03-array-order-primitives-preserved",
+      "finding_id": 3,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "array order and primitive preservation: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "array order and primitive preservation: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f03-backtick-fence-injection-contained",
+      "finding_id": 3,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "backtick fence containment: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "backtick fence containment: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-single-warning-surface",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "single structured warning surface: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "single structured warning surface: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-exact-sixteen-warning-registry",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "exact sixteen-name warning registry: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "exact sixteen-name warning registry: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-warning-schema-category-failure",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "warning schema and category validation: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "warning schema and category validation: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-trace-replay",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "deterministic warning trace replay: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "deterministic warning trace replay: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-dangling-source-rejected",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "dangling warning source rejection: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "dangling warning source rejection: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-proposed-access-runtime-id-join",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "proposed access uses matched runtime evidence id: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "proposed access uses matched runtime evidence id: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-rendered-exact-authorization",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "warning rebuttal requires rendered exact authorization: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "warning rebuttal requires rendered exact authorization: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-hidden-field-invariance",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "hidden author-field invariance: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "hidden author-field invariance: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-commit-point-boundary-only",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "commit point boundary only: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "commit point boundary only: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-safe-status-control",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "safe-status authored no-trap control: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "safe-status authored no-trap control: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-provisional-heldout-audit-blocked",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "heldout-audit pending recertification: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "heldout-audit pending recertification: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-provisional-eval-leakage-blocked",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "eval-leakage pending recertification: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "eval-leakage pending recertification: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f04-provisional-fixture-regenerate-blocked",
+      "finding_id": 4,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "fixture-regenerate pending recertification: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "fixture-regenerate pending recertification: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-historical-calibration-98-100-103-106",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "historical in-sample calibration: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "historical in-sample calibration: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-canonical-label-mapping",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "canonical scoring label mapping: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "canonical scoring label mapping: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-typed-missing-null-empty-false-zero",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "typed missing-value categories: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "typed missing-value categories: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-unicode-length-definitions",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "Unicode length definitions: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "Unicode length definitions: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-unordered-pair-uniqueness",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "unique unordered feature pairs: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "unique unordered feature pairs: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-training-fold-unseen-fallback",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "training-fold unseen fallback: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "training-fold unseen fallback: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-tie-to-hold",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "lookup and global tie to hold: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "lookup and global tie to hold: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-inclusive-ninety-percent-threshold",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "inclusive ninety-percent threshold: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "inclusive ninety-percent threshold: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-nonempty-exemption-rejected",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "frozen empty exemption list: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "frozen empty exemption list: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-absent-cp4-ledger-pending",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "pending CP4 blocks production number: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "pending CP4 blocks production number: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-new-visible-field-without-extractor-rejected",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "new visible field without extractor: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "new visible field without extractor: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-row-artifact-visible-parsed-from-wire",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "shortcut row projection parsed from wire: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "shortcut row projection parsed from wire: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-caller-visible-projection-rejected",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "caller visible projection rejected: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "caller visible projection rejected: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-integrity-leaf-feature-coverage",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "all integrity leaf families covered: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "all integrity leaf families covered: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    },
+    {
+      "subtest_id": "cp3-f12-integrity-record-association",
+      "finding_id": 12,
+      "owning_checkpoint": 3,
+      "known_bad_fixture": "integrity record associations preserved: scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "integrity record associations preserved: canonical current implementation",
+      "expected_pass": "separate child process exits zero",
+      "executed_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541"
+    }
+  ]
+}

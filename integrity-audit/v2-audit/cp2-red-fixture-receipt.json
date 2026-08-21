@@ -2,11 +2,11 @@
   "schema_version": "steerbench.red-test-receipt.v1",
   "checkpoint": 2,
   "source_hashes": {
-    "src/canonical-runner.mjs": "648e45688bc9eb29b52d3d853d68827b124bbba8367234567292fbb41560ec8c",
+    "src/canonical-runner.mjs": "31f7e02744c0b78aeaf37f8fd7c1a447a4e4c9ee88f018dc38a444e66c5263df",
     "src/id-map.mjs": "cc34c1cd77ae2d96ac1a43d203f45a9135e55b7f37294a48ee534cc617a14d98",
-    "src/integrity-evidence.mjs": "b195717f2c869d6339d08f6318e340983b532e4c6f14de934e1abec9f4fde581",
-    "src/model-input.mjs": "041be168ae0788dafca2a07b36567126d29dedb917e74e0be92d26b110b33176",
-    "src/policies.mjs": "bdb66cc7828768c93e8fa9b0caeff75c0e30bc4b5ba17e8f14513795c567f796",
+    "src/integrity-evidence.mjs": "cd1d9b2e6bb69d595cd5cc64ff3c1e4fec7c9935cd7d7b313dc0cbb0a1778ef4",
+    "src/model-input.mjs": "ee9b9833bd5b74f96934719ff2333da224560cd0098e49709a532aac17e3c48e",
+    "src/policies.mjs": "438bbf4a713f71e0225b7370f63314aa5c941560bf4e8b8ef97e657336891b45",
     "integrity-audit/v2-audit/cp2-red-fixtures.mjs": "5610ef5fdfa3785e2a9586aa44ee9140b1e62c622090ae5883318df37abef114",
     "integrity-audit/v2-audit/v1-defect-adapter.mjs": "ba8f4ad3632e2473d3cca02819411d41c3f581a33546046b1cd837d7262a6a2f"
   },

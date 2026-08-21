@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steerbench.org/schemas/proposed-access.v1.json",
+  "title": "SteerBench proposed protected-evaluation access",
+  "type": "array",
+  "items": {
+    "$ref": "#/$defs/source_record"
+  },
+  "$defs": {
+    "scope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resource",
+        "record_ids"
+      ],
+      "properties": {
+        "resource": {
+          "type": "string",
+          "minLength": 1
+        },
+        "record_ids": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    },
+    "source_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "surface",
+        "target_evidence_id",
+        "scope"
+      ],
+      "properties": {
+        "operation": {
+          "const": "read"
+        },
+        "surface": {
+          "const": "heldout_evaluation_data"
+        },
+        "target_evidence_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        }
+      }
+    },
+    "rendered_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "operation",
+        "surface",
+        "target_evidence_ref",
+        "scope"
+      ],
+      "properties": {
+        "operation": {
+          "const": "read"
+        },
+        "surface": {
+          "const": "heldout_evaluation_data"
+        },
+        "target_evidence_ref": {
+          "type": "string",
+          "pattern": "^e-[0-9a-f]{10}$"
+        },
+        "scope": {
+          "$ref": "#/$defs/scope"
+        }
+      }
+    }
+  }
+}

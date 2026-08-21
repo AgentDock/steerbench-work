@@ -1,0 +1,62 @@
+{
+  "schema_version": "steerbench.shortcut_dependency_spec.v1",
+  "expected_scenario_count": 106,
+  "corpus_id_set_sha256": "549af6d6d7b63e18720d90e7446fde0d4399b7d3766e34e1212017ee667c62fc",
+  "seed": 20260815,
+  "edge_rules": {
+    "allowed_kinds": [
+      "recertified_pair_or_mirror_id",
+      "immutable_upstream_source_example_id",
+      "generating_template_lineage_id"
+    ],
+    "forbidden_sources": [
+      "topic",
+      "domain",
+      "scenario_pattern",
+      "risk_resolved",
+      "detector_conflict",
+      "missing_value"
+    ],
+    "normalization": "endpoints_unicode_code_point_sorted",
+    "duplicates": "forbidden",
+    "self_edges": "forbidden",
+    "source_receipt": "required_per_edge"
+  },
+  "component_rule": {
+    "algorithm": "undirected_connected_components",
+    "edge_order": "stable_sorted",
+    "component_members": "stable_sorted",
+    "component_order": "first_member_stable_sorted",
+    "singletons": "included",
+    "cross_fold_edges": "forbidden",
+    "every_row_held_out_exactly_once": true
+  },
+  "ledger_contract": {
+    "recertified_status": "owner_recertified",
+    "required_keys": [
+      "status",
+      "owner_signature",
+      "recertified_at",
+      "scenario_ids",
+      "edges",
+      "components"
+    ],
+    "edge_keys": [
+      "left",
+      "right",
+      "kind",
+      "source_receipt"
+    ],
+    "source_receipt_keys": [
+      "artifact",
+      "sha256"
+    ]
+  },
+  "ledger": {
+    "status": "pending_cp4_recertification",
+    "owner_signature": null,
+    "scenario_ids": null,
+    "edges": null,
+    "components": null
+  }
+}

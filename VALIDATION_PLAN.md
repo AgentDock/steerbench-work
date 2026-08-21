@@ -36,6 +36,70 @@ industry standard. This approval does not authorize any reference-label change,
 other corpus edit, model or API call, smoke run, spend, paper/site/publication
 change, or scientific claim beyond the existing ceiling.
 
+**Owner amendment record (2026-08-21; Checkpoint 3):** The scientific owner approved first-hand in the operator channel.
+This approval
+is bound to the exact pre-activation amendment bytes: `VALIDATION_PLAN.md`
+SHA-256 `5dc98d36fc0511ea872eed23dea1eba9accb20cafa4d4fec82a0f752aa329c95`
+and `integrity-audit/v2-audit/CP3_PRIOR_ART.md` SHA-256
+`a2a7fe993e6cddc434df123ff532bbec590493a8c5ca31e8b4d4780bc53cce79`. It
+activates the actor-visibility and identity-minimization rule, the exhaustive
+rendered-integrity shortcut coverage, and the post-hoc historical-v1
+literal tool-call evidence-ID disclosure below. It does not authorize a
+scenario or reference label change, model or API call, spend, publication,
+model-based production enforcement, or a final v2 shortcut-clearance claim
+before the owner-recertified Checkpoint-4 ledger and Checkpoint-6 gate.
+
+**Post-signature normalization record (2026-08-21):** Before commit, the exact
+pre-activation bytes named above changed only as follows. The pending actor and
+future-variation headings became active, the verbatim approval and its two bound
+hashes were inserted, and the matching `CP3_PRIOR_ART.md` status paragraph
+changed from “proposed ... pending owner approval and not yet governing” to
+“owner-approved”; no source entry or claim changed. In the plan, the ambiguous
+phrase “benchmark principal/role token” became “benchmark actor/role token” so
+`principal` remains reserved for a distinct delegator. The approved exhaustive
+coverage item was made mechanically explicit by adding `actor` to the action
+feature list, expanding the abbreviated integrity list to all thirty-three leaf
+families and their whole-record associations, naming
+`SHORTCUT_FEATURE_SPEC.json.integrity_feature_coverage`, and enumerating the
+corresponding actor, leaf-mutation, association, and conditional alias receipts.
+The approved 100/106 disclosure was added to the historical-calibration and
+Finding-12 text with its exact raw-v1 formula and claim ceiling; the misleading
+shorthand “`commands.cmd`” was then corrected to “literal tool-call evidence-ID”
+without changing the formula or value. These normalizations add no scenario,
+label, model-call, spend, publication, enforcement, or shortcut-clearance
+authority.
+
+**Actor visibility and identity minimization.** Where the reference decision
+depends on who will execute the proposed external action, the canonical action
+record renders `actor` as the current executing party.
+`actor` is an opaque, source-grounded benchmark actor/role token, not a
+natural-person identity, and must not encode a real name, email address,
+employer, organization prestige, demographic or protected attribute, or any
+other identity fact unnecessary to the frozen authorization rule. The current
+Checkpoint-3 bytes freeze `actor: worker_agent` exactly once in each of the 106
+wire inputs. A three-row preliminary recertification or Checkpoint-4
+recertification may introduce a different per-row opaque actor only when an
+owner-signed source receipt establishes that executor; the value must be frozen
+before Checkpoint 6, registered as legitimate partial task state in
+`SHORTCUT_FEATURE_SPEC.json`, and included in the corrected-corpus shortcut
+receipt. If an action is performed on behalf of a different principal,
+`actor` must not be overloaded: the row remains blocked until a separately
+typed principal/delegator field and its actor-to-principal authorization
+binding are source-recertified, schema-registered, model-visible, and
+owner-approved. Authorization evidence must bind the relevant actor and, where
+applicable, principal to the exact operation, target, scope, and validity
+period. Model visibility exists only to evaluate the model's authorization
+reasoning; production authorization and enforcement remain deterministic
+controls outside the model.
+
+**Future-variation test rule:** Before any nonconstant per-row actor enters the
+corrected v2 corpus, Checkpoint 4/6 must receipt an opaque-alias invariance control:
+consistently renaming actor/principal aliases while preserving the
+authorization graph must preserve the reference decision and warning
+disposition. A value change that alters role, delegation, ownership, scope, or
+authority is not an alias mutation and requires row-level source/gold
+recertification.
+
 ## Locked design
 
 - All 106 scenarios; the 11 legacy rows are rebuilt (Corpus section).
@@ -354,13 +418,20 @@ pinned in `integrity-audit/v2-audit/CP3_PRIOR_ART.md`.
   permitted pair. Adding a model-visible structured field without a registered
   extractor fails closed.
 - The base registry covers: opaque identifier token shape; total and
-  per-section input lengths; action metadata (`mode`, `action_type`,
+  per-section input lengths; action metadata (`mode`, `actor`, `action_type`,
   `commit_category`, target scope, externality, reversibility, privilege, and
   cost fields); evidence count, sorted status/source-type multisets, signature
   presence, rendered allowed-field presence/key shape; warning count and names;
-  integrity touched/read/command counts, surfaces, statuses, protected markers,
-  and true-valued fields; proposed-access count, operation, surface, and scope
-  shape; evaluation-provenance presence and enums; and construction pattern.
+  all thirty-three schema-defined integrity leaf families named by
+  `SHORTCUT_FEATURE_SPEC.json.integrity_feature_coverage`, with every leaf
+  mapped to at least one registered feature and with structural whole-record
+  features preserving the associations among fields of each touched-file,
+  read-file, command, and protected-surface record; proposed-access count,
+  operation, surface, and scope shape; evaluation-provenance presence and
+  enums; and construction pattern. Free-text integrity values, including paths
+  and command text, use only presence, Unicode code-point length,
+  Unicode-whitespace token length, code-point shape, and structural record
+  descriptors; their literal text is never a categorical feature.
   Every feature is assigned exactly one of the three interpretation classes
   above. Text semantics are not
   treated as categorical metadata features. Character length counts Unicode
@@ -407,10 +478,15 @@ pinned in `integrity-audit/v2-audit/CP3_PRIOR_ART.md`.
   manifest is frozen empty. Any non-empty exemption requires an owner-approved
   plan amendment and a balanced-design receipt; no implicit bypass exists.
 - Historical v1 in-sample separability remains a distinct calibration record:
-  signature presence 98/106; count+status multiset 103/106; paired with
-  signature 106/106. Leave-one-family-out v1 values enter this plan only after
-  a committed implementation reproduces them with row- and fold-level
-  receipts. In-sample and held-out figures must never be conflated.
+  signature presence 98/106; the typed sorted multiset of literal
+  `legacy_id || id` values from raw `source_type === "tool_call"` evidence
+  records 100/106; count+status multiset 103/106; and count+status paired with
+  signature 106/106. The 100/106 value is a post-hoc same-sample
+  majority-lookup construction diagnostic only: it was not held out, is not
+  evidence of model reliance, and the literal IDs are never a production-v2
+  feature. Leave-one-family-out v1 values enter this plan only after a committed
+  implementation reproduces them with row- and fold-level receipts. In-sample,
+  held-out, and production figures must never be conflated.
 - Checkpoint 3 may clear the gate implementation, synthetic bad-fixture tests,
   and historical v1 calibration while emitting
   `CORPUS_BLOCKED_PENDING_CP4`, because production v2 folds fail closed until
@@ -566,12 +642,22 @@ enter v2 storage or scoring.
     failure; hidden-field invariance; `commit_point` boundary-only; the
     safe-status control; and a blocking receipt for each provisional row until
     its owner-signed recertification exists.
-  - Finding 12: historical 98/103/106 calibration; exact label mapping; typed
+  - Finding 12: historical 98/100/103/106 calibration, with the 100/106
+    literal-tool-evidence-ID result explicitly post-hoc, in-sample, and never a
+    production-v2 feature; exact label mapping; typed
     missing/null/empty/false/zero; Unicode code-point and whitespace-token
     definitions; unordered-pair uniqueness; training-fold unseen fallback;
     tie-to-hold; inclusive threshold; attempted non-empty exemption; absent
-    Checkpoint-4 dependency ledger yielding `CORPUS_BLOCKED_PENDING_CP4`; and
-    any newly visible field without an extractor.
+    Checkpoint-4 dependency ledger yielding `CORPUS_BLOCKED_PENDING_CP4`; any
+    newly visible field without an extractor; all 106 canonical wires parsing
+    `actor` exactly once in the frozen action order and deriving its registered
+    feature from the wire rather than a caller projection; every key in
+    `SHORTCUT_FEATURE_SPEC.json.integrity_feature_coverage` changing at least
+    one registered feature under an exact-wire leaf mutation; and a
+    cross-record value swap that preserves per-field multisets but changes the
+    registered whole-record association feature. The opaque-alias invariance
+    receipt becomes mandatory here only if a nonconstant per-row actor is
+    admitted under the future-variation rule.
   Each bad fixture must exit nonzero before replacing its prior receipt.
 - Checkpoints, each independently investigated before the next begins:
   (1) this plan + AUDIT; (2) detector decoupling + identifier opacity

@@ -5,7 +5,7 @@
   "split": null,
   "label_source": "benchmark-owner-pre-gold",
   "exporter_version": "sft-exporter/0.1.0",
-  "render_sha256": "b5e12faa6499724050d876d0f85708adeb564e3baaa45eb1e442ded8a369d5c1"
+  "render_sha256": "1df1600d281bf8212f8d7011efde49ec44a6365e39bd809b820830c2146059f1"
  },
  {
   "scenario_id": "air-canada-bereavement-policy-promise-realworld-010",
@@ -13,7 +13,7 @@
   "split": null,
   "label_source": "benchmark-owner-pre-gold",
   "exporter_version": "sft-exporter/0.1.0",
-  "render_sha256": "70c9b01b1aaae10c4ce81a37021304aa3267bbddd6515b6b979745a37c9ddea3"
+  "render_sha256": "87e5c8022e83bb295e375cfb26f2a50e75eebca29c5409a18582e9e99608541c"
  },
  {
   "scenario_id": "amazon-hiring-mirror-advance-candidate-tier-b-005",
@@ -21,7 +21,7 @@
   "split": null,
   "label_source": "benchmark-owner-pre-gold",
   "exporter_version": "sft-exporter/0.1.0",
-  "render_sha256": "d017ca8973d66fad2c8f711b4dba9c48966cde7ee353ff93acd907ff851fff2d"
+  "render_sha256": "e1cdc5550152664612efd66f00cab526ed91d31e8f00b36f4a93b6d118d4f2cb"
  },
  {
   "scenario_id": "angry-customer-escalation-001",
@@ -29,7 +29,7 @@
   "split": null,
   "label_source": "benchmark-owner-pre-gold",
   "exporter_version": "sft-exporter/0.1.0",
-  "render_sha256": "65d597f48dce04c8575429c0fbb2284cf110dc45a53c70b6a4d8f1f3afde7594"
+  "render_sha256": "baf3dafd0553ae977db59e656dbd15b633af2d01b1f992f071c8d85e956e50d4"
  },
  {
   "scenario_id": "apple-card-mirror-credit-extension-tier-b-004",
@@ -37,7 +37,7 @@
   "split": null,
   "label_source": "benchmark-owner-pre-gold",
   "exporter_version": "sft-exporter/0.1.0",
-  "render_sha256": "579722d6df9579437749c1dd387d012b7f32e85740d02fb7fc1b23b0ef3fe66c"
+  "render_sha256": "76bafcf41d26f135ccb6c6382aa44305e2122e56462d07fb3d239d5391aab1a7"
  },
  {
   "scenario_id": "bard-jwst-mirror-fact-checked-claim-tier-b-009",
@@ -45,7 +45,7 @@
   "split": null,
   "label_source": "benchmark-owner-pre-gold",
   "exporter_version": "sft-exporter/0.1.0",
-  "render_sha256": "e0f57b88851df8f592bc83aebd3596b6ec09189c3c570ee369cde733bda0314a"
+  "render_sha256": "94749e73de0cf22964e34ab552f1ba9e758f05de9ff469a5cb5b3d068f92221a"
  },
  {
   "scenario_id": "bing-sydney-conversation-end-refusal-tier-a-016",
@@ -53,7 +53,7 @@
   "split": null,
   "label_source": "benchmark-owner-pre-gold",
   "exporter_version": "sft-exporter/0.1.0",
-  "render_sha256": "3cc774154d9099034006450ae9cfec45ca5650315704226b6eafc395eee1d180"
+  "render_sha256": "999f7eb231d21a54b155e80dcc26a698d5008566105855e15361828deb5edd76"
  },
  {
   "scenario_id": "bulk-email-001",
@@ -61,7 +61,7 @@
   "split": null,
   "label_source": "benchmark-owner-pre-gold",
   "exporter_version": "sft-exporter/0.1.0",
-  "render_sha256": "5710376137e303d054f6fbae5d5d9f1b37a13d6ab09fcac52d7a8a0e02aa8897"
+  "render_sha256": "a12e57619959e2cee201365b3d731dda6ad8aae22dd3c4f687a939c67d4dd8fb"
  },
  {
   "scenario_id": "calendar-booking-001",
@@ -69,7 +69,7 @@
   "split": null,
   "label_source": "benchmark-owner-pre-gold",
   "exporter_version": "sft-exporter/0.1.0",
-  "render_sha256": "a750067b0ffcbbccca9fc252e8e93be3917eea90352997dcf0dfffb6c028e993"
+  "render_sha256": "e562a3edc5f4ecaa371ff0d95ec4b0b9827602ef5510caa0c648512066835bdc"
  },
  {
   "scenario_id": "calendar-invite-prompt-injection-004",
@@ -77,7 +77,7 @@
   "split": null,
   "label_source": "benchmark-owner-pre-gold",
   "exporter_version": "sft-exporter/0.1.0",
-  "render_sha256": "6c8fe1febdedc24cbe89f6215ce80583b75b211a99a4f7c58d9cc16787408ab1"
+  "render_sha256": "3a3122434666094c5a2333ec76da02aa13a92db309abedddb1efcd1338ea7b45"
  },
  {
   "scenario_id": "chatgpt-1200-line-script-refusal-tier-a-008",
@@ -85,7 +85,7 @@
   "split": null,
   "label_source": "benchmark-owner-pre-gold",
   "exporter_version": "sft-exporter/0.1.0",
-  "render_sha256": "271d9821a337a3976009a28bbba7f2dffd51c8cee681b10d77fefed5a8642e4a"
+  "render_sha256": "d5487db805871225905c0f5cd682598729bc1409a0ab774ba0069cc7a267b645"
  },
  {
   "scenario_id": "chatgpt-as-ai-language-model-disclaimer-refusal-tier-a-019",
@@ -93,6 +93,6 @@
   "split": null,
   "label_source": "benchmark-owner-pre-gold",
   "exporter_version": "sft-exporter/0.1.0",
-  "render_sha256": "f2815b605d88267b25365a3482a22fd7b0ba3028f0dc0f4abe20801f6547b84a"
+  "render_sha256": "bddd8b89d7c1812e37c77cea9d8e0c3461600a5e9de85fb377d45e0a5ff7b70b"
  }
 ]

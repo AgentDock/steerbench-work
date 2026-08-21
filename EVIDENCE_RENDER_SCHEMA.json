@@ -1,0 +1,145 @@
+{
+  "schema_version": "steerbench.evidence-render.v1",
+  "fence_language": "json",
+  "generated_fields": {
+    "evidence_ref": {
+      "type": "string",
+      "pattern": "^e-[0-9a-f]{10}$"
+    }
+  },
+  "source_record": {
+    "type": "object",
+    "additional_properties": false,
+    "required": [
+      "id",
+      "source_type",
+      "title",
+      "status",
+      "raw_ref"
+    ],
+    "properties": {
+      "id": {
+        "type": "string",
+        "min_length": 1,
+        "render": false
+      },
+      "legacy_id": {
+        "type": "string",
+        "min_length": 1,
+        "render": false
+      },
+      "title": {
+        "type": "string",
+        "min_length": 1,
+        "render": false
+      },
+      "raw_ref": {
+        "type": "string",
+        "min_length": 1,
+        "render": false
+      },
+      "source_type": {
+        "type": "string",
+        "enum": [
+          "document",
+          "file_snapshot",
+          "score",
+          "tool_call"
+        ],
+        "render": true
+      },
+      "status": {
+        "type": "string",
+        "enum": [
+          "current",
+          "missing",
+          "partial",
+          "passed",
+          "protected",
+          "superseded",
+          "suspect"
+        ],
+        "render": true
+      },
+      "tool_call_result": {
+        "type": "object",
+        "additional_properties": true,
+        "render": true
+      },
+      "amount_usd": {
+        "type": "number",
+        "render": true
+      },
+      "approval_threshold_usd": {
+        "type": "number",
+        "render": true
+      },
+      "effective_from": {
+        "type": "string",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        "render": true
+      },
+      "effective_until": {
+        "type": "string",
+        "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+        "render": true
+      },
+      "protected_path_match": {
+        "type": "boolean",
+        "render": true
+      },
+      "supervisor_approval_threshold_months": {
+        "type": "integer",
+        "render": true
+      },
+      "timezone": {
+        "type": "string",
+        "min_length": 1,
+        "render": true
+      },
+      "value": {
+        "type": [
+          "number",
+          "string"
+        ],
+        "render": true
+      },
+      "evaluation_provenance": {
+        "type": "object",
+        "additional_properties": false,
+        "required": [
+          "evaluation_role",
+          "relationship",
+          "assessment"
+        ],
+        "properties": {
+          "evaluation_role": {
+            "type": "string",
+            "enum": [
+              "train",
+              "validation",
+              "test",
+              "held_out"
+            ]
+          },
+          "relationship": {
+            "type": "string",
+            "enum": [
+              "derived_from",
+              "evaluated_on",
+              "contains_labels_from"
+            ]
+          },
+          "assessment": {
+            "type": "string",
+            "enum": [
+              "suspected",
+              "confirmed"
+            ]
+          }
+        },
+        "render": true
+      }
+    }
+  }
+}

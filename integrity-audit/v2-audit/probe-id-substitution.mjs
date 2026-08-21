@@ -1,14 +1,15 @@
 // Identifier-opacity probe (v2). Asserts the fixed behaviour that replaced the
-// v1 defect: derived surfaces and rendered bytes must not move when a source
-// identifier is renamed, and the only byte that may move when a mapped token
-// changes is that token.
+// v1 defect: derived surfaces and rendered bytes must not move when source
+// identifiers or source-metadata title/raw_ref fields are renamed, and the only
+// byte that may move when a mapped token changes is that token.
 //
 // The v1 defect this replaced (warnings changed on 5 scenarios under scenario-ID
 // substitution and 1 more under evidence-ID substitution) is recorded in
 // AUDIT.md and frozen in git history at commit 4b5b54c.
 //
 // Variants:
-//   A  source ids renamed, mapped tokens preserved  -> rendered bytes identical
+//   A  source ids and source-only metadata renamed, mapped tokens preserved
+//      -> rendered bytes identical
 //   B  mapped tokens changed, source ids preserved  -> only the token differs
 import fs from "node:fs";
 import path from "node:path";
@@ -74,10 +75,12 @@ const renameScenario = (json) => {
   const copy = structuredClone(json);
   copy.id = RENAME(json.id);
   const keyMap = renamedEvidenceIds.get(json.id);
-  for (const item of copy.evidence || []) {
+  for (const [index, item] of (copy.evidence || []).entries()) {
     const newKey = keyMap.get(item.legacy_id || item.id);
     item.id = newKey;
     if (item.legacy_id) item.legacy_id = newKey;
+    item.raw_ref = `neutral/reference-${index + 1}.dat`;
+    item.title = `Neutral evidence ${index + 1}`;
   }
   if (Array.isArray(copy.decision_point?.evidence_ids)) {
     copy.decision_point.evidence_ids = copy.decision_point.evidence_ids.map((e) => keyMap.get(e));
@@ -131,12 +134,15 @@ for (const json of scenarios) {
 }
 
 // No descriptive source identifier may appear anywhere in a rendered input.
+// raw_ref is tested through the origin-sensitive Variant A mutation above,
+// rather than by string matching: a selected tool payload may independently
+// contain the same decision-relevant path and must remain lossless.
 const leaked = [];
 for (const json of scenarios) {
   const input = base.get(json.id).input;
   const descriptive = [
     json.id,
-    ...(json.evidence || []).flatMap((e) => [e.legacy_id, e.id, e.raw_ref].filter(Boolean))
+    ...(json.evidence || []).flatMap((e) => [e.legacy_id, e.id].filter(Boolean))
   ];
   for (const d of descriptive) if (String(d).length > 3 && input.includes(d)) leaked.push(`${json.id}:${d}`);
 }

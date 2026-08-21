@@ -1,11 +1,25 @@
-// Shared vocabulary for the steering taxonomy: the action types that mark a
-// commit point, and the risk flags that count as materially risky. Risk
-// detection and steering policy both read from these lists so the two stay
-// in sync from a single source.
+/**
+ * Shared action-boundary and warning vocabulary.
+ *
+ * WARNING_RULES.json is the sole ordered warning registry. This module exposes
+ * its immutable names to the runtime without re-declaring the taxonomy in
+ * code.
+ */
+
+import fs from "node:fs";
+
+const REGISTRY_URL = new URL("../WARNING_RULES.json", import.meta.url);
+const registry = JSON.parse(fs.readFileSync(REGISTRY_URL, "utf8"));
+
+if (registry?.schema_version !== "steerbench.warning_rules.v1"
+  || !Array.isArray(registry.rules)
+  || !Array.isArray(registry.boundary_markers)) {
+  throw new Error(`invalid warning registry: ${REGISTRY_URL.pathname}`);
+}
 
 export const COMMIT_POINT_FLAG = "commit_point";
 
-export const COMMIT_ACTION_TYPES = [
+export const COMMIT_ACTION_TYPES = Object.freeze([
   "external_send",
   "publish",
   "durable_write",
@@ -13,33 +27,20 @@ export const COMMIT_ACTION_TYPES = [
   "cost_action",
   "privileged_tool_call",
   "final_claim"
-];
+]);
 
-export const MATERIAL_RISK_FLAGS = [
-  "conflicting_policy_versions",
-  "possible_data_leakage",
-  "protected_path_change",
-  "medium_or_low_confidence",
-  "cost_action_requires_review",
-  "sensitive_privilege",
-  "low_reversibility_external",
-  "success_criterion_change",
-  "changed_judge_without_product_fix",
-  "hidden_eval_data_access",
-  "protected_surface_change",
-  "broad_unrelated_diff",
-  "destructive_change",
-  "sensitive_surface_access",
-  "suspect_evidence_used",
-  "secret_exposure_risk"
-];
+export const WARNING_NAMES = Object.freeze(registry.rules.map((rule) => rule.name));
+
+export const MATERIAL_WARNING_NAMES = Object.freeze(
+  registry.rules.filter((rule) => rule.material === true).map((rule) => rule.name)
+);
 
 /**
- * Whether a risk flag is in the material-risk set that can trigger a human gate.
+ * Return whether a name is a registered material warning.
  *
- * @param {string} flag - Risk flag name.
- * @returns {boolean} True when the flag is materially risky.
+ * @param {string} name - Warning name.
+ * @returns {boolean} True for a registered material warning.
  */
-export function isMaterialRisk(flag) {
-  return MATERIAL_RISK_FLAGS.includes(flag);
+export function isMaterialRisk(name) {
+  return MATERIAL_WARNING_NAMES.includes(name);
 }

@@ -18,6 +18,9 @@ const copyFixtureTree = () => {
   const target = fs.mkdtempSync(path.join(os.tmpdir(), "sbw-cp2-red-mutation-"));
   for (const relative of [
     "ID_MAP.json",
+    "EVIDENCE_RENDER_SCHEMA.json",
+    "PROPOSED_ACCESS_SCHEMA.json",
+    "WARNING_RULES.json",
     "src",
     "scenario-sets/steerbench-work-2026-05",
     "integrity-audit/v2-audit"
@@ -72,6 +75,6 @@ test("CP2 gate blocks a production evidence lookup that returns its join key", (
     "src/id-map.mjs",
     "return evidenceTokenFor(load(), scenarioId, evidenceId);",
     "return evidenceId;",
-    /corrected evidence identifier leaks/
+    /corrected evidence identifier leaks|evidence_ref does not match/
   );
 });

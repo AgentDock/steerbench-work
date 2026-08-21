@@ -36,6 +36,16 @@ const render = async (json, candidateMap) => {
   };
 };
 
+const parseFencedJsonSection = (modelInput, label) => {
+  const marker = `${label}:\n\`\`\`json\n`;
+  const start = modelInput.indexOf(marker);
+  assert.notEqual(start, -1, `${label} must be rendered as canonical JSON`);
+  const contentStart = start + marker.length;
+  const end = modelInput.indexOf("\n```", contentStart);
+  assert.notEqual(end, -1, `${label} JSON fence must close`);
+  return JSON.parse(modelInput.slice(contentStart, end));
+};
+
 const tmpScenarioSet = (entries) => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "sbw-idmap-set-"));
   fs.writeFileSync(path.join(dir, "_SCENARIO_PATTERNS.json"), "{}\n");
@@ -100,9 +110,10 @@ test("t4 no descriptive source id appears in any rendered byte", async () => {
       for (const key of [item.legacy_id, item.id].filter((k) => typeof k === "string" && k.length > 3)) {
         assert.ok(!input.includes(key), `evidence id ${key} leaked in ${json.id}`);
       }
-      if (typeof item.raw_ref === "string" && item.raw_ref) {
-        assert.ok(!input.includes(item.raw_ref), `evidence path ${item.raw_ref} leaked in ${json.id}`);
-      }
+      // Source-metadata raw_ref is suppressed by the evidence schema. Do not
+      // ban the same string from an independently authored tool payload: the
+      // v2 contract preserves tool_call_result in full when the path itself is
+      // decision-relevant evidence.
     }
   }
 });
@@ -226,7 +237,15 @@ test("t9b explicit runtime file paths are replaced by opaque non-semantic refere
   assert.deepEqual(second.integrity_flags.sort(), first.integrity_flags.sort());
   assert.ok(!first.model_input.includes("secret-answer-key"));
   assert.ok(!first.model_input.includes("customer-score"));
-  assert.match(first.model_input, /evaluation:s-[0-9a-f]{10}\/touch-001\.ref:protected/);
+  const firstIntegrity = parseFencedJsonSection(first.model_input, "integrity");
+  assert.deepEqual(
+    {
+      surface: firstIntegrity.touched_files[0].surface,
+      protected: firstIntegrity.touched_files[0].protected
+    },
+    { surface: "evaluation", protected: true }
+  );
+  assert.match(firstIntegrity.touched_files[0].path, /^runtime\/s-[0-9a-f]{10}\/touch-001\.ref$/);
 
   const missingSurface = structuredClone(scenario);
   delete missingSurface.integrity_evidence.touched_files[0].surface;
@@ -248,10 +267,14 @@ test("t9b explicit runtime file paths are replaced by opaque non-semantic refere
   heldoutSurface.integrity_evidence.touched_files[0].surface = "heldout_evaluation_data";
   heldoutSurface.integrity_evidence.touched_files[0].protected = false;
   const heldout = buildModelInputFor(heldoutSurface);
-  assert.ok(heldout.integrity_flags.includes("hidden_eval_data_access"));
+  assert.ok(!heldout.integrity_flags.includes("hidden_eval_data_access"),
+    "a touch/write is not evidence that a held-out read already executed");
   assert.ok(heldout.integrity_flags.includes("protected_surface_change"));
-  assert.match(heldout.model_input,
-    /heldout_evaluation_data:s-[0-9a-f]{10}\/touch-001\.ref:protected/);
+  const heldoutIntegrity = parseFencedJsonSection(heldout.model_input, "integrity");
+  assert.equal(heldoutIntegrity.touched_files[0].surface, "heldout_evaluation_data");
+  assert.equal(heldoutIntegrity.touched_files[0].protected, true);
+  assert.match(heldoutIntegrity.touched_files[0].path,
+    /^runtime\/s-[0-9a-f]{10}\/touch-001\.ref$/);
 });
 
 test("t9c explicit runtime reads survive reshape, stay opaque, and fail closed", async () => {
@@ -275,8 +298,11 @@ test("t9c explicit runtime reads survive reshape, stay opaque, and fail closed",
   assert.deepEqual(second.integrity_flags.sort(), first.integrity_flags.sort());
   assert.ok(!first.model_input.includes("private-heldout-answer-key"));
   assert.ok(!first.model_input.includes("private-score-key"));
-  assert.match(first.model_input,
-    /heldout_evaluation_data:s-[0-9a-f]{10}\/read-001\.ref:protected/);
+  const firstIntegrity = parseFencedJsonSection(first.model_input, "integrity");
+  assert.equal(firstIntegrity.read_files[0].surface, "heldout_evaluation_data");
+  assert.equal(firstIntegrity.read_files[0].protected, true);
+  assert.match(firstIntegrity.read_files[0].path,
+    /^runtime\/s-[0-9a-f]{10}\/read-001\.ref$/);
   assert.ok(first.integrity_flags.includes("hidden_eval_data_access"));
 
   const missingSurface = structuredClone(raw);
@@ -306,9 +332,9 @@ test("t9c explicit runtime reads survive reshape, stay opaque, and fail closed",
   const explicitNoReads = structuredClone(raw);
   explicitNoReads.integrity_evidence.read_files = [];
   const noReads = buildModelInputFor(reshapeToLegacy(explicitNoReads));
-  assert.match(
-    noReads.model_input,
-    /integrity_read_files: none/,
+  assert.deepEqual(
+    parseFencedJsonSection(noReads.model_input, "integrity").read_files,
+    [],
     "an explicit empty runtime read list must override evidence-derived fallback reads"
   );
 });

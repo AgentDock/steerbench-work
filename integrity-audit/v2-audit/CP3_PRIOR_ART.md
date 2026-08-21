@@ -194,6 +194,75 @@ so their claims cannot silently drift.
     those require the source/gold recertification receipts reserved to the
     scientific owners.
 
+## Acting principal, identity minimization, and enforcement boundary
+
+The entries in this section ground the owner-approved 2026-08-21 Checkpoint-3
+amendment. They support a minimal acting-principal relation when the
+authorization construct depends on it, and they also bound that relation so
+irrelevant real-world identity does not become a model-visible cue.
+
+19. **Hu et al., NIST SP 800-162, “Guide to Attribute Based Access Control
+    (ABAC) Definition and Considerations.”** Updated 2019, DOI
+    `10.6028/NIST.SP.800-162`,
+    <https://csrc.nist.gov/pubs/sp/800/162/upd2/final>.
+    Supports: an authorization decision evaluates attributes of the subject,
+    object, requested operation, and sometimes environment against policy; a
+    subject-dependent rule is under-specified without subject context.
+    Does not establish: that a natural-person identity is required, that a
+    subject must be rendered to an LLM, or that production enforcement may be
+    delegated to a model.
+
+20. **OASIS, “eXtensible Access Control Markup Language (XACML) Version
+    3.0.”** OASIS Standard, 2013,
+    <https://docs.oasis-open.org/xacml/3.0/xacml-3.0-core-spec-os-en.html>.
+    Supports: a structured authorization request separates access-subject,
+    resource, action, and environment attributes for a policy decision point.
+    Does not establish: SteerBench's field names or wire order,
+    natural-language prompt rendering, or LLM-based enforcement.
+
+21. **Jones et al., “OAuth 2.0 Token Exchange.”** RFC 8693, 2020,
+    <https://www.rfc-editor.org/rfc/rfc8693.html>.
+    Supports: the current actor exercising delegated authority can be distinct
+    from the subject on whose behalf it acts, and that distinction can matter
+    to access-control policy.
+    Does not establish: that self-asserted prompt text proves either identity
+    or delegation; SteerBench still requires source-grounded, traceable
+    authorization evidence.
+
+22. **NIST SP 800-63C-4, “Federation and Assertions.”** 2025,
+    <https://pages.nist.gov/800-63-4/sp800-63c.html>.
+    Supports: pairwise pseudonymous identifiers, derived attributes, and
+    selective disclosure preserve decision-relevant subject relationships
+    while limiting identifying information; plaintext personal information is
+    prohibited in federated identifiers at FAL2.
+    Does not establish: SteerBench's actor token or benchmark schema. It limits
+    disclosure rather than requiring identity omission when a principal
+    relation is material.
+
+23. **Hemken et al., “Can a Large Language Model Keep My Secrets? A Study on
+    LLMs in Access Control.”** ACL-SRW 2025, ACL Anthology
+    `2025.acl-srw.49`, DOI `10.18653/v1/2025.acl-srw.49`,
+    <https://aclanthology.org/2025.acl-srw.49/>.
+    Supports: direct LLM access-control experiments make requester/role and
+    governing constraints observable to the evaluated model; omitting
+    decision-relevant constraints makes the judgment ill-defined.
+    Does not establish: a separate `actor:` field, real-name disclosure,
+    production security, or replacement of an external policy decision or
+    enforcement point.
+
+24. **Choi, Zhu, and Li, “When Identity Skews Debate: Anonymization for
+    Bias-Reduced Multi-Agent Reasoning.”** ACL 2026, ACL Anthology
+    `2026.acl-long.650`, DOI `10.18653/v1/2026.acl-long.650`,
+    <https://aclanthology.org/2026.acl-long.650/>.
+    Supports: identity markers in LLM prompts can induce identity-driven
+    sycophancy and self-bias; removing irrelevant identity markers can improve
+    content-based reasoning.
+    Consequence here: render only the opaque principal relation required by
+    the authorization construct and prohibit prestige-bearing or otherwise
+    irrelevant identity cues.
+    Does not establish: that authorization-relevant actor/principal relations
+    should be hidden, or that anonymization alone removes all proxy cues.
+
 ## Resulting claim ceiling
 
 These sources justify testing for shortcut predictors, documenting evidence
@@ -214,3 +283,10 @@ conservative local opacity decision supported by their measured separability
 in this corpus. The literature on annotation artifacts motivates checking the
 channel; it does not establish that every operational confidence value is a
 label leak.
+
+The acting-principal sources support including a minimal, structured
+acting-principal relation when the reference authorization rule depends on it,
+while minimizing or pseudonymizing identity and keeping production enforcement
+outside the model. They do not establish a universal requirement for an
+`actor:` prompt field, real-world identity disclosure, or LLM-enforced access
+control.
