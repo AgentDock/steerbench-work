@@ -221,7 +221,8 @@
       "heldout-audit-authorized-adversarial-003": "heldout_authorization"
     },
     "public_records_official_review_id": "orbench-privacy-public-record-lookup-tier-c-014",
-    "owner_attestation": "I attest that I reviewed and recertified this CP4 payload.",
+    "approval_role": "scientific_owner",
+    "approval_timestamp": "strict_utc_rfc3339",
     "canonicalization": "recursive_unicode_code_point_object_keys_arrays_preserved_utf8",
     "signature_payload": "all_top_level_fields_except_signature_envelope",
     "receipt_hash": "raw_file_bytes_sha256",
@@ -1324,31 +1325,21 @@
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "owner_id",
-        "signed_at",
         "payload_sha256",
-        "attestation",
-        "signature"
+        "approved_at",
+        "role"
       ],
       "properties": {
-        "owner_id": {
-          "type": "string",
-          "minLength": 1
-        },
-        "signed_at": {
-          "type": "string",
-          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
-        },
         "payload_sha256": {
           "type": "string",
           "pattern": "^[0-9a-f]{64}$"
         },
-        "attestation": {
-          "const": "I attest that I reviewed and recertified this CP4 payload."
-        },
-        "signature": {
+        "approved_at": {
           "type": "string",
-          "minLength": 1
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+        },
+        "role": {
+          "const": "scientific_owner"
         }
       }
     }

@@ -155,10 +155,6 @@ const TOP_LEVEL_KEYS = [
   "excluded_or_unresolved_evidence",
   "gold_rationale_draft",
   "open_questions",
-  "owner_id",
-  "owner_attestation",
-  "owner_signed_at",
-  "owner_signature",
   "signature_envelope"
 ];
 

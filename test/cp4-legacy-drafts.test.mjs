@@ -33,6 +33,7 @@ const DRAFTS_PATH = path.join(
 const GENERATOR_PATH = path.join(ROOT, "scripts", "generate-cp4-legacy-drafts.mjs");
 const EXPECTED_IDS_SHA256 = "7087c4549c409b2efa9c2231160626d5a41f5630e634bc77fe69985babc73f74";
 const EXPECTED_CP4_SCHEMA_SHA256 = "29664745db200c9311fb57f43763a4269c814944ab08b0887fd1c9668c93ee46";
+const CURRENT_CP4_SCHEMA_SHA256 = "ec8e78cc9cbfba66770f67b464b423df90533da448b7b31aa9fc3ade902650c6";
 const EXPECTED_EVIDENCE_SCHEMA_SHA256 = "3d1eeafe11be9d078d735f6f2e002b7799285256c94b8553253cde2e03d131b2";
 
 const EXPECTED_IDS = [
@@ -171,7 +172,11 @@ test("drafts bind the exact eleven IDs, 39 used entries, 22 missing entries, and
     bundle.target_evidence_render_schema_receipt.sha256,
     EXPECTED_EVIDENCE_SCHEMA_SHA256
   );
-  resolveReceipt(rule.target_contract.cp4_schema_receipt);
+  assert.equal(
+    sha256File(path.join(ROOT, "CP4_RECERTIFICATION_SCHEMA.json")),
+    CURRENT_CP4_SCHEMA_SHA256
+  );
+  assert.notEqual(CURRENT_CP4_SCHEMA_SHA256, EXPECTED_CP4_SCHEMA_SHA256);
   resolveReceipt(rule.target_contract.evidence_render_schema_receipt);
   resolveReceipt(bundle.migration_rule_receipt);
 });

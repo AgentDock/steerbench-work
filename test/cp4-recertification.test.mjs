@@ -12,10 +12,10 @@ import {
   ADAPTATION_RECORDS,
   ADAPTATION_SOURCE_RECEIPT_CONTRACT,
   AUTHORITY_RECORD_IDS,
+  CP4_APPROVAL_ROLE,
   CP4_RECERTIFICATION_SCHEMA,
   DEPENDENCY_CLAIM_KEYS,
   EXPECTED_SCENARIO_IDS,
-  OWNER_ATTESTATION,
   OWNER_RECERTIFIED,
   PROVISIONAL_RECORDS,
   REFERENCE_DECISIONS,
@@ -26,6 +26,15 @@ import {
   createPendingCp4Recertification,
   validateCp4Recertification
 } from "../src/cp4-recertification.mjs";
+import {
+  ACTIVATED_CP4_TEST_ROOT,
+  withControlledLegacyApprovalRecord
+} from "./cp4-activation-fixture.mjs";
+import {
+  LEGACY_MIGRATION_RULE_ARTIFACT,
+  LEGACY_SCENARIO_IDS,
+  loadAndValidateLegacyMigrationRule
+} from "../src/cp4-legacy-migration-rule.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SET = path.join(ROOT, "scenario-sets", "steerbench-work-2026-05");
@@ -39,21 +48,21 @@ function receiptFor(artifact, repositoryRoot = ROOT) {
   };
 }
 
-function signTestArtifact(artifact) {
+function signTestArtifact(artifact, approvedAt = "2026-08-21T12:34:56Z") {
   artifact.signature_envelope = {
-    owner_id: "synthetic-test-owner",
-    signed_at: "2026-08-21T12:34:56Z",
     payload_sha256: cp4PayloadSha256(artifact),
-    attestation: OWNER_ATTESTATION,
-    signature: "test-only-owner-supplied-opaque-attestation"
+    approved_at: approvedAt,
+    role: "scientific_owner"
   };
   return artifact;
 }
 
 function completeArtifact(
-  receipt = receiptFor("VALIDATION_PLAN.md"),
-  adaptationSources = null
+  receipt = receiptFor("VALIDATION_PLAN.md", ACTIVATED_CP4_TEST_ROOT),
+  adaptationSources = null,
+  repositoryRoot = ACTIVATED_CP4_TEST_ROOT
 ) {
+  const legacyRule = loadAndValidateLegacyMigrationRule(repositoryRoot);
   const artifact = createPendingCp4Recertification();
   artifact.status = OWNER_RECERTIFIED;
   for (const record of artifact.records) {
@@ -174,6 +183,19 @@ function completeArtifact(
       }
     }
   }
+  for (let index = 0; index < LEGACY_SCENARIO_IDS.length; index += 1) {
+    rowById(artifact, LEGACY_SCENARIO_IDS[index]).source_receipts.push(
+      structuredClone(legacyRule.rule.source_cohort.source_receipts[index]),
+      structuredClone(legacyRule.receipt)
+    );
+    rowById(artifact, LEGACY_SCENARIO_IDS[index]).source_receipts.sort(
+      (left, right) => {
+        if (left.artifact < right.artifact) return -1;
+        if (left.artifact > right.artifact) return 1;
+        return 0;
+      }
+    );
+  }
   const sources = adaptationSources || [
     frozenAdaptationWrapper("XSTest"),
     frozenAdaptationWrapper("OR-Bench")
@@ -191,6 +213,55 @@ function completeArtifact(
     }
   }
   return signTestArtifact(artifact);
+}
+
+function copyLegacyRuleInputs(destinationRoot) {
+  const artifacts = [
+    LEGACY_MIGRATION_RULE_ARTIFACT,
+    "CP4_RECERTIFICATION_SCHEMA.json",
+    "EVIDENCE_RENDER_SCHEMA.json",
+    "integrity-audit/v2-audit/LEGACY_MIGRATION_RULE_DESIGN.md",
+    "sources/cp4/xstest-adaptation-source-receipt.json",
+    "sources/cp4/or-bench-adaptation-source-receipt.json",
+    ...LEGACY_SCENARIO_IDS.map(
+      (scenarioId) => `scenario-sets/steerbench-work-2026-05/${scenarioId}.json`
+    )
+  ];
+  for (const artifact of artifacts) {
+    const destination = path.join(destinationRoot, artifact);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    fs.copyFileSync(path.join(ROOT, artifact), destination);
+  }
+  writeApprovalPlan(destinationRoot);
+}
+
+function writeApprovalPlan(repositoryRoot, approvalLine = null) {
+  const sourcePlan = fs.readFileSync(path.join(ROOT, "VALIDATION_PLAN.md"), "utf8");
+  const ruleReceipt = loadAndValidateLegacyMigrationRule(ROOT).receipt;
+  const record = approvalLine ?? (
+    "approval_record artifact=" + LEGACY_MIGRATION_RULE_ARTIFACT
+      + " sha256=" + ruleReceipt.sha256
+      + " approved_on=2026-08-21 role=scientific_owner"
+  );
+  fs.writeFileSync(
+    path.join(repositoryRoot, "VALIDATION_PLAN.md"),
+    withControlledLegacyApprovalRecord(sourcePlan, record)
+  );
+}
+
+function validateActivatedArtifact(artifact) {
+  return validateCp4Recertification(
+    artifact,
+    { repositoryRoot: ACTIVATED_CP4_TEST_ROOT }
+  );
+}
+
+function createApprovalTestRoot(t, approvalLine) {
+  const repositoryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "cp4-approval-test-"));
+  t.after(() => fs.rmSync(repositoryRoot, { recursive: true, force: true }));
+  copyLegacyRuleInputs(repositoryRoot);
+  writeApprovalPlan(repositoryRoot, approvalLine);
+  return repositoryRoot;
 }
 
 function rowById(artifact, scenarioId) {
@@ -295,6 +366,23 @@ test("schema freezes all plan fields, exact IDs, and the three exact cohorts", (
     ADAPTATION_SOURCE_RECEIPT_CONTRACT.direct_raw_artifact_hash_match,
     "forbidden"
   );
+  assert.equal(CP4_APPROVAL_ROLE, "scientific_owner");
+  assert.equal(CP4_RECERTIFICATION_SCHEMA["x-steerbench"].approval_role, CP4_APPROVAL_ROLE);
+  assert.equal(
+    CP4_RECERTIFICATION_SCHEMA["x-steerbench"].approval_timestamp,
+    "strict_utc_rfc3339"
+  );
+  assert.deepEqual(CP4_RECERTIFICATION_SCHEMA.$defs.signature_envelope.required, [
+    "payload_sha256",
+    "approved_at",
+    "role"
+  ]);
+  assert.deepEqual(
+    Object.keys(CP4_RECERTIFICATION_SCHEMA.$defs.signature_envelope.properties).sort(),
+    ["approved_at", "payload_sha256", "role"]
+  );
+  const schemaBytes = JSON.stringify(CP4_RECERTIFICATION_SCHEMA);
+  assert.doesNotMatch(schemaBytes, /owner_id|owner_attestation|attestation|"signature"/u);
 });
 
 test("reference decisions preserve all six canonical actions and the current corpus distribution", () => {
@@ -445,11 +533,9 @@ test("populated pending fields are checked, but null review content remains unsi
   assert.doesNotThrow(() => validateCp4Recertification(artifact));
 
   artifact.signature_envelope = {
-    owner_id: "not-allowed-while-pending",
-    signed_at: "2026-08-21T12:34:56Z",
     payload_sha256: cp4PayloadSha256(artifact),
-    attestation: OWNER_ATTESTATION,
-    signature: "test-only"
+    approved_at: "2026-08-21T12:34:56Z",
+    role: "scientific_owner"
   };
   assert.throws(
     () => validateCp4Recertification(artifact),
@@ -459,8 +545,14 @@ test("populated pending fields are checked, but null review content remains unsi
 
 test("owner-recertified artifact requires every completed field and validates cleanly", () => {
   const artifact = completeArtifact();
-  const validated = validateCp4Recertification(artifact);
-  assert.deepEqual(validated, JSON.parse(canonicalizeCp4Recertification(artifact)));
+  const validated = validateActivatedArtifact(artifact);
+  assert.deepEqual(
+    validated,
+    JSON.parse(canonicalizeCp4Recertification(
+      artifact,
+      { repositoryRoot: ACTIVATED_CP4_TEST_ROOT }
+    ))
+  );
   assert.deepEqual(validated.records.map((record) => record.scenario_id), EXPECTED_SCENARIO_IDS);
   assert.equal(
     artifact.signature_envelope.payload_sha256,
@@ -471,7 +563,7 @@ test("owner-recertified artifact requires every completed field and validates cl
   incomplete.status = OWNER_RECERTIFIED;
   signTestArtifact(incomplete);
   assert.throws(
-    () => validateCp4Recertification(incomplete),
+    () => validateActivatedArtifact(incomplete),
     /must contain primary source receipts/
   );
 
@@ -482,7 +574,7 @@ test("owner-recertified artifact requires every completed field and validates cl
   ).adaptation_license.license = null;
   signTestArtifact(incompleteAdaptation);
   assert.throws(
-    () => validateCp4Recertification(incompleteAdaptation),
+    () => validateActivatedArtifact(incompleteAdaptation),
     /transformation and license reviews are required/
   );
 
@@ -496,20 +588,20 @@ test("owner-recertified artifact requires every completed field and validates cl
     promptReview.source_receipts[0].sha256
   );
   signTestArtifact(distinctPromptHash);
-  assert.doesNotThrow(() => validateCp4Recertification(distinctPromptHash));
+  assert.doesNotThrow(() => validateActivatedArtifact(distinctPromptHash));
 
   promptReview.reviewed_prompt_sha256 = crypto.createHash("sha256")
-    .update("different prompt bytes after owner binding", "utf8")
+    .update("different prompt bytes after approval binding", "utf8")
     .digest("hex");
   assert.throws(
-    () => validateCp4Recertification(distinctPromptHash),
+    () => validateActivatedArtifact(distinctPromptHash),
     /payload_sha256 does not bind the canonical payload/
   );
 });
 
 test("the two frozen adaptation wrappers cross-bind all five adaptation records", () => {
   const artifact = completeArtifactWithFrozenAdaptationWrappers();
-  assert.doesNotThrow(() => validateCp4Recertification(artifact));
+  assert.doesNotThrow(() => validateActivatedArtifact(artifact));
   for (const record of artifact.records.filter(
     (candidate) => candidate.adaptation_license !== null
   )) {
@@ -530,6 +622,7 @@ test("adaptation wrappers reject every cross-bound mismatch and malformed conten
     await t.test(name, () => {
       const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "cp4-wrapper-test-"));
       try {
+        copyLegacyRuleInputs(temporaryRoot);
         fs.writeFileSync(path.join(temporaryRoot, "base.txt"), "synthetic base receipt\n");
         const wrapper = structuredClone(frozen.wrapper);
         if (mutateWrapper) mutateWrapper(wrapper);
@@ -547,7 +640,7 @@ test("adaptation wrappers reject every cross-bound mismatch and malformed conten
         const artifact = completeArtifact(baseReceipt, [
           { wrapper: frozen.wrapper, receipt: wrapperReceipt },
           { wrapper: frozenOrBench.wrapper, receipt: orWrapperReceipt }
-        ]);
+        ], temporaryRoot);
         assert.throws(
           () => validateCp4Recertification(
             artifact,
@@ -627,6 +720,7 @@ test("adaptation wrappers reject every cross-bound mismatch and malformed conten
 test("a matching bare artifact hash cannot bypass revision, mapping, or license provenance", (t) => {
   const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "cp4-raw-hash-test-"));
   t.after(() => fs.rmSync(temporaryRoot, { recursive: true, force: true }));
+  copyLegacyRuleInputs(temporaryRoot);
   fs.writeFileSync(path.join(temporaryRoot, "base.txt"), "synthetic base receipt\n");
   fs.writeFileSync(
     path.join(temporaryRoot, "bare-upstream.csv"),
@@ -653,7 +747,8 @@ test("a matching bare artifact hash cannot bypass revision, mapping, or license 
         wrapper: orBench.wrapper,
         receipt: receiptFor("or-wrapper.json", temporaryRoot)
       }
-    ]
+    ],
+    temporaryRoot
   );
   const adaptation = rowById(
     artifact,
@@ -776,27 +871,131 @@ test("receipt paths and raw SHA-256 bytes fail closed on every unsafe case", (t)
   }
 });
 
-test("signature envelope binds the canonical payload but does not pretend to verify crypto", () => {
+test("neutral approval envelope binds the canonical payload, timestamp, and role", () => {
   const artifact = completeArtifact();
   const boundDigest = artifact.signature_envelope.payload_sha256;
-  artifact.records[0].reference_rationale += " Mutated after owner binding.";
+  artifact.records[0].reference_rationale += " Mutated after approval binding.";
   assert.throws(
-    () => validateCp4Recertification(artifact),
+    () => validateActivatedArtifact(artifact),
     /does not bind the canonical payload/
   );
 
   const badDate = completeArtifact();
-  badDate.signature_envelope.signed_at = "2026-02-30T12:34:56Z";
+  badDate.signature_envelope.approved_at = "2026-02-30T12:34:56Z";
   assert.throws(
-    () => validateCp4Recertification(badDate),
+    () => validateActivatedArtifact(badDate),
     /not a real UTC timestamp/
   );
 
-  const opaqueSignature = completeArtifact();
-  assert.equal(cp4PayloadSha256(opaqueSignature), boundDigest);
-  opaqueSignature.signature_envelope.signature = "different-owner-supplied-opaque-value";
-  assert.equal(cp4PayloadSha256(opaqueSignature), boundDigest);
-  assert.doesNotThrow(() => validateCp4Recertification(opaqueSignature));
+  const nonUtc = completeArtifact();
+  nonUtc.signature_envelope.approved_at = "2026-08-21T12:34:56+00:00";
+  assert.throws(
+    () => validateActivatedArtifact(nonUtc),
+    /approved_at must be strict UTC RFC3339/
+  );
+
+  const wrongRole = completeArtifact();
+  assert.equal(cp4PayloadSha256(wrongRole), boundDigest);
+  wrongRole.signature_envelope.role = "reviewer";
+  assert.throws(
+    () => validateActivatedArtifact(wrongRole),
+    /role must equal scientific_owner/
+  );
+
+  const legacyCeremony = completeArtifact();
+  legacyCeremony.signature_envelope.owner_id = "forbidden-identity";
+  assert.throws(
+    () => validateActivatedArtifact(legacyCeremony),
+    /artifact\.signature_envelope\.owner_id is not allowed/
+  );
+});
+
+test("legacy-rule activation requires one exact neutral plan approval record", async (t) => {
+  const ruleReceipt = loadAndValidateLegacyMigrationRule(ROOT).receipt;
+  const exactRecord = "approval_record artifact=" + LEGACY_MIGRATION_RULE_ARTIFACT
+    + " sha256=" + ruleReceipt.sha256
+    + " approved_on=2026-08-21 role=scientific_owner";
+  const cases = [
+    {
+      name: "exact record",
+      line: exactRecord,
+      expectedError: null
+    },
+    {
+      name: "absent record",
+      line: "",
+      expectedError: /must contain exactly one neutral approval_record/
+    },
+    {
+      name: "wrong artifact",
+      line: exactRecord.replace(LEGACY_MIGRATION_RULE_ARTIFACT, "OTHER_RULE.json"),
+      expectedError: /must contain exactly one neutral approval_record/
+    },
+    {
+      name: "wrong hash",
+      line: exactRecord.replace(ruleReceipt.sha256, "0".repeat(64)),
+      expectedError: /must bind the exact LEGACY_MIGRATION_RULE\.json raw SHA-256/
+    },
+    {
+      name: "wrong role",
+      line: exactRecord.replace("role=scientific_owner", "role=reviewer"),
+      expectedError: /role must equal scientific_owner/
+    },
+    {
+      name: "invalid date",
+      line: exactRecord.replace("approved_on=2026-08-21", "approved_on=2026-02-30"),
+      expectedError: /must be a real Gregorian YYYY-MM-DD date/
+    },
+    {
+      name: "duplicate record",
+      line: exactRecord + "\n" + exactRecord,
+      expectedError: /contains duplicate approval_record lines/
+    }
+  ];
+
+  for (const candidate of cases) {
+    await t.test(candidate.name, (subtest) => {
+      const repositoryRoot = createApprovalTestRoot(subtest, candidate.line);
+      const artifact = completeArtifact(
+        receiptFor("VALIDATION_PLAN.md", repositoryRoot),
+        null,
+        repositoryRoot
+      );
+      const validate = () => validateCp4Recertification(artifact, { repositoryRoot });
+      if (candidate.expectedError === null) {
+        assert.doesNotThrow(validate);
+      } else {
+        assert.throws(validate, candidate.expectedError);
+      }
+    });
+  }
+});
+
+test("approval-plan fixtures replace an already-activated source record", () => {
+  const ruleReceipt = loadAndValidateLegacyMigrationRule(ROOT).receipt;
+  const existingRecord = "approval_record artifact=" + LEGACY_MIGRATION_RULE_ARTIFACT
+    + " sha256=" + ruleReceipt.sha256
+    + " approved_on=2026-08-21 role=scientific_owner";
+  const replacementRecord = existingRecord.replace(
+    "approved_on=2026-08-21",
+    "approved_on=2026-08-22"
+  );
+  const activatedSourcePlan = "before\n" + existingRecord + "\nafter\n";
+  const rewritten = withControlledLegacyApprovalRecord(
+    activatedSourcePlan,
+    replacementRecord
+  );
+  const approvalRecords = rewritten.split("\n").filter(
+    (line) => line.startsWith(
+      "approval_record artifact=" + LEGACY_MIGRATION_RULE_ARTIFACT + " "
+    )
+  );
+  assert.deepEqual(approvalRecords, [replacementRecord]);
+  assert.equal(
+    withControlledLegacyApprovalRecord(activatedSourcePlan, "")
+      .includes(existingRecord),
+    false
+  );
 });
 
 test("dependency claims stay explicit, sorted, and share one receipted meaning", () => {

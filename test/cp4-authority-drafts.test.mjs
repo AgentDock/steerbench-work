@@ -21,13 +21,13 @@ const AUTHORITY_IDS = [
 ];
 
 const DRAFT_SHA256 = {
-  "amazon-hiring-mirror-advance-candidate-tier-b-005": "8b8547fec948b729109dfbf905da15377f35077cf2477d22f286caf22d424533",
-  "apple-card-mirror-credit-extension-tier-b-004": "3b92f34fb4920029feff9ec7b3a16a58b781fe7d42623dcff46142ae7dbf0c81",
-  "cloudflare-regex-mirror-dry-run-deploy-tier-b-016": "106f16c8eefb446c403568ae3f57404f976c051230bd04c41b59ac6c461a08cf",
-  "crowdstrike-mirror-staged-sensor-update-tier-b-015": "c266f95761ea931875e3835ce78120359149f692abf978d4d451d0fadd75e2fa",
-  "facebook-bgp-mirror-canaried-config-tier-b-014": "00845f51f1fd2a07074acc662fbeca394594c921da63e69108d64dc018caa3e1",
-  "robodebt-mirror-eligible-notice-tier-b-010": "c3f9c69de824efad9bdda75e611d5766b84ddc2b86908f812ab46e89d5289f6b",
-  "tesla-autopilot-mirror-lane-change-tier-b-008": "349d805e7b648043ae9c604622e3a0149eefe8a0df3604a013bc0d82ec3a8abc"
+  "amazon-hiring-mirror-advance-candidate-tier-b-005": "0601b81e81731a7ed7e1d83adc851cadf820321b054c4332af849453623c25b1",
+  "apple-card-mirror-credit-extension-tier-b-004": "ac148d114dd2625300af420b7f5ac4d42dd4c227f2bd6882ae4e34b1fd4c8bfe",
+  "cloudflare-regex-mirror-dry-run-deploy-tier-b-016": "db775a5bf4edfd3e2a3f823834f3e531d463702ff77a07f781a0fd74c9a92361",
+  "crowdstrike-mirror-staged-sensor-update-tier-b-015": "f9e2a59c8f98e2866ea41f9eceaadbf3d42625d1546b6d3a67323a132a5402d2",
+  "facebook-bgp-mirror-canaried-config-tier-b-014": "5a8941252fd5558c590a77e3194e2c62dc1fa12a58e9f3c08df416a06c1a5b0d",
+  "robodebt-mirror-eligible-notice-tier-b-010": "29b795ae89583ad8f8c3db2d08f59a0c6ab7ffdcb14f07e9ad1777b80437c4c2",
+  "tesla-autopilot-mirror-lane-change-tier-b-008": "e11f46f982478ac1850ac6b0af47a397de24af33f076f4cf8a298252ff4c607b"
 };
 
 const CORRECTED_GROUNDING = {
@@ -149,14 +149,12 @@ test("CP4 authority drafts are canonical, unsigned, and byte-frozen", () => {
       "field_grounding",
       "unresolved_owner_decisions",
       "reference_label_change",
-      "owner_id",
       "signature_envelope"
     ]);
     assert.equal(value.schema_version, "steerbench.cp4_authority_review_draft.v1");
     assert.equal(value.status, "draft/pending");
     assert.equal(value.scenario_id, id);
     assert.equal(value.reference_label_change, null);
-    assert.equal(value.owner_id, null);
     assert.equal(value.signature_envelope, null);
     assert.equal(bytes.toString("utf8"), `${JSON.stringify(value, null, 2)}\n`);
     assert.equal(sha256(bytes), DRAFT_SHA256[id]);

@@ -105,9 +105,5 @@
     "Will the unsupported shielding and fetal-dose numbers be removed, narrowed, or supported by an additional frozen primary receipt?",
     "Does the age-conditional response preserve the row's construct and frozen continue action, or does it require an owner-approved plan amendment?"
   ],
-  "owner_id": null,
-  "owner_attestation": null,
-  "owner_signed_at": null,
-  "owner_signature": null,
   "signature_envelope": null
 }

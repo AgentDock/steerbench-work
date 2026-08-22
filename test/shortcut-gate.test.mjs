@@ -23,8 +23,7 @@ import {
   serializeHistoricalV1ShortcutRows
 } from "../scripts/generate-historical-v1-shortcut-rows.mjs";
 import {
-  DEPENDENCY_OWNER_ATTESTATION,
-  DEPENDENCY_SIGNATURE_TRUST_BOUNDARY,
+  DEPENDENCY_APPROVAL_ROLE,
   dependencyLedgerPayloadSha256
 } from "../src/cp4-dependency-ledger.mjs";
 import {
@@ -48,7 +47,8 @@ import {
   unicodeWhitespaceTokenLength
 } from "../src/shortcut-gate.mjs";
 import {
-  ACTIVATION_TEST_SIGNED_AT,
+  ACTIVATED_CP4_TEST_ROOT,
+  ACTIVATION_TEST_APPROVED_AT,
   createCompleteActivationTestCp4
 } from "./cp4-activation-fixture.mjs";
 
@@ -188,7 +188,7 @@ function ownerRecertifiedDependency(rows) {
     corpus_id_set_sha256: crypto.createHash("sha256").update(JSON.stringify(scenarioIds)).digest("hex"),
     ledger: {
       status: "owner_recertified",
-      recertified_at: ACTIVATION_TEST_SIGNED_AT,
+      recertified_at: ACTIVATION_TEST_APPROVED_AT,
       scenario_ids: scenarioIds,
       edges: [],
       components: scenarioIds.map((id) => [id]),
@@ -196,12 +196,10 @@ function ownerRecertifiedDependency(rows) {
     }
   };
   spec.ledger.signature_envelope = {
-    owner_id: "fixture-owner",
-    signed_at: ACTIVATION_TEST_SIGNED_AT,
     cp4_payload_sha256: cp4PayloadSha256(COMPLETE_CP4),
     ledger_payload_sha256: dependencyLedgerPayloadSha256(spec.ledger),
-    attestation: DEPENDENCY_OWNER_ATTESTATION,
-    signature: "test-only-owner-supplied-opaque-attestation"
+    approved_at: ACTIVATION_TEST_APPROVED_AT,
+    role: DEPENDENCY_APPROVAL_ROLE
   };
   return spec;
 }
@@ -309,7 +307,7 @@ test("service_signature detection is exact, recursive, and payload-scoped", () =
       cp4Recertification: COMPLETE_CP4,
       rowArtifact: artifactFor([row, ...syntheticRows().slice(1)]),
       actualSourceHashes: sourceHashes(),
-      repositoryRoot: ROOT
+      repositoryRoot: ACTIVATED_CP4_TEST_ROOT
     }),
     /not registered/
   );
@@ -356,7 +354,7 @@ test("unknown expected actions and scoring-map drift fail closed", () => {
     cp4Recertification: COMPLETE_CP4,
     rowArtifact: artifactFor(rows),
     actualSourceHashes: sourceHashes(),
-    repositoryRoot: ROOT
+    repositoryRoot: ACTIVATED_CP4_TEST_ROOT
   }), /CANONICAL_SCORING_MAPPING/);
 
   const drifted = structuredClone(FEATURE_SPEC);
@@ -374,7 +372,7 @@ test("missing CP4 ledger blocks without emitting a production number", () => {
   assert.doesNotMatch(JSON.stringify(report), /denominator|accuracy|correct|candidate_count/u);
 });
 
-test("pending status cannot mask a malformed dependency signing contract", async (t) => {
+test("pending status cannot mask a malformed dependency approval contract", async (t) => {
   for (const [name, mutate, expectedError] of [
     [
       "unknown top-level policy field",
@@ -407,7 +405,7 @@ test("pending status cannot mask a malformed dependency signing contract", async
     dependencySpec.ledger_contract.canonicalization = "plain_JSON_stringify";
     assert.throws(
       () => evaluateShortcutGate({ featureSpec: FEATURE_SPEC, dependencySpec }),
-      /ledger_contract signature metadata differ from the frozen CP4 contract/u
+      /ledger_contract metadata differ from the frozen CP4 contract/u
     );
   });
 
@@ -440,9 +438,9 @@ test("neither accepted row purpose can bypass owner-recertified activation", asy
       dependencySpec,
       rowArtifact: artifactFor(rows),
       actualSourceHashes: sourceHashes(),
-      repositoryRoot: ROOT
+      repositoryRoot: ACTIVATED_CP4_TEST_ROOT
     }),
-    /requires the signed CP4 artifact/u
+    /requires the approved CP4 artifact/u
   );
 
   for (const purpose of ["synthetic_red_fixture", "production_v2"]) {
@@ -459,7 +457,7 @@ test("neither accepted row purpose can bypass owner-recertified activation", asy
           cp4Recertification,
           rowArtifact,
           actualSourceHashes: sourceHashes(),
-          repositoryRoot: ROOT
+          repositoryRoot: ACTIVATED_CP4_TEST_ROOT
         }),
         /payload_sha256 does not bind the canonical payload/u
       );
@@ -653,7 +651,7 @@ test("row artifacts require exact independently supplied source hashes and bound
     cp4Recertification: COMPLETE_CP4,
     rowArtifact: artifactFor(rows),
     actualSourceHashes: mismatchedHashes,
-    repositoryRoot: ROOT
+    repositoryRoot: ACTIVATED_CP4_TEST_ROOT
   }), /source hash mismatch/);
 
   const badSpanRows = syntheticRows();
@@ -664,7 +662,7 @@ test("row artifacts require exact independently supplied source hashes and bound
     cp4Recertification: COMPLETE_CP4,
     rowArtifact: artifactFor(badSpanRows),
     actualSourceHashes: sourceHashes(),
-    repositoryRoot: ROOT
+    repositoryRoot: ACTIVATED_CP4_TEST_ROOT
   }), /sections do not equal spans independently parsed/);
 });
 
@@ -682,7 +680,7 @@ test("the exact wire is the sole visible truth and caller projections cannot fab
     cp4Recertification: COMPLETE_CP4,
     rowArtifact: artifactFor(rows),
     actualSourceHashes: sourceHashes(),
-    repositoryRoot: ROOT
+    repositoryRoot: ACTIVATED_CP4_TEST_ROOT
   }), /visible is not registered/);
 });
 
@@ -824,7 +822,7 @@ test("dependency components are exact undirected components with singletons", ()
     cp4Recertification: COMPLETE_CP4,
     rowArtifact: artifactFor(rows),
     actualSourceHashes: sourceHashes(),
-    repositoryRoot: ROOT
+    repositoryRoot: ACTIVATED_CP4_TEST_ROOT
   }), /dependency\.edges\[0\]\.kind is unsupported/u);
 });
 
@@ -837,7 +835,7 @@ test("inclusive 90 percent threshold blocks a synthetic label shortcut", () => {
     rowArtifact: artifactFor(rows),
     actualSourceHashes: sourceHashes(),
     scenarioPatterns: { scenarios: {} },
-    repositoryRoot: ROOT
+    repositoryRoot: ACTIVATED_CP4_TEST_ROOT
   });
   assert.equal(report.status, SHORTCUT_BLOCKED_STATUS);
   const mode = report.production_v2.results.find((result) => result.features.length === 1 && result.features[0] === "mode");
@@ -855,7 +853,7 @@ test("balanced constant synthetic rows pass the prespecified views", () => {
     rowArtifact: artifactFor(rows),
     actualSourceHashes: sourceHashes(),
     scenarioPatterns: { scenarios: {} },
-    repositoryRoot: ROOT
+    repositoryRoot: ACTIVATED_CP4_TEST_ROOT
   });
   assert.equal(report.status, SHORTCUT_PASS_STATUS);
   assert.equal(report.production_v2.denominator, 106);
@@ -868,8 +866,8 @@ test("balanced constant synthetic rows pass the prespecified views", () => {
     ledger_payload_sha256: dependencyLedgerPayloadSha256(
       ownerRecertifiedDependency(rows).ledger
     ),
-    dependency_signed_at: ACTIVATION_TEST_SIGNED_AT,
-    signature_trust_boundary: DEPENDENCY_SIGNATURE_TRUST_BOUNDARY
+    dependency_approved_at: ACTIVATION_TEST_APPROVED_AT,
+    approval_role: DEPENDENCY_APPROVAL_ROLE
   });
 });
 

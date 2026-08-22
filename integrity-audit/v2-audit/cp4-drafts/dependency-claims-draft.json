@@ -5,7 +5,7 @@
   "corpus_id_set_sha256": "549af6d6d7b63e18720d90e7446fde0d4399b7d3766e34e1212017ee667c62fc",
   "dependency_spec": {
     "artifact": "SHORTCUT_DEPENDENCY_SPEC.json",
-    "sha256": "501de47629f700d6a937a60be0f2242a3acbd8af1d8df00b8b572498cfaf2654"
+    "sha256": "ca6c05a112f586d403ae263d40f64c75b4327123de98a4b04e3fc3d03be20e53"
   },
   "pair_source_receipt": {
     "artifact": "integrity-audit/v2-audit/cp4-drafts/dependency-pair-source-receipt-draft.json",

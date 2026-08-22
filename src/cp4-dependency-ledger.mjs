@@ -4,7 +4,7 @@
  *
  * Expands exact recertified dependency claims into receipt-bearing clique
  * edges, derives every connected component, and compares the result with the
- * owner-recertified ledger committed in SHORTCUT_DEPENDENCY_SPEC.json.
+ * approved ledger committed in SHORTCUT_DEPENDENCY_SPEC.json.
  */
 
 import crypto from "node:crypto";
@@ -36,19 +36,13 @@ const DEPENDENCY_LEDGER_PAYLOAD_KEYS = [
   "components"
 ];
 const DEPENDENCY_SIGNATURE_ENVELOPE_KEYS = [
-  "owner_id",
-  "signed_at",
   "cp4_payload_sha256",
   "ledger_payload_sha256",
-  "attestation",
-  "signature"
+  "approved_at",
+  "role"
 ];
-/** Exact owner statement bound by every completed dependency envelope. */
-export const DEPENDENCY_OWNER_ATTESTATION =
-  "I attest that I reviewed and recertified this CP4 dependency ledger.";
-/** Trust limit disclosed beside every dependency-envelope payload binding. */
-export const DEPENDENCY_SIGNATURE_TRUST_BOUNDARY =
-  "First-hand owner approval recorded in chat and bound in Git is the trust boundary; the signature envelope is a tamper-evident payload-hash binding, not cryptographic authentication.";
+/** Anonymous scientific role required by every completed dependency envelope. */
+export const DEPENDENCY_APPROVAL_ROLE = "scientific_owner";
 const ALLOWED_KINDS = [
   "recertified_pair_or_mirror_id",
   "immutable_upstream_source_example_id",
@@ -202,8 +196,8 @@ export function validateCp4DependencySpec(spec) {
     "signature_envelope_keys",
     "canonicalization",
     "signature_payload",
-    "owner_attestation",
-    "signature_trust_boundary",
+    "approval_role",
+    "approval_timestamp",
     "edge_keys",
     "source_receipt_keys"
   ], "ledger_contract");
@@ -222,10 +216,9 @@ export function validateCp4DependencySpec(spec) {
       !== "recursive_unicode_code_point_object_keys_arrays_preserved_utf8"
     || spec.ledger_contract.signature_payload
       !== "all_ledger_fields_except_signature_envelope"
-    || spec.ledger_contract.owner_attestation !== DEPENDENCY_OWNER_ATTESTATION
-    || spec.ledger_contract.signature_trust_boundary
-      !== DEPENDENCY_SIGNATURE_TRUST_BOUNDARY) {
-    throw new Error("ledger_contract signature metadata differ from the frozen CP4 contract");
+    || spec.ledger_contract.approval_role !== DEPENDENCY_APPROVAL_ROLE
+    || spec.ledger_contract.approval_timestamp !== "strict_utc_rfc3339") {
+    throw new Error("ledger_contract metadata differ from the frozen CP4 contract");
   }
   assertSameStringSet(
     spec.ledger_contract.edge_keys,
@@ -279,7 +272,7 @@ export function dependencyLedgerPayloadSha256(ledger) {
     .digest("hex");
 }
 
-function validateDependencySignatureEnvelope(ledger, cp4Artifact) {
+function validateDependencyApprovalEnvelope(ledger, cp4Artifact) {
   if (ledger.status !== "owner_recertified") {
     throw new Error("committed dependency ledger is not owner-recertified");
   }
@@ -289,41 +282,37 @@ function validateDependencySignatureEnvelope(ledger, cp4Artifact) {
     "committed dependency ledger.signature_envelope"
   );
   const envelope = ledger.signature_envelope;
-  assertNonemptyString(envelope.owner_id, "committed dependency ledger.signature_envelope.owner_id");
   if (!SHA256_RE.test(envelope.cp4_payload_sha256)) {
     throw new Error("committed dependency ledger.signature_envelope.cp4_payload_sha256 must be a lowercase SHA-256 digest");
   }
   if (!SHA256_RE.test(envelope.ledger_payload_sha256)) {
     throw new Error("committed dependency ledger.signature_envelope.ledger_payload_sha256 must be a lowercase SHA-256 digest");
   }
-  if (envelope.attestation !== DEPENDENCY_OWNER_ATTESTATION) {
-    throw new Error("committed dependency ledger.signature_envelope.attestation differs from the frozen statement");
+  if (envelope.role !== DEPENDENCY_APPROVAL_ROLE) {
+    throw new Error("committed dependency ledger.signature_envelope.role must equal scientific_owner");
   }
-  assertNonemptyString(
-    envelope.signature,
-    "committed dependency ledger.signature_envelope.signature"
-  );
   const actualCp4Digest = cp4PayloadSha256(cp4Artifact);
   if (envelope.cp4_payload_sha256 !== actualCp4Digest
     || envelope.cp4_payload_sha256 !== cp4Artifact.signature_envelope.payload_sha256) {
-    throw new Error("committed dependency ledger does not bind the signed canonical CP4 payload");
+    throw new Error("committed dependency ledger does not bind the approved canonical CP4 payload");
   }
   const actualLedgerDigest = dependencyLedgerPayloadSha256(ledger);
   if (envelope.ledger_payload_sha256 !== actualLedgerDigest) {
-    throw new Error("committed dependency ledger signature envelope does not bind its canonical payload");
+    throw new Error("committed dependency ledger envelope does not bind its canonical payload");
   }
   assertStrictUtcTimestamp(ledger.recertified_at, "committed dependency ledger.recertified_at");
   assertStrictUtcTimestamp(
-    envelope.signed_at,
-    "committed dependency ledger.signature_envelope.signed_at"
+    envelope.approved_at,
+    "committed dependency ledger.signature_envelope.approved_at"
   );
-  if (ledger.recertified_at !== envelope.signed_at) {
-    throw new Error("committed dependency ledger.recertified_at must equal its envelope signed_at");
+  if (ledger.recertified_at !== envelope.approved_at) {
+    throw new Error("committed dependency ledger.recertified_at must equal its envelope approved_at");
   }
   return {
     cp4_payload_sha256: actualCp4Digest,
     ledger_payload_sha256: actualLedgerDigest,
-    signed_at: envelope.signed_at
+    approved_at: envelope.approved_at,
+    role: envelope.role
   };
 }
 
@@ -515,7 +504,7 @@ export function generateCp4DependencyLedger(recertificationLedger, { dependencyS
 }
 
 /**
- * Assert that generated dependency bytes equal the owner-recertified ledger.
+ * Assert that generated dependency bytes equal the approved ledger.
  *
  * @param {object} generatedLedger Candidate returned by {@link generateCp4DependencyLedger}.
  * @param {object} committedSpec Parsed committed SHORTCUT_DEPENDENCY_SPEC.json.
@@ -548,17 +537,17 @@ export function assertDependencyLedgerMatches(generatedLedger, committedSpec) {
 /**
  * Validate the complete CP4-to-dependency-ledger activation boundary.
  *
- * The CP4 artifact supplies the signed dependency claims. This validator
+ * The CP4 artifact supplies the approved dependency claims. This validator
  * verifies that artifact, regenerates the dependency graph, compares every
  * generated ledger byte with the committed ledger, and checks both declared
- * payload digests and the dependency ledger's signing timestamp. Signature
- * authenticity remains outside this deterministic validator.
+ * payload digests, the dependency ledger's approval timestamp, and its
+ * anonymous scientific role.
  *
- * @param {object} recertificationLedger Complete signed CP4 recertification artifact.
+ * @param {object} recertificationLedger Complete approved CP4 recertification artifact.
  * @param {object} committedSpec Parsed committed SHORTCUT_DEPENDENCY_SPEC.json.
  * @param {object} [options] CP4 validation options.
  * @param {string} [options.repositoryRoot] Absolute root used to resolve CP4 receipts.
- * @returns {{cp4_payload_sha256:string,ledger_payload_sha256:string,signed_at:string}} Verified activation receipt.
+ * @returns {{cp4_payload_sha256:string,ledger_payload_sha256:string,approved_at:string,role:string}} Verified activation receipt.
  * @throws {Error} If CP4, regenerated ledger, hashes, timestamps, or envelopes differ.
  */
 export function validateDependencyActivation(
@@ -574,5 +563,5 @@ export function validateDependencyActivation(
     dependencySpec: committedSpec
   });
   assertDependencyLedgerMatches(generated, committedSpec);
-  return validateDependencySignatureEnvelope(committedSpec.ledger, validatedCp4);
+  return validateDependencyApprovalEnvelope(committedSpec.ledger, validatedCp4);
 }

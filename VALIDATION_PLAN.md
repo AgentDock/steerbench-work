@@ -9,22 +9,25 @@ validation plan, not a preregistration in the registry sense. Changes
 require scientific-owner approval and are visible in git history.
 `AUDIT.md` is the v1 evidence record, not a second plan.
 
-**Owner amendment record (2026-08-18):** The scientific owner conditionally approved the Checkpoint-2
-clarification that task-essential paths authored in operational prose may
-remain visible while renderer-created metadata paths must remain opaque. The scientific owner
-also conditionally approved the Checkpoint-3 design boundary below after the
+**Scientific-owner amendment record (2026-08-18):** The scientific owner
+conditionally approved the Checkpoint-2 clarification that task-essential paths
+authored in operational prose may remain visible while renderer-created metadata
+paths must remain opaque. The scientific owner also conditionally approved the
+Checkpoint-3 design boundary below after the
 plan editor and independent reviewer agreed. The approval applies only if the
 implementation keeps separate prospective-access and evidence-provenance
 signals, passes the three-row offline regression set, completes source and gold
 recertification, and uses no keyword inference or fabricated state. This
 approval changes no scenario prose, reference label, human vote, v1 artifact,
-model-call authority, spend authority, or publication authority.
+model-call authority, spend authority, or publication authority. The approval
+statement is retained in the private session record, not in this repository.
 
-**Owner amendment record (2026-08-19; Checkpoint 3):** The scientific owner approved first-hand in the operator channel.
-
-This is
-recorded as approval of the executable Checkpoint-3 contract below,
-authorization to add `proposed_accesses[]` and/or
+**Scientific-owner amendment record (2026-08-19; Checkpoint 3):** The
+scientific owner approved the Checkpoint-3 contract direction on 2026-08-19,
+first-hand in the operator channel; no artifact hash was bound at that time.
+The statement is retained in the private session record. The approval is
+recorded as authorization to add
+`proposed_accesses[]` and/or
 `evidence[].evaluation_provenance` only to the three named regression rows,
 and retention by the scientific owners of final source/gold approval for those
 three recertification receipts. The approval is conditional on grounding the
@@ -36,23 +39,26 @@ industry standard. This approval does not authorize any reference-label change,
 other corpus edit, model or API call, smoke run, spend, paper/site/publication
 change, or scientific claim beyond the existing ceiling.
 
-**Owner amendment record (2026-08-21; Checkpoint 3):** The scientific owner approved first-hand in the operator channel.
-This approval
-is bound to the exact pre-activation amendment bytes: `VALIDATION_PLAN.md`
-SHA-256 `5dc98d36fc0511ea872eed23dea1eba9accb20cafa4d4fec82a0f752aa329c95`
-and `integrity-audit/v2-audit/CP3_PRIOR_ART.md` SHA-256
-`a2a7fe993e6cddc434df123ff532bbec590493a8c5ca31e8b4d4780bc53cce79`. It
-activates the actor-visibility and identity-minimization rule, the exhaustive
+**Scientific-owner amendment record (2026-08-21; Checkpoint 3):** The
+scientific owner approved the Checkpoint-3 amendment on 2026-08-21, first-hand
+in the operator channel:
+
+approval_record artifact=VALIDATION_PLAN.md sha256=5dc98d36fc0511ea872eed23dea1eba9accb20cafa4d4fec82a0f752aa329c95 approved_on=2026-08-21 role=scientific_owner
+approval_record artifact=integrity-audit/v2-audit/CP3_PRIOR_ART.md sha256=a2a7fe993e6cddc434df123ff532bbec590493a8c5ca31e8b4d4780bc53cce79 approved_on=2026-08-21 role=scientific_owner
+
+The approval statement is retained in the private session record, not in this
+repository. This approval activates the actor-visibility and
+identity-minimization rule, the exhaustive
 rendered-integrity shortcut coverage, and the post-hoc historical-v1
 literal tool-call evidence-ID disclosure below. It does not authorize a
 scenario or reference label change, model or API call, spend, publication,
 model-based production enforcement, or a final v2 shortcut-clearance claim
 before the owner-recertified Checkpoint-4 ledger and Checkpoint-6 gate.
 
-**Post-signature normalization record (2026-08-21):** Before commit, the exact
+**Post-approval normalization record (2026-08-21):** Before commit, the exact
 pre-activation bytes named above changed only as follows. The pending actor and
-future-variation headings became active, the verbatim approval and its two bound
-hashes were inserted, and the matching `CP3_PRIOR_ART.md` status paragraph
+future-variation headings became active, the neutral approval record and its two
+bound hashes were inserted, and the matching `CP3_PRIOR_ART.md` status paragraph
 changed from “proposed ... pending owner approval and not yet governing” to
 “owner-approved”; no source entry or claim changed. In the plan, the ambiguous
 phrase “benchmark principal/role token” became “benchmark actor/role token” so

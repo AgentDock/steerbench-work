@@ -3,25 +3,42 @@
   "checkpoint": 4,
   "status": "CP4_BLOCKED_PENDING_OWNER_RECERTIFICATION",
   "production_v2": null,
-  "required_subtest_count": 48,
+  "required_subtest_count": 62,
   "all_required_subtests_executed": true,
   "all_bad_fixtures_exited_nonzero_before_replacement": true,
   "all_corrected_fixtures_passed": true,
   "audit_source_hashes": {
-    "VALIDATION_PLAN.md": "eac119afb6454ee85dbc4b678f3b6be5b12fdd2a2674da72a0640d354da4f6ec",
-    "CP4_RECERTIFICATION_SCHEMA.json": "29664745db200c9311fb57f43763a4269c814944ab08b0887fd1c9668c93ee46",
     "CP4_RECERTIFICATION.json": "e7ce45529dc62ea8cf7e563235d59620fa2761407c38fbb41ce4d395a1fbada7",
-    "SHORTCUT_DEPENDENCY_SPEC.json": "501de47629f700d6a937a60be0f2242a3acbd8af1d8df00b8b572498cfaf2654",
-    "SHORTCUT_FEATURE_SPEC.json": "02c2759ee851fc1cb4a6e9233bba656b230d8c4d65394e6af480cf3ec8d949e2",
+    "CP4_RECERTIFICATION_SCHEMA.json": "ec8e78cc9cbfba66770f67b464b423df90533da448b7b31aa9fc3ade902650c6",
+    "EVIDENCE_RENDER_SCHEMA.json": "3d1eeafe11be9d078d735f6f2e002b7799285256c94b8553253cde2e03d131b2",
     "HISTORICAL_V1_SHORTCUT_ROWS.json": "82a8058c2c0d217ab6126972975d37d76b588991d2992b77680fe9a6a0741112",
+    "LEGACY_MIGRATION_RULE.json": "bd0aa9130470154611d995a4dcee2a85125a23735ac411a1d6c2cea7c17915fc",
+    "SHORTCUT_DEPENDENCY_SPEC.json": "ca6c05a112f586d403ae263d40f64c75b4327123de98a4b04e3fc3d03be20e53",
+    "SHORTCUT_FEATURE_SPEC.json": "02c2759ee851fc1cb4a6e9233bba656b230d8c4d65394e6af480cf3ec8d949e2",
+    "VALIDATION_PLAN.md": "1a0b3e974e5aacfd996428a770be3390dc7cdfec785444f43e7fb1b1c0437b32",
+    "integrity-audit/v2-audit/LEGACY_MIGRATION_RULE_DESIGN.md": "6506ec9a1cacb9853defcab0e7abd90cca8b52d4e80cf47968d40cb856abccd9",
+    "integrity-audit/v2-audit/cp4-red-fixtures.mjs": "39f06d30c6cfdf87060be2575078bda6907dac95daa8c6d4375697c858e71343",
     "results/v2026-05/release-manifest.json": "c05ffd155ffa0d2eead1148a9f148f8c0a6ddeab4ad79845a8a0a05ade8f9352",
-    "sources/cp4/xstest-adaptation-source-receipt.json": "cc7bf718dbb18199acbedaa897e8fc92cd1a189d362d9b7f6d827752354d36cf",
-    "sources/cp4/or-bench-adaptation-source-receipt.json": "6ad2305b4788029cff1dd6d733a29beec3988e1d273dfbf4c2b60484e2a8f514",
-    "src/cp4-recertification.mjs": "53ed76efc1184211b594932e406447fa7b49f14aaad59648fd5fee783e853f0e",
-    "src/cp4-dependency-ledger.mjs": "36c6d667866c60f703396ac488c5bf16756699988e7047590edc63d048f0ef31",
-    "src/shortcut-gate.mjs": "06c5231ed679ff619821a80e2a5c2cc0c0093fd790f0210dc2312ce57588c904",
+    "scenario-sets/steerbench-work-2026-05/air-canada-bereavement-policy-promise-realworld-010.json": "a0f134e7d562148c9bfbcf940d2fb086c5471784de91ab81b99a197a02168dbe",
+    "scenario-sets/steerbench-work-2026-05/calendar-invite-prompt-injection-004.json": "76e8789596dc7b17c76b92875a107dcf0c368f3e736b111c2a8d9d054b73824c",
+    "scenario-sets/steerbench-work-2026-05/deposition-statute-of-limitations-003.json": "57be1499d05be78881a4816edbe16c4b919673ad0bbabccfa0ab67591779a4e2",
+    "scenario-sets/steerbench-work-2026-05/dpd-chatbot-open-persona-realworld-011.json": "5f01e00f290ebda5a2614bbd167deae3f81f9c9b0c2f5a55358b27b85bfda7ea",
+    "scenario-sets/steerbench-work-2026-05/executive-impersonation-wire-fraud-005.json": "cc0380f8d715cf94900f474f0953524c91421464eb7a186d4d345eae2ecf1f8b",
+    "scenario-sets/steerbench-work-2026-05/knight-capital-trading-deploy-realworld-007.json": "3a153c7791ee9f287eb89b3edf095f2c5a9b0524bfcd8eb73b402bbe2ef788b0",
+    "scenario-sets/steerbench-work-2026-05/mata-avianca-fabricated-citation-realworld-008.json": "7db5f315b0f5ee8c7f647bbf447de0d1d1a1fb3c021e345211299cdb5440c576",
+    "scenario-sets/steerbench-work-2026-05/patient-records-employer-disclosure-002.json": "4b480596832f36e2ce062d533327ed39e69dd16c250aabb6b7835bc6b601eb5a",
+    "scenario-sets/steerbench-work-2026-05/replit-production-freeze-violation-realworld-006.json": "baae8614198d5d00dacc4cd65ee7073593079c25c2d8c08d4945367f8a6347ad",
+    "scenario-sets/steerbench-work-2026-05/telehealth-marketing-pixel-disclosure-001.json": "9f4cae7a29a2968bf59f13d05d4f770226189574ea0ed2f815d7e26c30f7b415",
+    "scenario-sets/steerbench-work-2026-05/workday-applicant-auto-reject-realworld-009.json": "8cdd55a914a8bf5b88b146d1884494d47bf0dd119e50cc1d1b0fddbefb0e879d",
+    "scripts/generate-cp4-legacy-migration-rule.mjs": "25068295e0929ab519dd0a455a4199cad473f9e17318c095e9b715e890e9b06e",
     "scripts/generate-cp4-recertification.mjs": "8399a01f95e7390435651af0c015272fb427fe37e66b65dc32e6cfc597bb4991",
-    "integrity-audit/v2-audit/cp4-red-fixtures.mjs": "ee90317899aaf0b1d2106022adc10b67058da175fc3782df354e2b801daec220"
+    "sources/cp4/or-bench-adaptation-source-receipt.json": "6ad2305b4788029cff1dd6d733a29beec3988e1d273dfbf4c2b60484e2a8f514",
+    "sources/cp4/xstest-adaptation-source-receipt.json": "cc7bf718dbb18199acbedaa897e8fc92cd1a189d362d9b7f6d827752354d36cf",
+    "src/cp4-dependency-ledger.mjs": "084be9d16a00b3be44bf6cbbaaf6323ef0f65cc996e5d14d29ec190ad3dbf943",
+    "src/cp4-legacy-migration-rule.mjs": "d4fc83afc063dd010c30c7c02a11d7c791629e8f7bb36c526eb2a513895b5bb2",
+    "src/cp4-recertification.mjs": "1f09520339e9d58b7784d1189e46f42eacead9d6fdab78a6364d1e9224d239e9",
+    "src/shortcut-gate.mjs": "abe114077c68c53416325e8811e876a264f926c62b65be38953cac1178e02401",
+    "test/cp4-activation-fixture.mjs": "e19aa777ad20d1a7f16a02f1689765b52cbb903bb6f8f0ddcda1a13d897342eb"
   },
   "measurements": {
     "scientific_status": "CP4_BLOCKED_PENDING_OWNER_RECERTIFICATION",
@@ -52,8 +69,8 @@
       "request_approval": 1
     },
     "owner_recertification_status": "pending_owner_recertification",
-    "owner_signature_envelope": null,
-    "owner_signature_trust_boundary": "First-hand owner approval recorded in chat and bound in Git is the trust boundary; the signature envelope is a tamper-evident payload-hash binding, not cryptographic authentication.",
+    "approval_envelope": null,
+    "approval_envelope_semantics": "Neutral role, strict UTC timestamp, and payload digest; no identity or cryptographic-authentication claim.",
     "committed_cp4_artifact": {
       "artifact": "CP4_RECERTIFICATION.json",
       "sha256": "e7ce45529dc62ea8cf7e563235d59620fa2761407c38fbb41ce4d395a1fbada7",
@@ -87,7 +104,7 @@
       "evidence_count_status_correct": 103,
       "evidence_count_status_plus_signature_correct": 106
     },
-    "scientific_limit": "Synthetic fixtures validate CP4 mechanics only. No row is claimed repaired, source-recertified, gold-recertified, owner-signed, or ready for production-v2 scoring."
+    "scientific_limit": "Synthetic fixtures validate CP4 mechanics only. No row is claimed repaired, source-recertified, gold-recertified, approved, or ready for production-v2 scoring."
   },
   "executions": [
     {
@@ -211,36 +228,140 @@
       "label": "source receipt raw-byte hash"
     },
     {
-      "subtest_id": "cp4-pending-signature",
+      "subtest_id": "cp4-legacy-rule-receipt-missing",
       "finding_id": 5,
       "owning_checkpoint": 4,
       "bad_exit_nonzero": true,
       "corrected_exit_zero": true,
-      "label": "signature forbidden while pending"
+      "label": "legacy record exact migration-rule receipt"
     },
     {
-      "subtest_id": "cp4-owner-envelope-missing",
+      "subtest_id": "cp4-legacy-rule-receipt-hash",
       "finding_id": 5,
       "owning_checkpoint": 4,
       "bad_exit_nonzero": true,
       "corrected_exit_zero": true,
-      "label": "owner envelope required when complete"
+      "label": "legacy record migration-rule raw-byte hash"
     },
     {
-      "subtest_id": "cp4-owner-envelope-stale",
+      "subtest_id": "cp4-legacy-authored-receipt-missing",
       "finding_id": 5,
       "owning_checkpoint": 4,
       "bad_exit_nonzero": true,
       "corrected_exit_zero": true,
-      "label": "owner envelope binds current payload"
+      "label": "legacy record exact authored-row receipt"
     },
     {
-      "subtest_id": "cp4-owner-envelope-invalid-utc",
+      "subtest_id": "cp4-legacy-authored-receipt-wrong-id",
       "finding_id": 5,
       "owning_checkpoint": 4,
       "bad_exit_nonzero": true,
       "corrected_exit_zero": true,
-      "label": "owner envelope strict UTC timestamp"
+      "label": "legacy authored-row receipt ID membership"
+    },
+    {
+      "subtest_id": "cp4-legacy-authored-receipt-nested-in-row",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "authored-row receipt reserved for its top-level legacy record"
+    },
+    {
+      "subtest_id": "cp4-legacy-authored-receipt-cross-row",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "authored-row receipt forbidden on another legacy record"
+    },
+    {
+      "subtest_id": "cp4-legacy-authored-receipt-outside-cohort",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "authored-row receipt forbidden outside legacy cohort"
+    },
+    {
+      "subtest_id": "cp4-legacy-authored-receipt-hash-alias-nested",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "authored-row raw bytes remain reserved under an alias path"
+    },
+    {
+      "subtest_id": "cp4-legacy-rule-receipt-outside-cohort",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "migration-rule receipt forbidden outside legacy cohort"
+    },
+    {
+      "subtest_id": "cp4-legacy-rule-receipt-nested-in-cohort",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "migration-rule receipt reserved for top-level legacy records"
+    },
+    {
+      "subtest_id": "cp4-legacy-rule-receipt-hash-alias-nested",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "migration-rule raw bytes remain reserved under an alias path"
+    },
+    {
+      "subtest_id": "cp4-legacy-rule-receipt-count-spoof",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "legacy migration-rule receipt membership, not count"
+    },
+    {
+      "subtest_id": "cp4-pending-approval-envelope",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "approval envelope forbidden while pending"
+    },
+    {
+      "subtest_id": "cp4-approval-envelope-missing",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "approval envelope required when complete"
+    },
+    {
+      "subtest_id": "cp4-approval-envelope-stale",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "approval envelope binds current payload"
+    },
+    {
+      "subtest_id": "cp4-approval-envelope-invalid-utc",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "approval envelope strict UTC timestamp"
+    },
+    {
+      "subtest_id": "cp4-approval-envelope-role",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "approval envelope anonymous scientific role"
     },
     {
       "subtest_id": "cp4-action-continue",
@@ -368,7 +489,7 @@
       "owning_checkpoint": 4,
       "bad_exit_nonzero": true,
       "corrected_exit_zero": true,
-      "label": "activation requires the dependency signature envelope"
+      "label": "activation requires the dependency approval envelope"
     },
     {
       "subtest_id": "cp4-activation-generated-ledger-mismatch",
@@ -385,6 +506,14 @@
       "bad_exit_nonzero": true,
       "corrected_exit_zero": true,
       "label": "activation rejects a false canonical dependency-ledger digest"
+    },
+    {
+      "subtest_id": "cp4-activation-dependency-role",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "activation requires the anonymous scientific-owner role"
     },
     {
       "subtest_id": "cp4-activation-timestamp-invalid",

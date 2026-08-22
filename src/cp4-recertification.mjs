@@ -1,18 +1,27 @@
 // Fail-closed Checkpoint-4 recertification validation and canonicalization.
 //
-// This module verifies structure, cohort coverage, source-receipt bytes, and
-// the digest bound by an owner-supplied attestation envelope. It deliberately
-// does not create, verify, or claim cryptographic authenticity for signatures.
+// This module verifies structure, cohort coverage, source-receipt bytes,
+// neutral role-based approval metadata, and its payload digest binding.
 
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+import {
+  LEGACY_MIGRATION_RULE_ARTIFACT,
+  LEGACY_SCENARIO_IDS,
+  loadAndValidateLegacyMigrationRule
+} from "./cp4-legacy-migration-rule.mjs";
+
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SHA256_RE = /^[0-9a-f]{64}$/u;
 const UTC_RFC3339_RE = /^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$/u;
+const GREGORIAN_DATE_RE = /^[0-9]{4}-[0-9]{2}-[0-9]{2}$/u;
 const DRIVE_RELATIVE_RE = /^[A-Za-z]:/u;
+const VALIDATION_PLAN_ARTIFACT = "VALIDATION_PLAN.md";
+const SCIENTIFIC_OWNER_ROLE = "scientific_owner";
+const APPROVAL_RECORD_RE = /^approval_record artifact=(\S+) sha256=(\S+) approved_on=(\S+) role=(\S+)$/u;
 const FROZEN_REFERENCE_DECISIONS = deepFreeze([
   "continue",
   "proceed",
@@ -234,9 +243,32 @@ function loadContract() {
       throw new Error("provisional cohort contains an unknown review kind");
     }
   }
-  if (metadata.owner_attestation
-    !== "I attest that I reviewed and recertified this CP4 payload.") {
-    throw new Error("CP4 owner attestation text changed");
+  if (metadata.approval_role !== SCIENTIFIC_OWNER_ROLE
+    || metadata.approval_timestamp !== "strict_utc_rfc3339") {
+    throw new Error("CP4 neutral approval metadata changed");
+  }
+  const approvalEnvelope = contract.$defs?.signature_envelope;
+  assertExactKeys(
+    approvalEnvelope,
+    ["type", "additionalProperties", "required", "properties"],
+    "CP4 schema approval envelope"
+  );
+  if (approvalEnvelope.type !== "object"
+    || approvalEnvelope.additionalProperties !== false
+    || JSON.stringify(approvalEnvelope.required)
+      !== JSON.stringify(["payload_sha256", "approved_at", "role"])) {
+    throw new Error("CP4 schema approval envelope fields changed");
+  }
+  assertExactKeys(
+    approvalEnvelope.properties,
+    ["payload_sha256", "approved_at", "role"],
+    "CP4 schema approval envelope properties"
+  );
+  if (approvalEnvelope.properties.payload_sha256?.pattern !== "^[0-9a-f]{64}$"
+    || approvalEnvelope.properties.approved_at?.pattern
+      !== "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+    || approvalEnvelope.properties.role?.const !== SCIENTIFIC_OWNER_ROLE) {
+    throw new Error("CP4 schema approval envelope constraints changed");
   }
   const recordDecisionEnum = contract.$defs?.record?.properties
     ?.reference_decision?.enum?.filter((value) => value !== null);
@@ -293,8 +325,8 @@ export const ADAPTATION_RECORDS =
   CP4_RECERTIFICATION_SCHEMA["x-steerbench"].adaptation_records;
 export const PROVISIONAL_RECORDS =
   CP4_RECERTIFICATION_SCHEMA["x-steerbench"].provisional_records;
-export const OWNER_ATTESTATION =
-  CP4_RECERTIFICATION_SCHEMA["x-steerbench"].owner_attestation;
+export const CP4_APPROVAL_ROLE =
+  CP4_RECERTIFICATION_SCHEMA["x-steerbench"].approval_role;
 export const REFERENCE_DECISIONS = FROZEN_REFERENCE_DECISIONS;
 export const ADAPTATION_SOURCE_RECEIPT_CONTRACT =
   CP4_RECERTIFICATION_SCHEMA["x-steerbench"].adaptation_source_receipt;
@@ -332,6 +364,7 @@ const RECORD_KEYS = deepFreeze([
 const AUTHORITY_RECORD_SET = new Set(AUTHORITY_RECORD_IDS);
 const ADAPTATION_RECORD_SET = new Set(Object.keys(ADAPTATION_RECORDS));
 const PROVISIONAL_RECORD_SET = new Set(Object.keys(PROVISIONAL_RECORDS));
+const LEGACY_SCENARIO_ID_SET = new Set(LEGACY_SCENARIO_IDS);
 const PUBLIC_RECORDS_REVIEW_ID =
   CP4_RECERTIFICATION_SCHEMA["x-steerbench"].public_records_official_review_id;
 const WARNING_NAMES =
@@ -356,7 +389,7 @@ export function canonicalizeCp4Payload(artifact) {
 }
 
 /**
- * Hash the canonical owner-bound payload bytes.
+ * Hash the canonical approval-bound payload bytes.
  *
  * @param {object} artifact CP4 recertification artifact.
  * @returns {string} Lowercase SHA-256 digest.
@@ -367,7 +400,7 @@ export function cp4PayloadSha256(artifact) {
     .digest("hex");
 }
 
-function sourceReceiptVerifier(repositoryRoot) {
+function repositoryArtifactReader(repositoryRoot) {
   if (typeof repositoryRoot !== "string" || !path.isAbsolute(repositoryRoot)) {
     throw new Error("repositoryRoot must be an absolute path");
   }
@@ -382,28 +415,23 @@ function sourceReceiptVerifier(repositoryRoot) {
   }
   const cache = new Map();
 
-  return function verifySourceReceipt(receipt, location) {
-    assertExactKeys(receipt, ["artifact", "sha256"], location);
-    assertNonemptyString(receipt.artifact, location + ".artifact");
-    if (!SHA256_RE.test(receipt.sha256)) {
-      throw new Error(location + ".sha256 must be a lowercase SHA-256 digest");
-    }
-    const artifact = receipt.artifact;
+  return function readRepositoryArtifact(artifact, location) {
+    assertNonemptyString(artifact, location);
     if (path.posix.isAbsolute(artifact)
       || path.win32.isAbsolute(artifact)
       || DRIVE_RELATIVE_RE.test(artifact)) {
-      throw new Error(location + ".artifact must be repository-relative, not absolute");
+      throw new Error(location + " must be repository-relative, not absolute");
     }
     if (artifact.includes("\\")) {
-      throw new Error(location + ".artifact must use canonical forward-slash separators");
+      throw new Error(location + " must use canonical forward-slash separators");
     }
     const segments = artifact.split("/");
     if (segments.length === 0
       || segments.some((segment) => segment === "" || segment === "." || segment === "..")) {
-      throw new Error(location + ".artifact contains traversal or a non-canonical segment");
+      throw new Error(location + " contains traversal or a non-canonical segment");
     }
     if (path.posix.normalize(artifact) !== artifact) {
-      throw new Error(location + ".artifact is not a canonical repository-relative path");
+      throw new Error(location + " is not a canonical repository-relative path");
     }
 
     let current = realRoot;
@@ -422,12 +450,12 @@ function sourceReceiptVerifier(repositoryRoot) {
         }
       }
     } catch (error) {
-      throw new Error(location + ".artifact cannot resolve to a regular non-symlink file: "
+      throw new Error(location + " cannot resolve to a regular non-symlink file: "
         + error.message);
     }
     const rootPrefix = realRoot.endsWith(path.sep) ? realRoot : realRoot + path.sep;
     if (!current.startsWith(rootPrefix)) {
-      throw new Error(location + ".artifact resolves outside repositoryRoot");
+      throw new Error(location + " resolves outside repositoryRoot");
     }
 
     let resolved = cache.get(artifact);
@@ -459,15 +487,27 @@ function sourceReceiptVerifier(repositoryRoot) {
           sha256: crypto.createHash("sha256").update(rawBytes).digest("hex")
         };
       } catch (error) {
-        throw new Error(location + ".artifact cannot be opened as a stable non-symlink file: "
+        throw new Error(location + " cannot be opened as a stable non-symlink file: "
           + error.message);
       } finally {
         if (descriptor !== undefined) fs.closeSync(descriptor);
       }
       cache.set(artifact, resolved);
     }
+    return resolved;
+  };
+}
+
+function sourceReceiptVerifier(readRepositoryArtifact) {
+  return function verifySourceReceipt(receipt, location) {
+    assertExactKeys(receipt, ["artifact", "sha256"], location);
+    assertNonemptyString(receipt.artifact, location + ".artifact");
+    if (!SHA256_RE.test(receipt.sha256)) {
+      throw new Error(location + ".sha256 must be a lowercase SHA-256 digest");
+    }
+    const resolved = readRepositoryArtifact(receipt.artifact, location + ".artifact");
     if (resolved.sha256 !== receipt.sha256) {
-      throw new Error(location + " SHA-256 mismatch for " + JSON.stringify(artifact));
+      throw new Error(location + " SHA-256 mismatch for " + JSON.stringify(receipt.artifact));
     }
     return resolved;
   };
@@ -1276,28 +1316,296 @@ function validateSharedDependencyClaimReceipts(records) {
   });
 }
 
-function validateSignatureEnvelope(envelope, artifact) {
+function hasExactSourceReceipt(receipts, expectedReceipt) {
+  return receipts.some((receipt) => receipt.artifact === expectedReceipt.artifact
+    && receipt.sha256 === expectedReceipt.sha256);
+}
+
+function collectReservedReceiptOccurrences(
+  value,
+  location,
+  reservedIdentityByArtifact,
+  reservedIdentityBySha256,
+  results = [],
+  ancestors = new Set()
+) {
+  if (value === null || typeof value !== "object" || ancestors.has(value)) return results;
+  ancestors.add(value);
+  if (isPlainObject(value)) {
+    const artifactIdentity = reservedIdentityByArtifact.get(value.artifact);
+    const sha256Identity = reservedIdentityBySha256.get(value.sha256);
+    if (artifactIdentity !== undefined
+      && sha256Identity !== undefined
+      && artifactIdentity !== sha256Identity) {
+      throw new Error(
+        location + " combines a reserved migration artifact with a different reserved SHA-256 identity"
+      );
+    }
+    const identity = artifactIdentity ?? sha256Identity;
+    if (identity !== undefined) {
+      results.push({
+        actualArtifact: value.artifact,
+        actualSha256: value.sha256,
+        identity,
+        location
+      });
+    }
+  }
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      collectReservedReceiptOccurrences(
+        value[index],
+        location + "[" + index + "]",
+        reservedIdentityByArtifact,
+        reservedIdentityBySha256,
+        results,
+        ancestors
+      );
+    }
+  } else if (isPlainObject(value)) {
+    for (const [key, child] of Object.entries(value)) {
+      collectReservedReceiptOccurrences(
+        child,
+        location + "." + key,
+        reservedIdentityByArtifact,
+        reservedIdentityBySha256,
+        results,
+        ancestors
+      );
+    }
+  }
+  ancestors.delete(value);
+  return results;
+}
+
+function enforceLegacyMigrationReceiptPlacement(records, legacyRule, ruleReceipt) {
+  const authoredReceiptById = new Map(
+    LEGACY_SCENARIO_IDS.map((scenarioId, index) => [
+      scenarioId,
+      legacyRule.source_cohort.source_receipts[index]
+    ])
+  );
+  const ruleIdentity = {
+    kind: "rule",
+    canonicalArtifact: ruleReceipt.artifact,
+    sha256: ruleReceipt.sha256,
+    scenarioId: null
+  };
+  const authoredIdentities = [...authoredReceiptById].map(([scenarioId, receipt]) => ({
+    kind: "authored_row",
+    canonicalArtifact: receipt.artifact,
+    sha256: receipt.sha256,
+    scenarioId
+  }));
+  const reservedIdentities = [ruleIdentity, ...authoredIdentities];
+  const reservedIdentityByArtifact = new Map();
+  const reservedIdentityBySha256 = new Map();
+  for (const identity of reservedIdentities) {
+    if (reservedIdentityByArtifact.has(identity.canonicalArtifact)
+      || reservedIdentityBySha256.has(identity.sha256)) {
+      throw new Error("legacy migration rule reserved receipt identities must be unique");
+    }
+    reservedIdentityByArtifact.set(identity.canonicalArtifact, identity);
+    reservedIdentityBySha256.set(identity.sha256, identity);
+  }
+  const authoredIdentityById = new Map(
+    authoredIdentities.map((identity) => [identity.scenarioId, identity])
+  );
+
+  records.forEach((record, recordIndex) => {
+    if (!isPlainObject(record)) return;
+    const location = "artifact.records[" + recordIndex + "]";
+    const occurrences = collectReservedReceiptOccurrences(
+      record,
+      location,
+      reservedIdentityByArtifact,
+      reservedIdentityBySha256
+    );
+    const authoredIdentity = authoredIdentityById.get(record.scenario_id);
+    const allowedIdentities = authoredIdentity === undefined
+      ? new Set()
+      : new Set([ruleIdentity, authoredIdentity]);
+    const topLevelReceiptLocations = new Set(
+      Array.isArray(record.source_receipts)
+        ? record.source_receipts.map(
+          (_receipt, receiptIndex) => location + ".source_receipts[" + receiptIndex + "]"
+        )
+        : []
+    );
+
+    const misplacedOccurrence = occurrences.find(
+      (occurrence) => occurrence.actualArtifact !== occurrence.identity.canonicalArtifact
+        || !allowedIdentities.has(occurrence.identity)
+        || !topLevelReceiptLocations.has(occurrence.location)
+    );
+    if (misplacedOccurrence === undefined) return;
+    if (misplacedOccurrence.actualArtifact
+      !== misplacedOccurrence.identity.canonicalArtifact) {
+      if (misplacedOccurrence.identity.kind === "rule") {
+        throw new Error(
+          misplacedOccurrence.location
+            + " reserved legacy rule receipt must use canonical artifact "
+            + LEGACY_MIGRATION_RULE_ARTIFACT
+        );
+      }
+      throw new Error(
+        misplacedOccurrence.location
+          + " reserved authored-row receipt must use its canonical scenario artifact "
+          + JSON.stringify(misplacedOccurrence.identity.canonicalArtifact)
+      );
+    }
+    if (misplacedOccurrence.identity.kind === "rule") {
+      if (!LEGACY_SCENARIO_ID_SET.has(record.scenario_id)) {
+        throw new Error(
+          misplacedOccurrence.location + " must not contain "
+            + LEGACY_MIGRATION_RULE_ARTIFACT + " outside the exact legacy cohort"
+        );
+      }
+      throw new Error(
+        misplacedOccurrence.location + " must not contain "
+          + LEGACY_MIGRATION_RULE_ARTIFACT
+          + "; legacy cohort records permit it only in top-level source_receipts"
+      );
+    }
+    const expectedScenarioId = misplacedOccurrence.identity.scenarioId;
+    if (expectedScenarioId !== record.scenario_id) {
+      throw new Error(
+        misplacedOccurrence.location + " must not contain reserved authored-row receipt for "
+          + JSON.stringify(expectedScenarioId) + " outside its matching legacy cohort record"
+      );
+    }
+    throw new Error(
+      misplacedOccurrence.location + " must not contain reserved authored-row receipt; "
+        + "the matching legacy cohort record permits it only in top-level source_receipts"
+    );
+  });
+}
+
+function validateCompleteLegacyReceipts(records, legacyRule, ruleReceipt) {
+  const authoredReceipts = legacyRule.source_cohort.source_receipts;
+  const authoredReceiptById = new Map(
+    LEGACY_SCENARIO_IDS.map((scenarioId, index) => [scenarioId, authoredReceipts[index]])
+  );
+
+  records.forEach((record, recordIndex) => {
+    if (!LEGACY_SCENARIO_ID_SET.has(record.scenario_id)) return;
+    const location = "artifact.records[" + recordIndex + "].source_receipts";
+    const authoredReceipt = authoredReceiptById.get(record.scenario_id);
+    if (!hasExactSourceReceipt(record.source_receipts, authoredReceipt)) {
+      throw new Error(
+        location + " must contain the exact authored-row receipt for "
+          + JSON.stringify(record.scenario_id)
+      );
+    }
+    if (record.source_receipts.filter(
+      (receipt) => receipt.artifact === authoredReceipt.artifact
+    ).length !== 1) {
+      throw new Error(
+        location + " must contain exactly one authored-row receipt for "
+          + JSON.stringify(record.scenario_id)
+      );
+    }
+    if (!hasExactSourceReceipt(record.source_receipts, ruleReceipt)) {
+      throw new Error(
+        location + " must contain the exact " + LEGACY_MIGRATION_RULE_ARTIFACT + " receipt"
+      );
+    }
+    if (record.source_receipts.filter(
+      (receipt) => receipt.artifact === LEGACY_MIGRATION_RULE_ARTIFACT
+    ).length !== 1) {
+      throw new Error(
+        location + " must contain exactly one "
+          + LEGACY_MIGRATION_RULE_ARTIFACT + " receipt"
+      );
+    }
+  });
+}
+
+function assertRealGregorianDate(value, location) {
+  if (!GREGORIAN_DATE_RE.test(value) || value.startsWith("0000-")) {
+    throw new Error(location + " must be a real Gregorian YYYY-MM-DD date");
+  }
+  const parsed = Date.parse(value + "T00:00:00Z");
+  if (!Number.isFinite(parsed) || new Date(parsed).toISOString().slice(0, 10) !== value) {
+    throw new Error(location + " must be a real Gregorian YYYY-MM-DD date");
+  }
+}
+
+function validateLegacyRuleApprovalRecord(planBytes, ruleReceipt) {
+  const lines = planBytes.toString("utf8").split("\n");
+  const parsedRecords = lines
+    .filter((line) => line.startsWith("approval_record"))
+    .map((line, index) => {
+      const match = APPROVAL_RECORD_RE.exec(line);
+      if (match === null) {
+        throw new Error(
+          VALIDATION_PLAN_ARTIFACT + " approval_record line " + (index + 1)
+            + " must match the exact neutral grammar"
+        );
+      }
+      return {
+        artifact: match[1],
+        sha256: match[2],
+        approvedOn: match[3],
+        role: match[4]
+      };
+    });
+  const matchingRecords = parsedRecords.filter(
+    (record) => record.artifact === LEGACY_MIGRATION_RULE_ARTIFACT
+  );
+  if (matchingRecords.length === 0) {
+    throw new Error(
+      VALIDATION_PLAN_ARTIFACT + " must contain exactly one neutral approval_record for "
+        + LEGACY_MIGRATION_RULE_ARTIFACT
+    );
+  }
+  if (matchingRecords.length > 1) {
+    throw new Error(
+      VALIDATION_PLAN_ARTIFACT + " contains duplicate approval_record lines for "
+        + LEGACY_MIGRATION_RULE_ARTIFACT
+    );
+  }
+  const approval = matchingRecords[0];
+  if (!SHA256_RE.test(approval.sha256) || approval.sha256 !== ruleReceipt.sha256) {
+    throw new Error(
+      VALIDATION_PLAN_ARTIFACT + " approval_record must bind the exact "
+        + LEGACY_MIGRATION_RULE_ARTIFACT + " raw SHA-256"
+    );
+  }
+  assertRealGregorianDate(
+    approval.approvedOn,
+    VALIDATION_PLAN_ARTIFACT + " approval_record approved_on"
+  );
+  if (approval.role !== CP4_APPROVAL_ROLE) {
+    throw new Error(
+      VALIDATION_PLAN_ARTIFACT + " approval_record role must equal "
+        + CP4_APPROVAL_ROLE
+    );
+  }
+}
+
+function validateApprovalEnvelope(envelope, artifact) {
   assertExactKeys(
     envelope,
-    ["owner_id", "signed_at", "payload_sha256", "attestation", "signature"],
+    ["payload_sha256", "approved_at", "role"],
     "artifact.signature_envelope"
   );
-  assertNonemptyString(envelope.owner_id, "artifact.signature_envelope.owner_id");
-  if (!UTC_RFC3339_RE.test(envelope.signed_at)) {
-    throw new Error("artifact.signature_envelope.signed_at must be strict UTC RFC3339");
+  if (!UTC_RFC3339_RE.test(envelope.approved_at)) {
+    throw new Error("artifact.signature_envelope.approved_at must be strict UTC RFC3339");
   }
-  const parsed = Date.parse(envelope.signed_at);
+  const parsed = Date.parse(envelope.approved_at);
   if (!Number.isFinite(parsed)
-    || new Date(parsed).toISOString().replace(".000Z", "Z") !== envelope.signed_at) {
-    throw new Error("artifact.signature_envelope.signed_at is not a real UTC timestamp");
+    || new Date(parsed).toISOString().replace(".000Z", "Z") !== envelope.approved_at) {
+    throw new Error("artifact.signature_envelope.approved_at is not a real UTC timestamp");
   }
   if (!SHA256_RE.test(envelope.payload_sha256)) {
     throw new Error("artifact.signature_envelope.payload_sha256 must be a lowercase SHA-256 digest");
   }
-  if (envelope.attestation !== OWNER_ATTESTATION) {
-    throw new Error("artifact.signature_envelope.attestation differs from the frozen statement");
+  if (envelope.role !== CP4_APPROVAL_ROLE) {
+    throw new Error(
+      "artifact.signature_envelope.role must equal " + CP4_APPROVAL_ROLE
+    );
   }
-  assertNonemptyString(envelope.signature, "artifact.signature_envelope.signature");
   const actualDigest = cp4PayloadSha256(artifact);
   if (envelope.payload_sha256 !== actualDigest) {
     throw new Error("artifact.signature_envelope.payload_sha256 does not bind the canonical payload");
@@ -1308,9 +1616,9 @@ function validateSignatureEnvelope(envelope, artifact) {
  * Validate a complete or pending CP4 artifact without mutating it.
  *
  * All populated source receipts are resolved beneath repositoryRoot and hashed
- * from raw bytes. Pending artifacts must be unsigned. Owner-recertified
- * artifacts must have complete records and a digest-bound, owner-supplied
- * envelope. Signature authenticity is intentionally outside this validator.
+ * from raw bytes. Pending artifacts have no approval envelope. Owner-recertified
+ * artifacts must have complete records, a neutral digest-bound approval
+ * envelope, and an exact hash-bound legacy-rule approval record in the plan.
  *
  * @param {object} artifact CP4 recertification artifact.
  * @param {object} [options] Validation options.
@@ -1342,17 +1650,43 @@ export function validateCp4Recertification(artifact, options = {}) {
     throw new Error("artifact.records must contain exactly 106 records");
   }
   const complete = artifact.status === OWNER_RECERTIFIED;
-  const verifyReceipt = sourceReceiptVerifier(repositoryRoot);
+  const readRepositoryArtifact = repositoryArtifactReader(repositoryRoot);
+  const verifyReceipt = sourceReceiptVerifier(readRepositoryArtifact);
+  const legacyMigrationRule = complete
+    ? loadAndValidateLegacyMigrationRule(repositoryRoot)
+    : null;
+  if (complete) {
+    validateLegacyRuleApprovalRecord(
+      readRepositoryArtifact(
+        VALIDATION_PLAN_ARTIFACT,
+        "legacy migration rule approval plan"
+      ).rawBytes,
+      legacyMigrationRule.receipt
+    );
+    enforceLegacyMigrationReceiptPlacement(
+      artifact.records,
+      legacyMigrationRule.rule,
+      legacyMigrationRule.receipt
+    );
+  }
   artifact.records.forEach((record, index) => {
     validateRecord(record, index, complete, verifyReceipt);
   });
   validateSharedDependencyClaimReceipts(artifact.records);
 
   if (complete) {
+    validateCompleteLegacyReceipts(
+      artifact.records,
+      legacyMigrationRule.rule,
+      legacyMigrationRule.receipt
+    );
+  }
+
+  if (complete) {
     if (artifact.signature_envelope === null) {
       throw new Error("artifact.signature_envelope is required for owner_recertified status");
     }
-    validateSignatureEnvelope(artifact.signature_envelope, artifact);
+    validateApprovalEnvelope(artifact.signature_envelope, artifact);
   } else if (artifact.signature_envelope !== null) {
     throw new Error("pending artifacts must have a null signature_envelope");
   }
@@ -1453,7 +1787,7 @@ function nullProvisionalReview(kind) {
  * Create the unsigned 106-row pending template.
  *
  * Cohort membership and dependency-claim keys are present explicitly. No
- * source facts, owner identity, digest, attestation, or signature is invented.
+ * source facts, approval role, timestamp, or payload digest is invented.
  *
  * @returns {object} Mutable pending template.
  */

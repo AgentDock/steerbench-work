@@ -119,7 +119,10 @@ test("package allowlist includes every runtime-loaded CP4 contract", () => {
   const requiredArtifacts = [
     "HISTORICAL_V1_SHORTCUT_ROWS.json",
     "CP4_RECERTIFICATION_SCHEMA.json",
-    "CP4_RECERTIFICATION.json"
+    "CP4_RECERTIFICATION.json",
+    "LEGACY_MIGRATION_RULE.json",
+    "integrity-audit/v2-audit/LEGACY_MIGRATION_RULE_DESIGN.md",
+    "VALIDATION_PLAN.md"
   ];
   for (const artifact of requiredArtifacts) {
     assert.equal(

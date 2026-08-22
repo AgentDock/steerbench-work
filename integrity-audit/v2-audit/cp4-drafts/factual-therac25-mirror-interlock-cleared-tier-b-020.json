@@ -123,9 +123,5 @@
     "What committed fixture specification and execution receipt establish the seven interlocks, prescribed mode and dose, target state, and dosimeter state for this fictional session?",
     "What source-grounded safety clearance and execution authority support the existing beam-on action after the factual repair?"
   ],
-  "owner_id": null,
-  "owner_attestation": null,
-  "owner_signed_at": null,
-  "owner_signature": null,
   "signature_envelope": null
 }

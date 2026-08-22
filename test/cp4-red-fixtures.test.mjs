@@ -30,10 +30,23 @@ const EXPECTED_SUBTEST_IDS = [
   "cp4-receipt-traversal",
   "cp4-receipt-symlink",
   "cp4-receipt-hash",
-  "cp4-pending-signature",
-  "cp4-owner-envelope-missing",
-  "cp4-owner-envelope-stale",
-  "cp4-owner-envelope-invalid-utc",
+  "cp4-legacy-rule-receipt-missing",
+  "cp4-legacy-rule-receipt-hash",
+  "cp4-legacy-authored-receipt-missing",
+  "cp4-legacy-authored-receipt-wrong-id",
+  "cp4-legacy-authored-receipt-nested-in-row",
+  "cp4-legacy-authored-receipt-cross-row",
+  "cp4-legacy-authored-receipt-outside-cohort",
+  "cp4-legacy-authored-receipt-hash-alias-nested",
+  "cp4-legacy-rule-receipt-outside-cohort",
+  "cp4-legacy-rule-receipt-nested-in-cohort",
+  "cp4-legacy-rule-receipt-hash-alias-nested",
+  "cp4-legacy-rule-receipt-count-spoof",
+  "cp4-pending-approval-envelope",
+  "cp4-approval-envelope-missing",
+  "cp4-approval-envelope-stale",
+  "cp4-approval-envelope-invalid-utc",
+  "cp4-approval-envelope-role",
   "cp4-action-continue",
   "cp4-action-proceed",
   "cp4-action-block",
@@ -52,6 +65,7 @@ const EXPECTED_SUBTEST_IDS = [
   "cp4-activation-dependency-envelope-missing",
   "cp4-activation-generated-ledger-mismatch",
   "cp4-activation-ledger-digest-mismatch",
+  "cp4-activation-dependency-role",
   "cp4-activation-timestamp-invalid",
   "cp4-activation-timestamp-inconsistent",
   "cp4-adaptation-dataset",
@@ -64,6 +78,40 @@ const EXPECTED_SUBTEST_IDS = [
   "cp4-pending-owner-blocks",
   "cp4-pending-dependency-blocks"
 ];
+
+const EXPECTED_AUDIT_SOURCES = [
+  "CP4_RECERTIFICATION.json",
+  "CP4_RECERTIFICATION_SCHEMA.json",
+  "EVIDENCE_RENDER_SCHEMA.json",
+  "HISTORICAL_V1_SHORTCUT_ROWS.json",
+  "LEGACY_MIGRATION_RULE.json",
+  "SHORTCUT_DEPENDENCY_SPEC.json",
+  "SHORTCUT_FEATURE_SPEC.json",
+  "VALIDATION_PLAN.md",
+  "integrity-audit/v2-audit/LEGACY_MIGRATION_RULE_DESIGN.md",
+  "integrity-audit/v2-audit/cp4-red-fixtures.mjs",
+  "results/v2026-05/release-manifest.json",
+  "scenario-sets/steerbench-work-2026-05/air-canada-bereavement-policy-promise-realworld-010.json",
+  "scenario-sets/steerbench-work-2026-05/calendar-invite-prompt-injection-004.json",
+  "scenario-sets/steerbench-work-2026-05/deposition-statute-of-limitations-003.json",
+  "scenario-sets/steerbench-work-2026-05/dpd-chatbot-open-persona-realworld-011.json",
+  "scenario-sets/steerbench-work-2026-05/executive-impersonation-wire-fraud-005.json",
+  "scenario-sets/steerbench-work-2026-05/knight-capital-trading-deploy-realworld-007.json",
+  "scenario-sets/steerbench-work-2026-05/mata-avianca-fabricated-citation-realworld-008.json",
+  "scenario-sets/steerbench-work-2026-05/patient-records-employer-disclosure-002.json",
+  "scenario-sets/steerbench-work-2026-05/replit-production-freeze-violation-realworld-006.json",
+  "scenario-sets/steerbench-work-2026-05/telehealth-marketing-pixel-disclosure-001.json",
+  "scenario-sets/steerbench-work-2026-05/workday-applicant-auto-reject-realworld-009.json",
+  "scripts/generate-cp4-legacy-migration-rule.mjs",
+  "scripts/generate-cp4-recertification.mjs",
+  "sources/cp4/or-bench-adaptation-source-receipt.json",
+  "sources/cp4/xstest-adaptation-source-receipt.json",
+  "src/cp4-dependency-ledger.mjs",
+  "src/cp4-legacy-migration-rule.mjs",
+  "src/cp4-recertification.mjs",
+  "src/shortcut-gate.mjs",
+  "test/cp4-activation-fixture.mjs"
+].sort();
 
 const ACTIVATION_BOUNDARY_CASES = [
   [
@@ -80,15 +128,93 @@ const ACTIVATION_BOUNDARY_CASES = [
   ],
   [
     "cp4-activation-ledger-digest-mismatch",
-    /dependency ledger signature envelope does not bind its canonical payload/u
+    /dependency ledger envelope does not bind its canonical payload/u
+  ],
+  [
+    "cp4-activation-dependency-role",
+    /dependency ledger\.signature_envelope\.role must equal scientific_owner/u
   ],
   [
     "cp4-activation-timestamp-invalid",
-    /dependency ledger\.recertified_at is not a real UTC timestamp/u
+    /dependency ledger\.signature_envelope\.approved_at is not a real UTC timestamp/u
   ],
   [
     "cp4-activation-timestamp-inconsistent",
-    /dependency ledger\.recertified_at must equal its envelope signed_at/u
+    /dependency ledger\.recertified_at must equal its envelope approved_at/u
+  ]
+];
+
+const CP4_APPROVAL_BOUNDARY_CASES = [
+  [
+    "cp4-pending-approval-envelope",
+    /pending artifacts must have a null signature_envelope/u
+  ],
+  [
+    "cp4-approval-envelope-missing",
+    /artifact\.signature_envelope is required for owner_recertified status/u
+  ],
+  [
+    "cp4-approval-envelope-stale",
+    /artifact\.signature_envelope\.payload_sha256 does not bind the canonical payload/u
+  ],
+  [
+    "cp4-approval-envelope-invalid-utc",
+    /artifact\.signature_envelope\.approved_at is not a real UTC timestamp/u
+  ],
+  [
+    "cp4-approval-envelope-role",
+    /artifact\.signature_envelope\.role must equal scientific_owner/u
+  ]
+];
+
+const LEGACY_RECEIPT_BOUNDARY_CASES = [
+  [
+    "cp4-legacy-rule-receipt-missing",
+    /must contain the exact LEGACY_MIGRATION_RULE\.json receipt/u
+  ],
+  [
+    "cp4-legacy-rule-receipt-hash",
+    /SHA-256 mismatch for "LEGACY_MIGRATION_RULE\.json"/u
+  ],
+  [
+    "cp4-legacy-authored-receipt-missing",
+    /must contain the exact authored-row receipt for/u
+  ],
+  [
+    "cp4-legacy-authored-receipt-wrong-id",
+    /must not contain reserved authored-row receipt for .* outside its matching legacy cohort record/u
+  ],
+  [
+    "cp4-legacy-authored-receipt-nested-in-row",
+    /matching legacy cohort record permits it only in top-level source_receipts/u
+  ],
+  [
+    "cp4-legacy-authored-receipt-cross-row",
+    /must not contain reserved authored-row receipt for .* outside its matching legacy cohort record/u
+  ],
+  [
+    "cp4-legacy-authored-receipt-outside-cohort",
+    /must not contain reserved authored-row receipt for .* outside its matching legacy cohort record/u
+  ],
+  [
+    "cp4-legacy-authored-receipt-hash-alias-nested",
+    /reserved authored-row receipt must use its canonical scenario artifact/u
+  ],
+  [
+    "cp4-legacy-rule-receipt-outside-cohort",
+    /must not contain LEGACY_MIGRATION_RULE\.json outside the exact legacy cohort/u
+  ],
+  [
+    "cp4-legacy-rule-receipt-nested-in-cohort",
+    /legacy cohort records permit it only in top-level source_receipts/u
+  ],
+  [
+    "cp4-legacy-rule-receipt-hash-alias-nested",
+    /reserved legacy rule receipt must use canonical artifact LEGACY_MIGRATION_RULE\.json/u
+  ],
+  [
+    "cp4-legacy-rule-receipt-count-spoof",
+    /must contain the exact LEGACY_MIGRATION_RULE\.json receipt/u
   ]
 ];
 
@@ -114,8 +240,54 @@ function currentCorpusTreeBinding() {
   };
 }
 
-test("activation fixtures fail at six distinct production validation boundaries", () => {
+test("activation fixtures fail at seven distinct production validation boundaries", () => {
   for (const [subtestId, expectedError] of ACTIVATION_BOUNDARY_CASES) {
+    const bad = spawnSync(process.execPath, [
+      SCRIPT,
+      "--subtest",
+      subtestId,
+      "--variant",
+      "bad"
+    ], { cwd: ROOT, encoding: "utf8" });
+    assert.notEqual(bad.status, 0, `${subtestId} known-bad fixture exited zero`);
+    assert.match(bad.stderr, expectedError, `${subtestId} failed at the wrong boundary`);
+
+    const corrected = spawnSync(process.execPath, [
+      SCRIPT,
+      "--subtest",
+      subtestId,
+      "--variant",
+      "corrected"
+    ], { cwd: ROOT, encoding: "utf8" });
+    assert.equal(corrected.status, 0, `${subtestId}: ${corrected.stderr}`);
+  }
+});
+
+test("CP4 approval-envelope fixtures fail at exact production validation boundaries", () => {
+  for (const [subtestId, expectedError] of CP4_APPROVAL_BOUNDARY_CASES) {
+    const bad = spawnSync(process.execPath, [
+      SCRIPT,
+      "--subtest",
+      subtestId,
+      "--variant",
+      "bad"
+    ], { cwd: ROOT, encoding: "utf8" });
+    assert.notEqual(bad.status, 0, `${subtestId} known-bad fixture exited zero`);
+    assert.match(bad.stderr, expectedError, `${subtestId} failed at the wrong boundary`);
+
+    const corrected = spawnSync(process.execPath, [
+      SCRIPT,
+      "--subtest",
+      subtestId,
+      "--variant",
+      "corrected"
+    ], { cwd: ROOT, encoding: "utf8" });
+    assert.equal(corrected.status, 0, `${subtestId}: ${corrected.stderr}`);
+  }
+});
+
+test("legacy migration receipt fixtures fail at exact production validation boundaries", () => {
+  for (const [subtestId, expectedError] of LEGACY_RECEIPT_BOUNDARY_CASES) {
     const bad = spawnSync(process.execPath, [
       SCRIPT,
       "--subtest",
@@ -150,6 +322,7 @@ test("CP4 receipt and matrix bind every required isolated red subtest", () => {
   assert.equal(receipt.all_required_subtests_executed, true);
   assert.equal(receipt.all_bad_fixtures_exited_nonzero_before_replacement, true);
   assert.equal(receipt.all_corrected_fixtures_passed, true);
+  assert.deepEqual(Object.keys(receipt.audit_source_hashes), EXPECTED_AUDIT_SOURCES);
   for (const [relative, expected] of Object.entries(receipt.audit_source_hashes)) {
     assert.equal(
       sha256(fs.readFileSync(path.join(ROOT, relative))),
@@ -195,10 +368,10 @@ test("CP4 receipt cannot be mistaken for corpus repair or scientific recertifica
   assert.equal(measurements.scenario_ids_match_current_corpus, true);
   assert.deepEqual(measurements.current_corpus_tree, currentCorpusTreeBinding());
   assert.equal(measurements.owner_recertification_status, "pending_owner_recertification");
-  assert.equal(measurements.owner_signature_envelope, null);
+  assert.equal(measurements.approval_envelope, null);
   assert.equal(
-    measurements.owner_signature_trust_boundary,
-    "First-hand owner approval recorded in chat and bound in Git is the trust boundary; the signature envelope is a tamper-evident payload-hash binding, not cryptographic authentication."
+    measurements.approval_envelope_semantics,
+    "Neutral role, strict UTC timestamp, and payload digest; no identity or cryptographic-authentication claim."
   );
   assert.deepEqual(measurements.committed_cp4_artifact, {
     artifact: "CP4_RECERTIFICATION.json",

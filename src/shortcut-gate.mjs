@@ -11,7 +11,6 @@ import { isDeepStrictEqual } from "node:util";
 
 import { canonicalJson } from "./evidence-rendering.mjs";
 import {
-  DEPENDENCY_SIGNATURE_TRUST_BOUNDARY,
   validateCp4DependencySpec,
   validateDependencyActivation
 } from "./cp4-dependency-ledger.mjs";
@@ -1063,7 +1062,7 @@ function constructionPatternInput(patterns) {
  * @param {object} args Gate inputs.
  * @param {object} args.featureSpec Frozen feature spec.
  * @param {object} args.dependencySpec Frozen dependency spec.
- * @param {object|null} [args.cp4Recertification] Signed CP4 recertification artifact.
+ * @param {object|null} [args.cp4Recertification] Approved CP4 recertification artifact.
  * @param {object|null} [args.rowArtifact] Explicit rendered-row artifact.
  * @param {object} [args.actualSourceHashes] Independently measured source hashes.
  * @param {object} [args.scenarioPatterns] Construction-pattern sidecar.
@@ -1091,7 +1090,7 @@ export function evaluateShortcutGate({
     };
   }
   if (cp4Recertification === null) {
-    throw new Error("owner-recertified dependency evaluation requires the signed CP4 artifact");
+    throw new Error("owner-recertified dependency evaluation requires the approved CP4 artifact");
   }
   const dependencyActivation = validateDependencyActivation(
     cp4Recertification,
@@ -1144,8 +1143,8 @@ export function evaluateShortcutGate({
         every_row_held_out_exactly_once: true,
         cp4_payload_sha256: dependencyActivation.cp4_payload_sha256,
         ledger_payload_sha256: dependencyActivation.ledger_payload_sha256,
-        dependency_signed_at: dependencyActivation.signed_at,
-        signature_trust_boundary: DEPENDENCY_SIGNATURE_TRUST_BOUNDARY
+        dependency_approved_at: dependencyActivation.approved_at,
+        approval_role: dependencyActivation.role
       },
       candidate_count: results.length,
       blockers_by_class: blockersByClass,

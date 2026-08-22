@@ -42,17 +42,15 @@
       "signature_envelope"
     ],
     "signature_envelope_keys": [
-      "owner_id",
-      "signed_at",
       "cp4_payload_sha256",
       "ledger_payload_sha256",
-      "attestation",
-      "signature"
+      "approved_at",
+      "role"
     ],
     "canonicalization": "recursive_unicode_code_point_object_keys_arrays_preserved_utf8",
     "signature_payload": "all_ledger_fields_except_signature_envelope",
-    "owner_attestation": "I attest that I reviewed and recertified this CP4 dependency ledger.",
-    "signature_trust_boundary": "First-hand owner approval recorded in chat and bound in Git is the trust boundary; the signature envelope is a tamper-evident payload-hash binding, not cryptographic authentication.",
+    "approval_role": "scientific_owner",
+    "approval_timestamp": "strict_utc_rfc3339",
     "edge_keys": [
       "left",
       "right",

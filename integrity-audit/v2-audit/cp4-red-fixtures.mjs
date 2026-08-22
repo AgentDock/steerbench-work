@@ -18,8 +18,8 @@ import { fileURLToPath } from "node:url";
 import {
   ADAPTATION_RECORDS,
   AUTHORITY_RECORD_IDS,
+  CP4_APPROVAL_ROLE,
   EXPECTED_SCENARIO_IDS,
-  OWNER_ATTESTATION,
   OWNER_RECERTIFIED,
   PENDING_OWNER_RECERTIFICATION,
   PROVISIONAL_RECORDS,
@@ -31,7 +31,7 @@ import {
   validateCp4Recertification
 } from "../../src/cp4-recertification.mjs";
 import {
-  DEPENDENCY_OWNER_ATTESTATION,
+  DEPENDENCY_APPROVAL_ROLE,
   assertDependencyLedgerMatches,
   dependencyLedgerPayloadSha256,
   validateDependencyActivation,
@@ -44,6 +44,15 @@ import {
   calibrateHistoricalV1InSample,
   typedCanonicalKey
 } from "../../src/shortcut-gate.mjs";
+import {
+  LEGACY_MIGRATION_RULE_ARTIFACT,
+  LEGACY_SCENARIO_IDS,
+  loadAndValidateLegacyMigrationRule
+} from "../../src/cp4-legacy-migration-rule.mjs";
+import {
+  ACTIVATED_CP4_TEST_ROOT,
+  ACTIVATION_TEST_APPROVED_AT
+} from "../../test/cp4-activation-fixture.mjs";
 
 const ROOT = fileURLToPath(new URL("../..", import.meta.url));
 const SCRIPT_PATH = fileURLToPath(import.meta.url);
@@ -86,10 +95,23 @@ const SUBTESTS = [
   ["cp4-receipt-traversal", 3, "traversing source receipt path"],
   ["cp4-receipt-symlink", 3, "symlink source receipt path"],
   ["cp4-receipt-hash", 3, "source receipt raw-byte hash"],
-  ["cp4-pending-signature", 5, "signature forbidden while pending"],
-  ["cp4-owner-envelope-missing", 5, "owner envelope required when complete"],
-  ["cp4-owner-envelope-stale", 5, "owner envelope binds current payload"],
-  ["cp4-owner-envelope-invalid-utc", 5, "owner envelope strict UTC timestamp"],
+  ["cp4-legacy-rule-receipt-missing", 5, "legacy record exact migration-rule receipt"],
+  ["cp4-legacy-rule-receipt-hash", 5, "legacy record migration-rule raw-byte hash"],
+  ["cp4-legacy-authored-receipt-missing", 5, "legacy record exact authored-row receipt"],
+  ["cp4-legacy-authored-receipt-wrong-id", 5, "legacy authored-row receipt ID membership"],
+  ["cp4-legacy-authored-receipt-nested-in-row", 5, "authored-row receipt reserved for its top-level legacy record"],
+  ["cp4-legacy-authored-receipt-cross-row", 5, "authored-row receipt forbidden on another legacy record"],
+  ["cp4-legacy-authored-receipt-outside-cohort", 5, "authored-row receipt forbidden outside legacy cohort"],
+  ["cp4-legacy-authored-receipt-hash-alias-nested", 5, "authored-row raw bytes remain reserved under an alias path"],
+  ["cp4-legacy-rule-receipt-outside-cohort", 5, "migration-rule receipt forbidden outside legacy cohort"],
+  ["cp4-legacy-rule-receipt-nested-in-cohort", 5, "migration-rule receipt reserved for top-level legacy records"],
+  ["cp4-legacy-rule-receipt-hash-alias-nested", 5, "migration-rule raw bytes remain reserved under an alias path"],
+  ["cp4-legacy-rule-receipt-count-spoof", 5, "legacy migration-rule receipt membership, not count"],
+  ["cp4-pending-approval-envelope", 5, "approval envelope forbidden while pending"],
+  ["cp4-approval-envelope-missing", 5, "approval envelope required when complete"],
+  ["cp4-approval-envelope-stale", 5, "approval envelope binds current payload"],
+  ["cp4-approval-envelope-invalid-utc", 5, "approval envelope strict UTC timestamp"],
+  ["cp4-approval-envelope-role", 5, "approval envelope anonymous scientific role"],
   ...REFERENCE_DECISIONS.map((decision) => [
     `cp4-action-${decision.replaceAll("_", "-")}`,
     7,
@@ -104,9 +126,10 @@ const SUBTESTS = [
   ["cp4-dependency-invented-edge", 12, "invented dependency edge"],
   ["cp4-dependency-component-drift", 12, "dependency component drift"],
   ["cp4-activation-cp4-payload-forgery", 5, "activation rejects a forged CP4 payload"],
-  ["cp4-activation-dependency-envelope-missing", 12, "activation requires the dependency signature envelope"],
+  ["cp4-activation-dependency-envelope-missing", 12, "activation requires the dependency approval envelope"],
   ["cp4-activation-generated-ledger-mismatch", 12, "activation rejects generated-versus-committed dependency drift"],
   ["cp4-activation-ledger-digest-mismatch", 12, "activation rejects a false canonical dependency-ledger digest"],
+  ["cp4-activation-dependency-role", 12, "activation requires the anonymous scientific-owner role"],
   ["cp4-activation-timestamp-invalid", 12, "activation rejects an invalid dependency timestamp"],
   ["cp4-activation-timestamp-inconsistent", 12, "activation rejects inconsistent dependency timestamps"],
   ["cp4-adaptation-dataset", 15, "adaptation dataset binding"],
@@ -129,22 +152,97 @@ function receiptFor(artifact, repositoryRoot = ROOT) {
   };
 }
 
-function signSyntheticArtifact(artifact) {
+function approveSyntheticArtifact(artifact) {
   artifact.signature_envelope = {
-    owner_id: "synthetic-red-fixture-owner",
-    signed_at: "2026-08-21T12:34:56Z",
     payload_sha256: cp4PayloadSha256(artifact),
-    attestation: OWNER_ATTESTATION,
-    signature: "synthetic-red-fixture-opaque-attestation"
+    approved_at: ACTIVATION_TEST_APPROVED_AT,
+    role: CP4_APPROVAL_ROLE
   };
   return artifact;
 }
 
-function completeSyntheticArtifact(receipt = receiptFor("VALIDATION_PLAN.md")) {
+function legacyReceiptBinding(repositoryRoot = ROOT) {
+  const loaded = loadAndValidateLegacyMigrationRule(repositoryRoot);
+  return {
+    rule: loaded.rule,
+    ruleReceipt: loaded.receipt,
+    authoredReceiptById: new Map(LEGACY_SCENARIO_IDS.map((scenarioId, index) => [
+      scenarioId,
+      loaded.rule.source_cohort.source_receipts[index]
+    ]))
+  };
+}
+
+function sortSourceReceipts(receipts) {
+  receipts.sort((left, right) => {
+    if (left.artifact < right.artifact) return -1;
+    if (left.artifact > right.artifact) return 1;
+    return 0;
+  });
+}
+
+function addLegacyReceipts(artifact, repositoryRoot = ROOT) {
+  const binding = legacyReceiptBinding(repositoryRoot);
+  for (const scenarioId of LEGACY_SCENARIO_IDS) {
+    const receipts = rowById(artifact, scenarioId).source_receipts;
+    receipts.push(
+      structuredClone(binding.authoredReceiptById.get(scenarioId)),
+      structuredClone(binding.ruleReceipt)
+    );
+    sortSourceReceipts(receipts);
+  }
+  return binding;
+}
+
+function copyLegacyReceiptInputs(repositoryRoot) {
+  const binding = legacyReceiptBinding(ROOT);
+  const relativeArtifacts = new Set([
+    LEGACY_MIGRATION_RULE_ARTIFACT,
+    binding.rule.design_receipt.artifact,
+    binding.rule.target_contract.cp4_schema_receipt.artifact,
+    binding.rule.target_contract.evidence_render_schema_receipt.artifact,
+    "sources/cp4/or-bench-adaptation-source-receipt.json",
+    "sources/cp4/xstest-adaptation-source-receipt.json",
+    ...Array.from(binding.authoredReceiptById.values(), (receipt) => receipt.artifact)
+  ]);
+  for (const relative of relativeArtifacts) {
+    const destination = path.join(repositoryRoot, relative);
+    fs.mkdirSync(path.dirname(destination), { recursive: true });
+    fs.copyFileSync(path.join(ROOT, relative), destination);
+  }
+  fs.copyFileSync(
+    path.join(ACTIVATED_CP4_TEST_ROOT, "VALIDATION_PLAN.md"),
+    path.join(repositoryRoot, "VALIDATION_PLAN.md")
+  );
+}
+
+function withScratchReservedReceiptAlias(sourceArtifact, aliasArtifact, callback) {
+  const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "cp4-red-alias-"));
+  try {
+    copyLegacyReceiptInputs(temporaryRoot);
+    const aliasPath = path.join(temporaryRoot, aliasArtifact);
+    fs.mkdirSync(path.dirname(aliasPath), { recursive: true });
+    fs.copyFileSync(path.join(temporaryRoot, sourceArtifact), aliasPath);
+    callback(
+      completeWithFrozenWrappers(temporaryRoot),
+      receiptFor(aliasArtifact, temporaryRoot),
+      temporaryRoot
+    );
+  } finally {
+    fs.rmSync(temporaryRoot, { recursive: true, force: true });
+  }
+}
+
+function completeSyntheticArtifact(
+  receipt = null,
+  repositoryRoot = ACTIVATED_CP4_TEST_ROOT
+) {
+  const sourceReceipt = receipt
+    ?? receiptFor("VALIDATION_PLAN.md", repositoryRoot);
   const artifact = createPendingCp4Recertification();
   artifact.status = OWNER_RECERTIFIED;
   for (const record of artifact.records) {
-    record.source_receipts = [receipt];
+    record.source_receipts = [sourceReceipt];
     record.proposed_action = {
       actor: "synthetic_worker",
       principal: null,
@@ -155,7 +253,7 @@ function completeSyntheticArtifact(receipt = receiptFor("VALIDATION_PLAN.md")) {
     record.ordinary_authority = {
       status: "established",
       rationale: "Synthetic mechanics-only authority basis.",
-      source_receipts: [receipt]
+      source_receipts: [sourceReceipt]
     };
     record.exceptional_authority = {
       status: "not_applicable",
@@ -166,7 +264,7 @@ function completeSyntheticArtifact(receipt = receiptFor("VALIDATION_PLAN.md")) {
       evidence_ids: [],
       facts: ["Synthetic mechanics-only evidence fact."],
       absence_rationale: null,
-      source_receipts: [receipt]
+      source_receipts: [sourceReceipt]
     };
     record.warning_basis = {
       warnings: [],
@@ -176,11 +274,11 @@ function completeSyntheticArtifact(receipt = receiptFor("VALIDATION_PLAN.md")) {
     record.reference_decision = "continue";
     record.reference_rationale = "Synthetic mechanics-only reference rationale.";
     record.prompt_reference_review = {
-      reviewed_prompt_sha256: receipt.sha256,
+      reviewed_prompt_sha256: sourceReceipt.sha256,
       prompt_decision_consistent: true,
       contradictions: [],
       rationale: "Synthetic prompt/reference mechanics review.",
-      source_receipts: [receipt]
+      source_receipts: [sourceReceipt]
     };
     if (record.authority_review !== null) {
       Object.assign(record.authority_review, {
@@ -194,7 +292,7 @@ function completeSyntheticArtifact(receipt = receiptFor("VALIDATION_PLAN.md")) {
         legal_authority: "synthetic legal-authority finding",
         operational_delegation: "synthetic action-specific delegation",
         safety_clearance: "synthetic safety-clearance finding",
-        supporting_artifact: receipt,
+        supporting_artifact: sourceReceipt,
         conclusion: "authority_established",
         rationale: "Synthetic uniform authority-review record."
       });
@@ -204,7 +302,7 @@ function completeSyntheticArtifact(receipt = receiptFor("VALIDATION_PLAN.md")) {
         upstream_dataset: ADAPTATION_RECORDS[record.scenario_id],
         immutable_upstream_revision: "synthetic-immutable-revision",
         upstream_source_example_or_prompt_id: "synthetic-upstream-id",
-        upstream_artifact_sha256: receipt.sha256,
+        upstream_artifact_sha256: sourceReceipt.sha256,
         transformation: {
           what_changed: "Synthetic source transformed into an action-boundary fixture.",
           why: "Exercise adaptation-binding mechanics."
@@ -215,7 +313,7 @@ function completeSyntheticArtifact(receipt = receiptFor("VALIDATION_PLAN.md")) {
           compatible: true,
           rationale: "Synthetic license compatibility conclusion."
         },
-        source_receipts: [receipt]
+        source_receipts: [sourceReceipt]
       });
       if (record.adaptation_license.official_source_review !== null) {
         Object.assign(record.adaptation_license.official_source_review, {
@@ -226,12 +324,12 @@ function completeSyntheticArtifact(receipt = receiptFor("VALIDATION_PLAN.md")) {
           delaware_automation_rules: "synthetic Delaware automation rules",
           target_record_existence: "synthetic target-record finding",
           reference_decision: record.reference_decision,
-          source_receipts: [receipt]
+          source_receipts: [sourceReceipt]
         });
       }
     }
     if (record.provisional_review !== null) {
-      record.provisional_review.source_receipts = [receipt];
+      record.provisional_review.source_receipts = [sourceReceipt];
       if (record.provisional_review.kind === "heldout_authorization") {
         Object.assign(record.provisional_review, {
           acting_identity: "synthetic acting identity",
@@ -257,7 +355,8 @@ function completeSyntheticArtifact(receipt = receiptFor("VALIDATION_PLAN.md")) {
       }
     }
   }
-  return signSyntheticArtifact(artifact);
+  addLegacyReceipts(artifact, repositoryRoot);
+  return approveSyntheticArtifact(artifact);
 }
 
 function rowById(artifact, scenarioId) {
@@ -270,12 +369,12 @@ function wrapperPath(dataset) {
     : "sources/cp4/or-bench-adaptation-source-receipt.json";
 }
 
-function frozenWrapper(dataset) {
+function frozenWrapper(dataset, repositoryRoot = ROOT) {
   const relative = wrapperPath(dataset);
   return {
     relative,
-    value: JSON.parse(fs.readFileSync(path.join(ROOT, relative), "utf8")),
-    receipt: receiptFor(relative)
+    value: JSON.parse(fs.readFileSync(path.join(repositoryRoot, relative), "utf8")),
+    receipt: receiptFor(relative, repositoryRoot)
   };
 }
 
@@ -294,22 +393,23 @@ function configureAdaptation(artifact, scenarioId, wrapper, sourceReceipt) {
     wrapper.upstream.license_evidence.declared_identifier;
 }
 
-function completeWithFrozenWrappers() {
-  const artifact = completeSyntheticArtifact();
+function completeWithFrozenWrappers(repositoryRoot = ACTIVATED_CP4_TEST_ROOT) {
+  const artifact = completeSyntheticArtifact(null, repositoryRoot);
   for (const dataset of ["XSTest", "OR-Bench"]) {
-    const frozen = frozenWrapper(dataset);
+    const frozen = frozenWrapper(dataset, repositoryRoot);
     for (const [scenarioId, expectedDataset] of Object.entries(ADAPTATION_RECORDS)) {
       if (expectedDataset === dataset) {
         configureAdaptation(artifact, scenarioId, frozen.value, frozen.receipt);
       }
     }
   }
-  return signSyntheticArtifact(artifact);
+  return approveSyntheticArtifact(artifact);
 }
 
 function withScratchWrapper(mutate, callback) {
   const temporaryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "cp4-red-wrapper-"));
   try {
+    copyLegacyReceiptInputs(temporaryRoot);
     fs.writeFileSync(path.join(temporaryRoot, "base.txt"), "synthetic base receipt\n");
     const baseReceipt = receiptFor("base.txt", temporaryRoot);
     const frozenByDataset = {};
@@ -321,7 +421,7 @@ function withScratchWrapper(mutate, callback) {
       const filename = `${dataset.toLowerCase().replaceAll("-", "")}.json`;
       fs.writeFileSync(path.join(temporaryRoot, filename), stableBytes(scratch));
     }
-    const artifact = completeSyntheticArtifact(baseReceipt);
+    const artifact = completeSyntheticArtifact(baseReceipt, temporaryRoot);
     for (const [scenarioId, dataset] of Object.entries(ADAPTATION_RECORDS)) {
       const filename = `${dataset.toLowerCase().replaceAll("-", "")}.json`;
       configureAdaptation(
@@ -331,7 +431,7 @@ function withScratchWrapper(mutate, callback) {
         receiptFor(filename, temporaryRoot)
       );
     }
-    signSyntheticArtifact(artifact);
+    approveSyntheticArtifact(artifact);
     callback(artifact, temporaryRoot);
   } finally {
     fs.rmSync(temporaryRoot, { recursive: true, force: true });
@@ -351,22 +451,20 @@ function addDependencyClaim(artifact, scenarioIds, kind, id, receipt) {
   }
 }
 
-function signDependencySpec(spec, cp4Artifact = null) {
-  const signedAt = spec.ledger.recertified_at;
+function approveDependencySpec(spec, cp4Artifact = null) {
+  const approvedAt = spec.ledger.recertified_at;
   spec.ledger.signature_envelope = {
-    owner_id: "synthetic-red-fixture-owner",
-    signed_at: signedAt,
     cp4_payload_sha256: cp4Artifact ? cp4PayloadSha256(cp4Artifact) : DIGEST,
     ledger_payload_sha256: DIGEST,
-    attestation: DEPENDENCY_OWNER_ATTESTATION,
-    signature: "synthetic-red-fixture-opaque-dependency-attestation"
+    approved_at: approvedAt,
+    role: DEPENDENCY_APPROVAL_ROLE
   };
   spec.ledger.signature_envelope.ledger_payload_sha256 =
     dependencyLedgerPayloadSha256(spec.ledger);
   return spec;
 }
 
-function ownerDependencySpec(candidate, cp4Artifact = null) {
+function approvedDependencySpec(candidate, cp4Artifact = null) {
   const spec = structuredClone(DEPENDENCY_SPEC);
   spec.ledger = {
     status: "owner_recertified",
@@ -376,7 +474,7 @@ function ownerDependencySpec(candidate, cp4Artifact = null) {
     components: structuredClone(candidate.components),
     signature_envelope: null
   };
-  return signDependencySpec(spec, cp4Artifact);
+  return approveDependencySpec(spec, cp4Artifact);
 }
 
 function completeActivationFixture() {
@@ -386,7 +484,7 @@ function completeActivationFixture() {
   });
   return {
     cp4Artifact,
-    dependencySpec: ownerDependencySpec(generated, cp4Artifact)
+    dependencySpec: approvedDependencySpec(generated, cp4Artifact)
   };
 }
 
@@ -522,25 +620,154 @@ function runSubtest(id, variant) {
     return;
   }
 
-  if (id === "cp4-pending-signature") {
+  if ([
+    "cp4-legacy-rule-receipt-hash-alias-nested",
+    "cp4-legacy-authored-receipt-hash-alias-nested"
+  ].includes(id)) {
+    const binding = legacyReceiptBinding();
+    const sourceArtifact = id === "cp4-legacy-rule-receipt-hash-alias-nested"
+      ? binding.ruleReceipt.artifact
+      : binding.authoredReceiptById.get(LEGACY_SCENARIO_IDS[0]).artifact;
+    const aliasArtifact = "synthetic-aliases/" + path.basename(sourceArtifact);
+    withScratchReservedReceiptAlias(
+      sourceArtifact,
+      aliasArtifact,
+      (artifact, aliasReceipt, temporaryRoot) => {
+        if (bad) {
+          const firstRecord = rowById(artifact, LEGACY_SCENARIO_IDS[0]);
+          firstRecord.ordinary_authority.source_receipts.push(aliasReceipt);
+          sortSourceReceipts(firstRecord.ordinary_authority.source_receipts);
+        }
+        approveSyntheticArtifact(artifact);
+        validateCp4Recertification(artifact, { repositoryRoot: temporaryRoot });
+      }
+    );
+    return;
+  }
+
+  if ([
+    "cp4-legacy-rule-receipt-missing",
+    "cp4-legacy-rule-receipt-hash",
+    "cp4-legacy-authored-receipt-missing",
+    "cp4-legacy-authored-receipt-wrong-id",
+    "cp4-legacy-authored-receipt-nested-in-row",
+    "cp4-legacy-authored-receipt-cross-row",
+    "cp4-legacy-authored-receipt-outside-cohort",
+    "cp4-legacy-rule-receipt-outside-cohort",
+    "cp4-legacy-rule-receipt-nested-in-cohort",
+    "cp4-legacy-rule-receipt-count-spoof"
+  ].includes(id)) {
+    const artifact = completeWithFrozenWrappers();
+    if (bad) {
+      const binding = legacyReceiptBinding();
+      const firstScenarioId = LEGACY_SCENARIO_IDS[0];
+      const secondScenarioId = LEGACY_SCENARIO_IDS[1];
+      const firstRecord = rowById(artifact, firstScenarioId);
+      const secondRecord = rowById(artifact, secondScenarioId);
+      const firstReceiptCount = firstRecord.source_receipts.length;
+      const firstAuthoredReceipt = binding.authoredReceiptById.get(firstScenarioId);
+      const secondAuthoredReceipt = binding.authoredReceiptById.get(secondScenarioId);
+
+      if (id === "cp4-legacy-rule-receipt-missing") {
+        firstRecord.source_receipts = firstRecord.source_receipts.filter(
+          (receipt) => receipt.artifact !== LEGACY_MIGRATION_RULE_ARTIFACT
+        );
+      }
+      if (id === "cp4-legacy-rule-receipt-hash") {
+        firstRecord.source_receipts.find(
+          (receipt) => receipt.artifact === LEGACY_MIGRATION_RULE_ARTIFACT
+        ).sha256 = "0".repeat(64);
+      }
+      if (id === "cp4-legacy-authored-receipt-missing") {
+        firstRecord.source_receipts = firstRecord.source_receipts.filter(
+          (receipt) => receipt.artifact !== firstAuthoredReceipt.artifact
+        );
+      }
+      if (id === "cp4-legacy-authored-receipt-wrong-id") {
+        firstRecord.source_receipts = firstRecord.source_receipts.filter(
+          (receipt) => receipt.artifact !== firstAuthoredReceipt.artifact
+        );
+        firstRecord.source_receipts.push(structuredClone(secondAuthoredReceipt));
+        sortSourceReceipts(firstRecord.source_receipts);
+        assert.equal(firstRecord.source_receipts.length, firstReceiptCount);
+      }
+      if (id === "cp4-legacy-authored-receipt-nested-in-row") {
+        firstRecord.ordinary_authority.source_receipts.push(
+          structuredClone(firstAuthoredReceipt)
+        );
+        sortSourceReceipts(firstRecord.ordinary_authority.source_receipts);
+      }
+      if (id === "cp4-legacy-authored-receipt-cross-row") {
+        secondRecord.source_receipts.push(structuredClone(firstAuthoredReceipt));
+        sortSourceReceipts(secondRecord.source_receipts);
+      }
+      if (id === "cp4-legacy-authored-receipt-outside-cohort") {
+        const outsideReceipts = artifact.records.find(
+          (record) => !LEGACY_SCENARIO_IDS.includes(record.scenario_id)
+        ).source_receipts;
+        outsideReceipts.push(structuredClone(firstAuthoredReceipt));
+        sortSourceReceipts(outsideReceipts);
+      }
+      if (id === "cp4-legacy-rule-receipt-outside-cohort") {
+        const outsideReceipts = artifact.records.find(
+          (record) => !LEGACY_SCENARIO_IDS.includes(record.scenario_id)
+        ).source_receipts;
+        outsideReceipts.push(structuredClone(binding.ruleReceipt));
+        sortSourceReceipts(outsideReceipts);
+      }
+      if (id === "cp4-legacy-rule-receipt-nested-in-cohort") {
+        firstRecord.ordinary_authority.source_receipts.push(
+          structuredClone(binding.ruleReceipt)
+        );
+        sortSourceReceipts(firstRecord.ordinary_authority.source_receipts);
+      }
+      if (id === "cp4-legacy-rule-receipt-count-spoof") {
+        firstRecord.source_receipts = firstRecord.source_receipts.filter(
+          (receipt) => receipt.artifact !== LEGACY_MIGRATION_RULE_ARTIFACT
+        );
+        firstRecord.source_receipts.push(receiptFor("CP4_RECERTIFICATION_SCHEMA.json"));
+        sortSourceReceipts(firstRecord.source_receipts);
+        assert.equal(firstRecord.source_receipts.length, firstReceiptCount);
+      }
+      approveSyntheticArtifact(artifact);
+    }
+    validateCp4Recertification(artifact, {
+      repositoryRoot: ACTIVATED_CP4_TEST_ROOT
+    });
+    return;
+  }
+
+  if (id === "cp4-pending-approval-envelope") {
     const artifact = createPendingCp4Recertification();
     if (bad) artifact.signature_envelope = {
-      owner_id: "not-allowed-while-pending",
-      signed_at: "2026-08-21T12:34:56Z",
       payload_sha256: DIGEST,
-      attestation: OWNER_ATTESTATION,
-      signature: "synthetic"
+      approved_at: ACTIVATION_TEST_APPROVED_AT,
+      role: CP4_APPROVAL_ROLE
     };
     validateCp4Recertification(artifact);
     return;
   }
 
-  if (["cp4-owner-envelope-missing", "cp4-owner-envelope-stale", "cp4-owner-envelope-invalid-utc"].includes(id)) {
+  if ([
+    "cp4-approval-envelope-missing",
+    "cp4-approval-envelope-stale",
+    "cp4-approval-envelope-invalid-utc",
+    "cp4-approval-envelope-role"
+  ].includes(id)) {
     const artifact = completeWithFrozenWrappers();
-    if (bad && id === "cp4-owner-envelope-missing") artifact.signature_envelope = null;
-    if (bad && id === "cp4-owner-envelope-stale") artifact.records[0].reference_rationale += " stale mutation";
-    if (bad && id === "cp4-owner-envelope-invalid-utc") artifact.signature_envelope.signed_at = "2026-02-30T12:34:56Z";
-    validateCp4Recertification(artifact);
+    if (bad && id === "cp4-approval-envelope-missing") artifact.signature_envelope = null;
+    if (bad && id === "cp4-approval-envelope-stale") {
+      artifact.records[0].reference_rationale += " stale mutation";
+    }
+    if (bad && id === "cp4-approval-envelope-invalid-utc") {
+      artifact.signature_envelope.approved_at = "2026-02-30T12:34:56Z";
+    }
+    if (bad && id === "cp4-approval-envelope-role") {
+      artifact.signature_envelope.role = "named_individual";
+    }
+    validateCp4Recertification(artifact, {
+      repositoryRoot: ACTIVATED_CP4_TEST_ROOT
+    });
     return;
   }
 
@@ -611,7 +838,7 @@ function runSubtest(id, variant) {
       planReceipt
     );
     const generated = generateCp4DependencyLedger(artifact, { dependencySpec: DEPENDENCY_SPEC });
-    const committed = ownerDependencySpec(generated);
+    const committed = approvedDependencySpec(generated);
     if (bad && id === "cp4-dependency-omitted-edge") {
       committed.ledger.edges = [];
       committed.ledger.components = EXPECTED_SCENARIO_IDS.map((scenarioId) => [scenarioId]);
@@ -648,12 +875,13 @@ function runSubtest(id, variant) {
     "cp4-activation-dependency-envelope-missing",
     "cp4-activation-generated-ledger-mismatch",
     "cp4-activation-ledger-digest-mismatch",
+    "cp4-activation-dependency-role",
     "cp4-activation-timestamp-invalid",
     "cp4-activation-timestamp-inconsistent"
   ].includes(id)) {
     const { cp4Artifact, dependencySpec } = completeActivationFixture();
     if (bad && id === "cp4-activation-cp4-payload-forgery") {
-      cp4Artifact.records[0].reference_rationale += " forged after owner signature";
+      cp4Artifact.records[0].reference_rationale += " forged after approval";
     }
     if (bad && id === "cp4-activation-dependency-envelope-missing") {
       dependencySpec.ledger.signature_envelope = null;
@@ -665,7 +893,7 @@ function runSubtest(id, variant) {
         EXPECTED_SCENARIO_IDS.slice(0, 2),
         "recertified_pair_or_mirror_id",
         "invented-activation-pair",
-        receiptFor("VALIDATION_PLAN.md")
+        receiptFor("VALIDATION_PLAN.md", ACTIVATED_CP4_TEST_ROOT)
       );
       const inventedLedger = generateCp4DependencyLedger(inventedClaims, {
         dependencySpec: DEPENDENCY_SPEC
@@ -673,22 +901,26 @@ function runSubtest(id, variant) {
       dependencySpec.ledger.scenario_ids = inventedLedger.scenario_ids;
       dependencySpec.ledger.edges = inventedLedger.edges;
       dependencySpec.ledger.components = inventedLedger.components;
-      signDependencySpec(dependencySpec, cp4Artifact);
+      approveDependencySpec(dependencySpec, cp4Artifact);
     }
     if (bad && id === "cp4-activation-ledger-digest-mismatch") {
       dependencySpec.ledger.signature_envelope.ledger_payload_sha256 = "0".repeat(64);
     }
+    if (bad && id === "cp4-activation-dependency-role") {
+      dependencySpec.ledger.signature_envelope.role = "named_individual";
+    }
     if (bad && id === "cp4-activation-timestamp-invalid") {
-      dependencySpec.ledger.recertified_at = "2026-02-30T12:34:56Z";
-      dependencySpec.ledger.signature_envelope.ledger_payload_sha256 =
-        dependencyLedgerPayloadSha256(dependencySpec.ledger);
+      dependencySpec.ledger.signature_envelope.approved_at =
+        "2026-02-30T12:34:56Z";
     }
     if (bad && id === "cp4-activation-timestamp-inconsistent") {
       dependencySpec.ledger.recertified_at = "2026-08-21T12:34:55Z";
       dependencySpec.ledger.signature_envelope.ledger_payload_sha256 =
         dependencyLedgerPayloadSha256(dependencySpec.ledger);
     }
-    validateDependencyActivation(cp4Artifact, dependencySpec);
+    validateDependencyActivation(cp4Artifact, dependencySpec, {
+      repositoryRoot: ACTIVATED_CP4_TEST_ROOT
+    });
     return;
   }
 
@@ -706,8 +938,10 @@ function runSubtest(id, variant) {
     if (bad && id === "cp4-adaptation-upstream-hash") record.adaptation_license.upstream_artifact_sha256 = "0".repeat(64);
     if (bad && id === "cp4-adaptation-upstream-id") record.adaptation_license.upstream_source_example_or_prompt_id = "wrong-upstream-id";
     if (bad && id === "cp4-adaptation-license") record.adaptation_license.license.identifier = "wrong-license";
-    signSyntheticArtifact(artifact);
-    validateCp4Recertification(artifact);
+    approveSyntheticArtifact(artifact);
+    validateCp4Recertification(artifact, {
+      repositoryRoot: ACTIVATED_CP4_TEST_ROOT
+    });
     return;
   }
 
@@ -819,9 +1053,9 @@ function cp4Measurements() {
     exact_reference_actions: REFERENCE_DECISIONS,
     current_corpus_action_counts: decisionCounts,
     owner_recertification_status: pending.status,
-    owner_signature_envelope: pending.signature_envelope,
-    owner_signature_trust_boundary:
-      "First-hand owner approval recorded in chat and bound in Git is the trust boundary; the signature envelope is a tamper-evident payload-hash binding, not cryptographic authentication.",
+    approval_envelope: pending.signature_envelope,
+    approval_envelope_semantics:
+      "Neutral role, strict UTC timestamp, and payload digest; no identity or cryptographic-authentication claim.",
     committed_cp4_artifact: {
       artifact: "CP4_RECERTIFICATION.json",
       sha256: sha256(committedCp4Bytes),
@@ -841,7 +1075,7 @@ function cp4Measurements() {
       evidence_count_status_plus_signature_correct:
         historical.evidence_count_status_plus_signature_correct
     },
-    scientific_limit: "Synthetic fixtures validate CP4 mechanics only. No row is claimed repaired, source-recertified, gold-recertified, owner-signed, or ready for production-v2 scoring."
+    scientific_limit: "Synthetic fixtures validate CP4 mechanics only. No row is claimed repaired, source-recertified, gold-recertified, approved, or ready for production-v2 scoring."
   };
 }
 
@@ -900,20 +1134,37 @@ function orchestratorMain() {
 
   const auditSources = [
     "VALIDATION_PLAN.md",
+    "LEGACY_MIGRATION_RULE.json",
+    "integrity-audit/v2-audit/LEGACY_MIGRATION_RULE_DESIGN.md",
+    "EVIDENCE_RENDER_SCHEMA.json",
     "CP4_RECERTIFICATION_SCHEMA.json",
     "CP4_RECERTIFICATION.json",
     "SHORTCUT_DEPENDENCY_SPEC.json",
     "SHORTCUT_FEATURE_SPEC.json",
     "HISTORICAL_V1_SHORTCUT_ROWS.json",
     "results/v2026-05/release-manifest.json",
+    "scenario-sets/steerbench-work-2026-05/air-canada-bereavement-policy-promise-realworld-010.json",
+    "scenario-sets/steerbench-work-2026-05/calendar-invite-prompt-injection-004.json",
+    "scenario-sets/steerbench-work-2026-05/deposition-statute-of-limitations-003.json",
+    "scenario-sets/steerbench-work-2026-05/dpd-chatbot-open-persona-realworld-011.json",
+    "scenario-sets/steerbench-work-2026-05/executive-impersonation-wire-fraud-005.json",
+    "scenario-sets/steerbench-work-2026-05/knight-capital-trading-deploy-realworld-007.json",
+    "scenario-sets/steerbench-work-2026-05/mata-avianca-fabricated-citation-realworld-008.json",
+    "scenario-sets/steerbench-work-2026-05/patient-records-employer-disclosure-002.json",
+    "scenario-sets/steerbench-work-2026-05/replit-production-freeze-violation-realworld-006.json",
+    "scenario-sets/steerbench-work-2026-05/telehealth-marketing-pixel-disclosure-001.json",
+    "scenario-sets/steerbench-work-2026-05/workday-applicant-auto-reject-realworld-009.json",
     "sources/cp4/xstest-adaptation-source-receipt.json",
     "sources/cp4/or-bench-adaptation-source-receipt.json",
+    "src/cp4-legacy-migration-rule.mjs",
     "src/cp4-recertification.mjs",
     "src/cp4-dependency-ledger.mjs",
     "src/shortcut-gate.mjs",
+    "scripts/generate-cp4-legacy-migration-rule.mjs",
     "scripts/generate-cp4-recertification.mjs",
+    "test/cp4-activation-fixture.mjs",
     "integrity-audit/v2-audit/cp4-red-fixtures.mjs"
-  ];
+  ].sort();
   const receipt = {
     schema_version: "steerbench.red-test-receipt.v1",
     checkpoint: 4,

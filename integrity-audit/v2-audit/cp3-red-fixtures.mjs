@@ -27,7 +27,7 @@ import {
   hashSourcePath
 } from "../../scripts/check-shortcuts.mjs";
 import {
-  DEPENDENCY_OWNER_ATTESTATION,
+  DEPENDENCY_APPROVAL_ROLE,
   dependencyLedgerPayloadSha256
 } from "../../src/cp4-dependency-ledger.mjs";
 import {
@@ -44,7 +44,8 @@ import {
   unicodeWhitespaceTokenLength
 } from "../../src/shortcut-gate.mjs";
 import {
-  ACTIVATION_TEST_SIGNED_AT,
+  ACTIVATED_CP4_TEST_ROOT,
+  ACTIVATION_TEST_APPROVED_AT,
   createCompleteActivationTestCp4
 } from "../../test/cp4-activation-fixture.mjs";
 import { MATERIAL_WARNING_NAMES, WARNING_NAMES } from "../../src/taxonomy.mjs";
@@ -244,7 +245,7 @@ function syntheticDependency(rows) {
     corpus_id_set_sha256: sha256(JSON.stringify(scenarioIds)),
     ledger: {
       status: "owner_recertified",
-      recertified_at: ACTIVATION_TEST_SIGNED_AT,
+      recertified_at: ACTIVATION_TEST_APPROVED_AT,
       scenario_ids: scenarioIds,
       edges: [],
       components: scenarioIds.map((id) => [id]),
@@ -252,12 +253,10 @@ function syntheticDependency(rows) {
     }
   };
   spec.ledger.signature_envelope = {
-    owner_id: "cp3-synthetic-red-fixture-only",
-    signed_at: ACTIVATION_TEST_SIGNED_AT,
     cp4_payload_sha256: COMPLETE_CP4.signature_envelope.payload_sha256,
     ledger_payload_sha256: dependencyLedgerPayloadSha256(spec.ledger),
-    attestation: DEPENDENCY_OWNER_ATTESTATION,
-    signature: "cp3-test-only-owner-supplied-opaque-attestation"
+    approved_at: ACTIVATION_TEST_APPROVED_AT,
+    role: DEPENDENCY_APPROVAL_ROLE
   };
   return spec;
 }
@@ -859,7 +858,7 @@ function runSubtest(id, variant) {
         rowArtifact: rowArtifact(rows, hashes),
         actualSourceHashes: hashes,
         scenarioPatterns: SCENARIO_PATTERNS,
-        repositoryRoot: ROOT
+        repositoryRoot: ACTIVATED_CP4_TEST_ROOT
       });
       return;
     }
@@ -879,7 +878,7 @@ function runSubtest(id, variant) {
           rowArtifact: rowArtifact(rows, hashes),
           actualSourceHashes: hashes,
           scenarioPatterns: SCENARIO_PATTERNS,
-          repositoryRoot: ROOT
+          repositoryRoot: ACTIVATED_CP4_TEST_ROOT
         });
         return;
       }
@@ -1025,20 +1024,36 @@ function orchestratorMain() {
   const measurements = cp3Measurements();
   const auditSources = [
     "CP4_RECERTIFICATION_SCHEMA.json",
+    "EVIDENCE_RENDER_SCHEMA.json",
+    "HISTORICAL_V1_SHORTCUT_ROWS.json",
+    "LEGACY_MIGRATION_RULE.json",
     "SHORTCUT_DEPENDENCY_SPEC.json",
     "VALIDATION_PLAN.md",
+    "integrity-audit/v2-audit/LEGACY_MIGRATION_RULE_DESIGN.md",
     "integrity-audit/v2-audit/cp3-red-fixtures.mjs",
     "integrity-audit/v2-audit/v1-defect-adapter.mjs",
-    "HISTORICAL_V1_SHORTCUT_ROWS.json",
     "results/v2026-05/release-manifest.json",
+    "scenario-sets/steerbench-work-2026-05/air-canada-bereavement-policy-promise-realworld-010.json",
+    "scenario-sets/steerbench-work-2026-05/calendar-invite-prompt-injection-004.json",
+    "scenario-sets/steerbench-work-2026-05/deposition-statute-of-limitations-003.json",
+    "scenario-sets/steerbench-work-2026-05/dpd-chatbot-open-persona-realworld-011.json",
+    "scenario-sets/steerbench-work-2026-05/executive-impersonation-wire-fraud-005.json",
+    "scenario-sets/steerbench-work-2026-05/knight-capital-trading-deploy-realworld-007.json",
+    "scenario-sets/steerbench-work-2026-05/mata-avianca-fabricated-citation-realworld-008.json",
+    "scenario-sets/steerbench-work-2026-05/patient-records-employer-disclosure-002.json",
+    "scenario-sets/steerbench-work-2026-05/replit-production-freeze-violation-realworld-006.json",
+    "scenario-sets/steerbench-work-2026-05/telehealth-marketing-pixel-disclosure-001.json",
+    "scenario-sets/steerbench-work-2026-05/workday-applicant-auto-reject-realworld-009.json",
     "scripts/check-shortcuts.mjs",
+    "scripts/generate-cp4-legacy-migration-rule.mjs",
     "sources/cp4/or-bench-adaptation-source-receipt.json",
     "sources/cp4/xstest-adaptation-source-receipt.json",
     "src/cp4-dependency-ledger.mjs",
+    "src/cp4-legacy-migration-rule.mjs",
     "src/cp4-recertification.mjs",
     "src/shortcut-gate.mjs",
     "test/cp4-activation-fixture.mjs"
-  ];
+  ].sort();
   const receipt = {
     schema_version: "steerbench.red-test-receipt.v1",
     checkpoint: 3,

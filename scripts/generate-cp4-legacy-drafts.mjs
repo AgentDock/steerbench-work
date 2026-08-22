@@ -19,6 +19,10 @@ const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SCENARIO_DIRECTORY = "scenario-sets/steerbench-work-2026-05";
 const RULE_ARTIFACT = "LEGACY_MIGRATION_RULE_DRAFT.json";
 const DRAFTS_ARTIFACT = "integrity-audit/v2-audit/cp4-drafts/legacy-row-drafts.json";
+const HISTORICAL_CP4_SCHEMA_RECEIPT = Object.freeze({
+  artifact: "CP4_RECERTIFICATION_SCHEMA.json",
+  sha256: "29664745db200c9311fb57f43763a4269c814944ab08b0887fd1c9668c93ee46"
+});
 
 export const LEGACY_DRAFT_STATUS = "draft_pending_owner_recertification";
 export const LEGACY_SCENARIO_IDS = Object.freeze([
@@ -235,7 +239,7 @@ export function buildLegacyMigrationRuleDraft(repositoryRoot = ROOT) {
     purpose: "Preserve the exact legacy source rows and expose unresolved CP4 mappings for owner recertification without changing live scenarios.",
     target_contract: {
       cp4_schema_version: CP4_SCHEMA_VERSION,
-      cp4_schema_receipt: receiptFor(repositoryRoot, "CP4_RECERTIFICATION_SCHEMA.json"),
+      cp4_schema_receipt: { ...HISTORICAL_CP4_SCHEMA_RECEIPT },
       evidence_render_schema_receipt: receiptFor(repositoryRoot, "EVIDENCE_RENDER_SCHEMA.json")
     },
     source_cohort: {
@@ -504,7 +508,7 @@ export function buildLegacyRowDraftBundle({
       artifact: RULE_ARTIFACT,
       sha256: sha256(Buffer.from(ruleBytes, "utf8"))
     },
-    target_cp4_schema_receipt: receiptFor(repositoryRoot, "CP4_RECERTIFICATION_SCHEMA.json"),
+    target_cp4_schema_receipt: { ...HISTORICAL_CP4_SCHEMA_RECEIPT },
     target_evidence_render_schema_receipt: receiptFor(repositoryRoot, "EVIDENCE_RENDER_SCHEMA.json"),
     scenario_count: EXPECTED_COUNTS.scenarios,
     scenario_ids: [...LEGACY_SCENARIO_IDS],

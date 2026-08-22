@@ -5,53 +5,118 @@
 
 import crypto from "node:crypto";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
   ADAPTATION_RECORDS,
-  OWNER_ATTESTATION,
   OWNER_RECERTIFIED,
   cp4PayloadSha256,
   createPendingCp4Recertification
 } from "../src/cp4-recertification.mjs";
+import {
+  LEGACY_MIGRATION_RULE_ARTIFACT,
+  LEGACY_SCENARIO_IDS,
+  loadAndValidateLegacyMigrationRule
+} from "../src/cp4-legacy-migration-rule.mjs";
 
-export const ACTIVATION_TEST_SIGNED_AT = "2026-08-21T12:34:56Z";
+export const ACTIVATION_TEST_APPROVED_AT = "2026-08-21T12:34:56Z";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
+const LEGACY_APPROVAL_RECORD_LINE_RE =
+  /^approval_record artifact=LEGACY_MIGRATION_RULE\.json(?: [^\r\n]*)?\r?\n?/gm;
+
+/**
+ * Replace any existing legacy-rule approval record with controlled fixture text.
+ *
+ * @param {string} sourcePlan Source validation-plan text.
+ * @param {string} approvalLine Controlled record text, or an empty string.
+ * @returns {string} Scratch-plan text with only the controlled record(s).
+ */
+export function withControlledLegacyApprovalRecord(sourcePlan, approvalLine) {
+  const planWithoutLegacyApproval = sourcePlan.replace(
+    LEGACY_APPROVAL_RECORD_LINE_RE,
+    ""
+  );
+  const planWithTrailingNewline = planWithoutLegacyApproval.endsWith("\n")
+    ? planWithoutLegacyApproval
+    : planWithoutLegacyApproval + "\n";
+  return approvalLine.length === 0
+    ? planWithTrailingNewline
+    : planWithTrailingNewline + approvalLine + "\n";
+}
+
+function copyArtifact(sourceRoot, destinationRoot, artifact) {
+  const destination = path.join(destinationRoot, artifact);
+  fs.mkdirSync(path.dirname(destination), { recursive: true });
+  fs.copyFileSync(path.join(sourceRoot, artifact), destination);
+}
+
+function createActivatedCp4TestRoot() {
+  const repositoryRoot = fs.mkdtempSync(path.join(os.tmpdir(), "cp4-activated-root-"));
+  const legacyRule = loadAndValidateLegacyMigrationRule(ROOT);
+  const artifacts = [
+    LEGACY_MIGRATION_RULE_ARTIFACT,
+    "CP4_RECERTIFICATION_SCHEMA.json",
+    "EVIDENCE_RENDER_SCHEMA.json",
+    "integrity-audit/v2-audit/LEGACY_MIGRATION_RULE_DESIGN.md",
+    "sources/cp4/xstest-adaptation-source-receipt.json",
+    "sources/cp4/or-bench-adaptation-source-receipt.json",
+    ...legacyRule.rule.source_cohort.source_receipts.map((receipt) => receipt.artifact)
+  ];
+  for (const artifact of artifacts) copyArtifact(ROOT, repositoryRoot, artifact);
+
+  const plan = fs.readFileSync(path.join(ROOT, "VALIDATION_PLAN.md"), "utf8");
+  const approvalLine = "approval_record artifact=" + LEGACY_MIGRATION_RULE_ARTIFACT
+    + " sha256=" + legacyRule.receipt.sha256
+    + " approved_on=2026-08-21 role=scientific_owner";
+  fs.writeFileSync(
+    path.join(repositoryRoot, "VALIDATION_PLAN.md"),
+    withControlledLegacyApprovalRecord(plan, approvalLine)
+  );
+  return repositoryRoot;
+}
+
+export const ACTIVATED_CP4_TEST_ROOT = createActivatedCp4TestRoot();
+process.once("exit", () => {
+  fs.rmSync(ACTIVATED_CP4_TEST_ROOT, { recursive: true, force: true });
+});
 
 /**
  * Create a raw-byte source receipt for a repository artifact.
  *
  * @param {string} artifact Repository-relative artifact path.
+ * @param {string} repositoryRoot Test repository root.
  * @returns {{artifact:string,sha256:string}} Receipt bound to the current bytes.
  */
-export function activationTestReceipt(artifact = "VALIDATION_PLAN.md") {
+export function activationTestReceipt(
+  artifact = "VALIDATION_PLAN.md",
+  repositoryRoot = ACTIVATED_CP4_TEST_ROOT
+) {
   return {
     artifact,
     sha256: crypto.createHash("sha256")
-      .update(fs.readFileSync(path.join(ROOT, artifact)))
+      .update(fs.readFileSync(path.join(repositoryRoot, artifact)))
       .digest("hex")
   };
 }
 
 /**
- * Replace the fixture's CP4 envelope after an intentional payload mutation.
+ * Replace the fixture's neutral CP4 envelope after a payload mutation.
  *
  * @param {object} artifact Complete CP4 fixture.
- * @param {string} signedAt Strict UTC timestamp.
- * @returns {object} The same artifact, signed for deterministic tests.
+ * @param {string} approvedAt Strict UTC timestamp.
+ * @returns {object} The same artifact, rebound for deterministic tests.
  */
 export function signActivationTestCp4(
   artifact,
-  signedAt = ACTIVATION_TEST_SIGNED_AT
+  approvedAt = ACTIVATION_TEST_APPROVED_AT
 ) {
   artifact.signature_envelope = {
-    owner_id: "synthetic-test-owner",
-    signed_at: signedAt,
     payload_sha256: cp4PayloadSha256(artifact),
-    attestation: OWNER_ATTESTATION,
-    signature: "test-only-owner-supplied-opaque-attestation"
+    approved_at: approvedAt,
+    role: "scientific_owner"
   };
   return artifact;
 }
@@ -60,13 +125,13 @@ function rowById(artifact, scenarioId) {
   return artifact.records.find((record) => record.scenario_id === scenarioId);
 }
 
-function frozenAdaptationWrapper(dataset) {
+function frozenAdaptationWrapper(dataset, repositoryRoot) {
   const filename = dataset === "XSTest"
     ? "sources/cp4/xstest-adaptation-source-receipt.json"
     : "sources/cp4/or-bench-adaptation-source-receipt.json";
   return {
-    wrapper: JSON.parse(fs.readFileSync(path.join(ROOT, filename), "utf8")),
-    receipt: activationTestReceipt(filename)
+    wrapper: JSON.parse(fs.readFileSync(path.join(repositoryRoot, filename), "utf8")),
+    receipt: activationTestReceipt(filename, repositoryRoot)
   };
 }
 
@@ -95,13 +160,16 @@ function configureAdaptationFromWrapper(artifact, scenarioId, wrapper, sourceRec
  * exercise its complete activation path without bypasses or mocks.
  *
  * @param {object} [options] Fixture options.
- * @param {string} [options.signedAt] Owner-envelope timestamp.
+ * @param {string} [options.approvedAt] Approval-envelope timestamp.
+ * @param {string} [options.repositoryRoot] Activated scratch repository root.
  * @returns {object} Complete owner-recertified CP4 artifact.
  */
 export function createCompleteActivationTestCp4({
-  signedAt = ACTIVATION_TEST_SIGNED_AT
+  approvedAt = ACTIVATION_TEST_APPROVED_AT,
+  repositoryRoot = ACTIVATED_CP4_TEST_ROOT
 } = {}) {
-  const receipt = activationTestReceipt();
+  const receipt = activationTestReceipt("VALIDATION_PLAN.md", repositoryRoot);
+  const legacyRule = loadAndValidateLegacyMigrationRule(repositoryRoot);
   const artifact = createPendingCp4Recertification();
   artifact.status = OWNER_RECERTIFIED;
 
@@ -224,8 +292,21 @@ export function createCompleteActivationTestCp4({
     }
   }
 
+  for (let index = 0; index < LEGACY_SCENARIO_IDS.length; index += 1) {
+    const record = rowById(artifact, LEGACY_SCENARIO_IDS[index]);
+    record.source_receipts.push(
+      structuredClone(legacyRule.rule.source_cohort.source_receipts[index]),
+      structuredClone(legacyRule.receipt)
+    );
+    record.source_receipts.sort((left, right) => {
+      if (left.artifact < right.artifact) return -1;
+      if (left.artifact > right.artifact) return 1;
+      return 0;
+    });
+  }
+
   for (const dataset of ["XSTest", "OR-Bench"]) {
-    const source = frozenAdaptationWrapper(dataset);
+    const source = frozenAdaptationWrapper(dataset, repositoryRoot);
     for (const [scenarioId, expectedDataset] of Object.entries(ADAPTATION_RECORDS)) {
       if (expectedDataset === dataset) {
         configureAdaptationFromWrapper(
@@ -238,5 +319,5 @@ export function createCompleteActivationTestCp4({
     }
   }
 
-  return signActivationTestCp4(artifact, signedAt);
+  return signActivationTestCp4(artifact, approvedAt);
 }

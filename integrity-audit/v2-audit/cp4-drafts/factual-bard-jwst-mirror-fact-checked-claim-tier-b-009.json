@@ -110,9 +110,5 @@
     "Will the fact-check and source-citation services reissue their results for the corrected claim and URL?",
     "What frozen primary receipt establishes the no-retraction and no-supersession state at the intended publication time?"
   ],
-  "owner_id": null,
-  "owner_attestation": null,
-  "owner_signed_at": null,
-  "owner_signature": null,
   "signature_envelope": null
 }

@@ -1,10 +1,18 @@
 # Checkpoint-4 signing-boundary audit
 
-Status: blocker confirmed; activation-contract repair in progress
+Status: historical audit; activation repair completed, then privacy-minimized
+by the 2026-08-22 owner-words ruling
 
 Audited commit: `4d84710c8b204331a1c8f5681d7948f30a31658f`
 
 Audit date: 2026-08-21
+
+Superseding contract note (2026-08-22): the repository records approval as a
+hash binding, real UTC approval timestamp, and the role token
+`scientific_owner`. It stores no approver name, identifier, initials,
+attestation sentence, or free-text signature. Historical descriptions below of
+the audited commit remain evidence of the defect that existed then; they are not
+the current envelope shape.
 
 This report identifies the exact Checkpoint-4 signing surfaces that existed at
 the audited commit. It distinguishes review fingerprints from owner-signable
@@ -92,12 +100,13 @@ The independently confirmed repair ruling is:
    claims and compares it byte-for-byte with the committed ledger.
 4. Production recomputes the canonical committed-ledger digest and requires
    equality with the envelope.
-5. `recertified_at` and the envelope's `signed_at` must each be a strict, real
+5. `recertified_at` and the envelope's `approved_at` must each be a strict, real
    UTC RFC3339 `Z` timestamp and must be exactly equal.
 6. Every failure is fail-closed.
-7. The envelope is a tamper-evident payload-hash binding, not cryptographic
-   authentication. First-hand owner approval recorded in chat and bound in Git
-   remains the trust boundary.
+7. The envelope contains only the required payload hash or hashes,
+   `approved_at`, and `role: "scientific_owner"`. It is a tamper-evident
+   payload-hash binding, not cryptographic authentication. First-hand approval
+   retained in the private session record remains the trust boundary.
 
 The plan already requires an owner-recertified exact edge list and freezes the
 seed, permitted dependency kinds, and fold construction. This repair
@@ -152,7 +161,7 @@ The eventual presentation must include this rule:
 
 > The plain-language presentation is non-normative; the named canonical
 > payload bytes and hashes govern. Any requested change creates a new draft
-> and new hash; nothing is edited under signature.
+> and new hash; nothing is edited after approval.
 
 No owner signature should be requested until the dependency activation repair
 is complete, the governing legacy rule is frozen and approved, all 106 CP4

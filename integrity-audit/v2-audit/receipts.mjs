@@ -425,22 +425,44 @@ check("CP3 receipt exact execution keys", [...new Set(cp3Receipt.executions.map(
   "bad_exit_nonzero|corrected_exit_zero|finding_id|label|owning_checkpoint|subtest_id"
 ]);
 check("CP3 receipt every execution belongs to checkpoint 3", cp3Receipt.executions.filter((row) => row.owning_checkpoint !== 3).map((row) => row.subtest_id), []);
-const cp3ExpectedAuditSourceHashes = {
-  "CP4_RECERTIFICATION_SCHEMA.json": sha256(fs.readFileSync(path.join(ROOT, "CP4_RECERTIFICATION_SCHEMA.json"))),
-  "SHORTCUT_DEPENDENCY_SPEC.json": sha256(fs.readFileSync(path.join(ROOT, "SHORTCUT_DEPENDENCY_SPEC.json"))),
-  "VALIDATION_PLAN.md": sha256(fs.readFileSync(path.join(ROOT, "VALIDATION_PLAN.md"))),
-  "integrity-audit/v2-audit/cp3-red-fixtures.mjs": sha256(fs.readFileSync(path.join(ROOT, "integrity-audit/v2-audit/cp3-red-fixtures.mjs"))),
-  "integrity-audit/v2-audit/v1-defect-adapter.mjs": sha256(fs.readFileSync(path.join(ROOT, "integrity-audit/v2-audit/v1-defect-adapter.mjs"))),
-  "HISTORICAL_V1_SHORTCUT_ROWS.json": sha256(fs.readFileSync(path.join(ROOT, "HISTORICAL_V1_SHORTCUT_ROWS.json"))),
-  "results/v2026-05/release-manifest.json": sha256(fs.readFileSync(path.join(ROOT, "results/v2026-05/release-manifest.json"))),
-  "scripts/check-shortcuts.mjs": sha256(fs.readFileSync(path.join(ROOT, "scripts/check-shortcuts.mjs"))),
-  "sources/cp4/or-bench-adaptation-source-receipt.json": sha256(fs.readFileSync(path.join(ROOT, "sources/cp4/or-bench-adaptation-source-receipt.json"))),
-  "sources/cp4/xstest-adaptation-source-receipt.json": sha256(fs.readFileSync(path.join(ROOT, "sources/cp4/xstest-adaptation-source-receipt.json"))),
-  "src/cp4-dependency-ledger.mjs": sha256(fs.readFileSync(path.join(ROOT, "src/cp4-dependency-ledger.mjs"))),
-  "src/cp4-recertification.mjs": sha256(fs.readFileSync(path.join(ROOT, "src/cp4-recertification.mjs"))),
-  "src/shortcut-gate.mjs": sha256(fs.readFileSync(path.join(ROOT, "src/shortcut-gate.mjs"))),
-  "test/cp4-activation-fixture.mjs": sha256(fs.readFileSync(path.join(ROOT, "test/cp4-activation-fixture.mjs")))
-};
+const cp3ExpectedAuditSources = [
+  "CP4_RECERTIFICATION_SCHEMA.json",
+  "EVIDENCE_RENDER_SCHEMA.json",
+  "HISTORICAL_V1_SHORTCUT_ROWS.json",
+  "LEGACY_MIGRATION_RULE.json",
+  "SHORTCUT_DEPENDENCY_SPEC.json",
+  "VALIDATION_PLAN.md",
+  "integrity-audit/v2-audit/LEGACY_MIGRATION_RULE_DESIGN.md",
+  "integrity-audit/v2-audit/cp3-red-fixtures.mjs",
+  "integrity-audit/v2-audit/v1-defect-adapter.mjs",
+  "results/v2026-05/release-manifest.json",
+  "scenario-sets/steerbench-work-2026-05/air-canada-bereavement-policy-promise-realworld-010.json",
+  "scenario-sets/steerbench-work-2026-05/calendar-invite-prompt-injection-004.json",
+  "scenario-sets/steerbench-work-2026-05/deposition-statute-of-limitations-003.json",
+  "scenario-sets/steerbench-work-2026-05/dpd-chatbot-open-persona-realworld-011.json",
+  "scenario-sets/steerbench-work-2026-05/executive-impersonation-wire-fraud-005.json",
+  "scenario-sets/steerbench-work-2026-05/knight-capital-trading-deploy-realworld-007.json",
+  "scenario-sets/steerbench-work-2026-05/mata-avianca-fabricated-citation-realworld-008.json",
+  "scenario-sets/steerbench-work-2026-05/patient-records-employer-disclosure-002.json",
+  "scenario-sets/steerbench-work-2026-05/replit-production-freeze-violation-realworld-006.json",
+  "scenario-sets/steerbench-work-2026-05/telehealth-marketing-pixel-disclosure-001.json",
+  "scenario-sets/steerbench-work-2026-05/workday-applicant-auto-reject-realworld-009.json",
+  "scripts/check-shortcuts.mjs",
+  "scripts/generate-cp4-legacy-migration-rule.mjs",
+  "sources/cp4/or-bench-adaptation-source-receipt.json",
+  "sources/cp4/xstest-adaptation-source-receipt.json",
+  "src/cp4-dependency-ledger.mjs",
+  "src/cp4-legacy-migration-rule.mjs",
+  "src/cp4-recertification.mjs",
+  "src/shortcut-gate.mjs",
+  "test/cp4-activation-fixture.mjs"
+].sort();
+const cp3ExpectedAuditSourceHashes = Object.fromEntries(
+  cp3ExpectedAuditSources.map((relative) => [
+    relative,
+    sha256(fs.readFileSync(path.join(ROOT, relative)))
+  ])
+);
 check("CP3 receipt audit-source hashes", cp3Receipt.audit_source_hashes, cp3ExpectedAuditSourceHashes);
 
 const cp3ExpectedSourceHashes = Object.fromEntries(Object.entries(defaultShortcutSourcePaths()).map(([name, sourcePath]) => [

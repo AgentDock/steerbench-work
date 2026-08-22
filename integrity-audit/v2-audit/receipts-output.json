@@ -397,8 +397,8 @@
     ]
   },
   "checkpoint_3": {
-    "red_fixture_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b",
-    "red_test_matrix_sha256": "729ae6ef3348c8eb6ac8e419fb5f21984f22bf3b80e6d565ebf8b60682b7960d",
+    "red_fixture_receipt_sha256": "c57add6b9176464840d7c219b6ddbd0e02e8f661325488a7675d97d047ff2622",
+    "red_test_matrix_sha256": "19cb9a652a781b169f545d886fc64e1b2b9221aad54cc6f09f4413f1009153af",
     "required_subtests": 43,
     "measurements": {
       "corpus_rows": 106,
@@ -482,7 +482,7 @@
         "row_artifact_schema": "steerbench.shortcut_rows.v1",
         "row_artifact_purpose": "synthetic_red_fixture",
         "row_artifact_rows": 106,
-        "row_artifact_sha256": "717bdd3370927dc8a0b1776eefe93fb27b5f26b2d9ed749402116c52ba24034c",
+        "row_artifact_sha256": "e2611a1d62990801e496a3df84805dc67126a5293308ea04bc837f72e74cf0cd",
         "visible_values_source": "production_parser_from_exact_wire_with_verified_spans",
         "caller_visible_projection": "forbidden_by_exact_row_schema",
         "integrity_leaf_family_count": 33,
@@ -491,9 +491,9 @@
       },
       "source_hashes": {
         "corpus": "5c2c1f7eeb00c2f4ea9d7002789491d4bbc63126d559af7066a2373b9b1730be",
-        "renderer": "68aaf23e4c2b2602cd6dc2cd08a093c440dfe4bde5fc2cb09b0c3bb2dd157d6b",
+        "renderer": "5a6c4551c7d1b56016560ab75425aa4b36f0e1d6cdb40af4c9fc6723f3e57f8b",
         "feature_spec": "02c2759ee851fc1cb4a6e9233bba656b230d8c4d65394e6af480cf3ec8d949e2",
-        "dependency_spec": "501de47629f700d6a937a60be0f2242a3acbd8af1d8df00b8b572498cfaf2654",
+        "dependency_spec": "ca6c05a112f586d403ae263d40f64c75b4327123de98a4b04e3fc3d03be20e53",
         "evidence_schema": "3d1eeafe11be9d078d735f6f2e002b7799285256c94b8553253cde2e03d131b2",
         "warning_rules": "4cc92049cee349092be28001e0ce557c3cf194469c8ced5a2ce0a41b651f8bbe",
         "proposed_access_schema": "214742e218fabaeea6136336211708b8a7245aa42adbdcd7b62d930db33ab7ae",
