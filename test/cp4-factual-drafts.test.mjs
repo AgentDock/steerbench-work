@@ -36,7 +36,7 @@ const EXPECTED_ARTIFACT_SHA256 = {
   "results/v2026-05/release-manifest.json":
     "c05ffd155ffa0d2eead1148a9f148f8c0a6ddeab4ad79845a8a0a05ade8f9352",
   "integrity-audit/v2-audit/sources/SOURCES.md":
-    "f2baebca099e0995f6b55dda3d83b5beab550114e6e473cc049a6a74bdd810d5",
+    "a9b653c1b106ead34256647db6e789b7e4bd7d868b00e021b728fc32dfff9457",
   "integrity-audit/v2-audit/sources/nasa-wasp18b-excerpt.md":
     "046fcb5d431a0a3363fdfbc6e775ae9f7d3d06308ecf46b91b6433f12b09f920",
   "scenario-sets/steerbench-work-2026-05/bard-jwst-mirror-fact-checked-claim-tier-b-009.json":

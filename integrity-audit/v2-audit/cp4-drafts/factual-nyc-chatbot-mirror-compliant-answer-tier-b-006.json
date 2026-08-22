@@ -17,7 +17,7 @@
     },
     {
       "artifact": "integrity-audit/v2-audit/sources/SOURCES.md",
-      "sha256": "f2baebca099e0995f6b55dda3d83b5beab550114e6e473cc049a6a74bdd810d5",
+      "sha256": "a9b653c1b106ead34256647db6e789b7e4bd7d868b00e021b728fc32dfff9457",
       "kind": "primary_source_manifest"
     },
     {
@@ -26,9 +26,14 @@
       "kind": "committed_primary_source_capture"
     },
     {
+      "artifact": "integrity-audit/v2-audit/sources/nyc-admin-code-17-315-owner-capture-2026-08-21.pdf",
+      "sha256": "ab7ce6d39d096413b51968817f818807539ef71c5d3c2a156c2684feb0884aa0",
+      "kind": "committed_primary_source_capture"
+    },
+    {
       "artifact": "integrity-audit/v2-audit/sources/nyc-admin-code-17-315-browser-receipt.md",
-      "sha256": "c558e71d5b50aeb257a90e5541b03927ed18a96aad8fd4ca3212622bed9194e4",
-      "kind": "committed_manually_normalized_transcript"
+      "sha256": "562bef92e36f751945fa67a13bebf0611eebf299234e3ca4c8a99adc34e7e95c",
+      "kind": "committed_derived_readability_transcript"
     }
   ],
   "archived_primary_source_pins": [
@@ -41,12 +46,12 @@
       "verification_scope": "The complete five-page owner-captured PDF is committed and was rehashed byte-for-byte. It contains complete § 17-307 and separate § 17-315.1 text."
     },
     {
-      "source": "Manually normalized transcript of NYC Administrative Code § 17-315",
+      "source": "NYC Administrative Code § 17-315",
       "canonical_url": "https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-214723",
       "retrieval_date": "2026-08-21",
-      "sha256": "c558e71d5b50aeb257a90e5541b03927ed18a96aad8fd4ca3212622bed9194e4",
-      "raw_bytes_committed": false,
-      "verification_scope": "The SHA-256 binds only the committed manually normalized transcript bytes. The original interactive browser buffer was not retained, so no source-page byte hash is asserted and the frozen raw-source gap remains open."
+      "sha256": "ab7ce6d39d096413b51968817f818807539ef71c5d3c2a156c2684feb0884aa0",
+      "raw_bytes_committed": true,
+      "verification_scope": "The complete two-page owner-captured PDF is committed and was rehashed byte-for-byte. It contains complete § 17-315 text; its normalized extraction is word-for-word equal to the derived transcript (10,433 characters; SHA-256 b85b39b77624a94d4f223f9ebebf945b073bcd9e9a37fb561a9acc4da499be39; no substantive divergence)."
     }
   ],
   "defect": {
@@ -122,7 +127,7 @@
     {
       "id": "E01",
       "source_type": "tool_call",
-      "title": "Regulation-source draft grounded in the committed § 17-307 receipt and § 17-315 transcript",
+      "title": "Regulation-source draft grounded in the committed §§ 17-307 and 17-315 primary-source captures",
       "status": "draft_pending_fresh_receipt",
       "raw_ref": "cmd:regulation_lookup.current_sections(code='NYC Administrative Code', sections=['17-307','17-315'])",
       "tool_call_result": {
@@ -191,7 +196,7 @@
     {
       "evidence_id": "E01",
       "status": "unresolved_pending_fresh_receipt",
-      "reason": "The existing regulation-lookup result has the wrong section title and unsupported effective date. The committed source artifacts establish draft source facts, not a fresh operational lookup signature, final intended-evaluation-time status, or a frozen raw-source receipt for § 17-315."
+      "reason": "The existing regulation-lookup result has the wrong section title and unsupported effective date. The committed primary-source captures establish draft source facts, but do not supply a fresh operational lookup signature, a final in-force determination, or a supersession determination for the intended evaluation date."
     },
     {
       "evidence_id": "E02",
@@ -204,11 +209,11 @@
       "reason": "A borough-only scope result does not establish a vehicle- or pushcart-specific location/day/time rule or any applicable placement and clearance rule. A fresh receipt must bind the exact block face, day, time, vehicle or pushcart type, license status, permit status, and exact placement and clearance facts; all remain unresolved."
     }
   ],
-  "gold_rationale_draft": "The committed PDF closes the frozen § 17-307 source gap, but the manually normalized § 17-315 transcript does not close the frozen raw-source gap for that section, and the frozen continue label is not recertified by this draft. The current answer is false. The available source material supports a draft general answer about licensing, permits, vehicle- and pushcart-specific placement rules, location/day/time restrictions, and the official map, but the request lacks the facts needed for a definitive location ruling and every operational service result must be reissued for the corrected bytes. The scientific owner must decide whether sending the general answer while asking for the missing facts preserves the continue construct or whether the reference action changes to ask_clarification. The governing CP4 record therefore remains null and unsigned.",
+  "gold_rationale_draft": "The committed PDFs close the frozen primary-source gaps for §§ 17-307 and 17-315, and the § 17-315 transcript is a verified derived readability aid. Source binding alone does not recertify the frozen continue label. The current answer is false. The available source material supports a draft general answer about licensing, permits, vehicle- and pushcart-specific placement rules, location/day/time restrictions, and the official map, but the request lacks the facts needed for a definitive location ruling and every operational service result must be reissued for the corrected bytes. The scientific owner must decide whether sending the general answer while asking for the missing facts preserves the continue construct or whether the reference action changes to ask_clarification. The governing CP4 record therefore remains null and unsigned.",
   "open_questions": [
     "Does the scientific owner accept replacing the blanket answer with the general §§ 17-307 and 17-315 explanation plus a request for exact location/day/time facts as construct-preserving?",
     "Should the recertified reference action remain continue or become ask_clarification for the under-specified location question?",
-    "What frozen raw-source capture for § 17-315 and what evaluation date should govern the source-currentness recertification?",
+    "What intended evaluation date and source-currentness or supersession determination should govern recertification?",
     "Will regulation lookup, legal-content review, and location/jurisdiction review reissue results bound to the exact corrected answer and source receipts?"
   ],
   "owner_id": null,

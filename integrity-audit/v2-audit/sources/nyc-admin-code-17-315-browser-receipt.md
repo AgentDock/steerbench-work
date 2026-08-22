@@ -1,4 +1,4 @@
-# NYC Administrative Code § 17-315 manually normalized transcript
+# NYC Administrative Code § 17-315 derived readability transcript
 
 - Canonical source: American Legal Publishing, New York City
   Administrative Code, Title 17, Chapter 3, Subchapter 2.
@@ -6,23 +6,44 @@
   pushcarts; vending in certain areas restricted or prohibited."
 - URL:
   https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-214723
-- Observed: 2026-08-21 in the owner's interactive Codex browser session
-  after loading the code-library page.
-- Transcription method: the section text visible in that browser session
-  was manually transcribed and normalized below. This file is not a raw
-  browser capture and is not byte-equivalent to the source page.
-- Provenance boundary: the original browser buffer was not retained. The
-  SHA-256 of this committed file binds only these manually normalized
-  transcript bytes; it does not authenticate or freeze the source-page
-  bytes. No hash of the discarded browser buffer is asserted, and the
-  frozen raw-source gap for § 17-315 remains open.
-- Normalization: indentation whitespace and non-breaking spaces were
-  collapsed or removed, paragraph breaks and simple subdivision labels
-  were added, and substantive wording and ordering were preserved. The
-  transcript is not byte-equivalent to the discarded browser buffer.
+- Authoritative primary receipt:
+  `nyc-admin-code-17-315-owner-capture-2026-08-21.pdf`, captured by the
+  owner on 2026-08-21, 34,843 bytes, 2 pages, SHA-256
+  `ab7ce6d39d096413b51968817f818807539ef71c5d3c2a156c2684feb0884aa0`.
+- Transcript provenance: the section text visible in the owner's
+  interactive browser session was manually transcribed and normalized
+  below. The transcript is now a derived readability aid; the committed
+  owner-captured PDF is the authoritative primary receipt.
+- Source binding: text extracted from the authoritative PDF and the body
+  below are word-for-word equal after whitespace/form-feed normalization.
+  Both normalize to 10,433 characters and SHA-256
+  `b85b39b77624a94d4f223f9ebebf945b073bcd9e9a37fb561a9acc4da499be39`;
+  there is no substantive divergence.
+- Normalization: replace each run matching `/[\s\f]+/gu` with one ASCII
+  space, then trim. The transcript's paragraph layout remains a readability
+  choice and is not byte-equivalent to the PDF.
 - Redistribution status: the section text is a public-law enactment. The
   American Legal page chrome and publisher-authored material are not
   reproduced here.
+
+## Machine-checkable normalized-text binding
+
+```json
+{
+  "schema_version": "steerbench.source_text_equivalence.v1",
+  "authoritative_capture": "integrity-audit/v2-audit/sources/nyc-admin-code-17-315-owner-capture-2026-08-21.pdf",
+  "authoritative_capture_sha256": "ab7ce6d39d096413b51968817f818807539ef71c5d3c2a156c2684feb0884aa0",
+  "derived_transcript": "integrity-audit/v2-audit/sources/nyc-admin-code-17-315-browser-receipt.md#complete-normalized-section-transcript",
+  "extraction": "pdftotext default reading-order output",
+  "normalization": "value.replace(/[\\s\\f]+/gu, \" \").trim()",
+  "capture_normalized_characters": 10433,
+  "transcript_normalized_characters": 10433,
+  "capture_normalized_sha256": "b85b39b77624a94d4f223f9ebebf945b073bcd9e9a37fb561a9acc4da499be39",
+  "transcript_normalized_sha256": "b85b39b77624a94d4f223f9ebebf945b073bcd9e9a37fb561a9acc4da499be39",
+  "exact_word_equality": true,
+  "substantive_divergence": false
+}
+```
 
 ## Controlling observations
 

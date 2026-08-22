@@ -17,6 +17,8 @@ const SCENARIO = `scenario-sets/steerbench-work-2026-05/${SCENARIO_ID}.json`;
 const SOURCE_MANIFEST = "integrity-audit/v2-audit/sources/SOURCES.md";
 const SECTION_307_PDF =
   "integrity-audit/v2-audit/sources/nyc-admin-code-17-307-owner-capture-2026-08-21.pdf";
+const SECTION_315_PDF =
+  "integrity-audit/v2-audit/sources/nyc-admin-code-17-315-owner-capture-2026-08-21.pdf";
 const SECTION_315_RECEIPT =
   "integrity-audit/v2-audit/sources/nyc-admin-code-17-315-browser-receipt.md";
 const DRAFT =
@@ -28,11 +30,31 @@ const EXPECTED_SHA256 = {
   [SCENARIO]:
     "31499381224646c437607dc7c0dcebd29ef03108007f5cedd3557419254618f4",
   [SOURCE_MANIFEST]:
-    "f2baebca099e0995f6b55dda3d83b5beab550114e6e473cc049a6a74bdd810d5",
+    "a9b653c1b106ead34256647db6e789b7e4bd7d868b00e021b728fc32dfff9457",
   [SECTION_307_PDF]:
     "99d7062944a6ff00185abb11a15b54d573720cf2a795b2576d5a7c34e3070dbd",
+  [SECTION_315_PDF]:
+    "ab7ce6d39d096413b51968817f818807539ef71c5d3c2a156c2684feb0884aa0",
   [SECTION_315_RECEIPT]:
-    "c558e71d5b50aeb257a90e5541b03927ed18a96aad8fd4ca3212622bed9194e4"
+    "562bef92e36f751945fa67a13bebf0611eebf299234e3ca4c8a99adc34e7e95c"
+};
+
+const EXPECTED_NORMALIZED_TEXT_BINDING = {
+  schema_version: "steerbench.source_text_equivalence.v1",
+  authoritative_capture: SECTION_315_PDF,
+  authoritative_capture_sha256: EXPECTED_SHA256[SECTION_315_PDF],
+  derived_transcript:
+    `${SECTION_315_RECEIPT}#complete-normalized-section-transcript`,
+  extraction: "pdftotext default reading-order output",
+  normalization: 'value.replace(/[\\s\\f]+/gu, " ").trim()',
+  capture_normalized_characters: 10_433,
+  transcript_normalized_characters: 10_433,
+  capture_normalized_sha256:
+    "b85b39b77624a94d4f223f9ebebf945b073bcd9e9a37fb561a9acc4da499be39",
+  transcript_normalized_sha256:
+    "b85b39b77624a94d4f223f9ebebf945b073bcd9e9a37fb561a9acc4da499be39",
+  exact_word_equality: true,
+  substantive_divergence: false
 };
 
 const EXPECTED_ARCHIVED_PRIMARY_SOURCE_PINS = [
@@ -47,14 +69,14 @@ const EXPECTED_ARCHIVED_PRIMARY_SOURCE_PINS = [
       "The complete five-page owner-captured PDF is committed and was rehashed byte-for-byte. It contains complete § 17-307 and separate § 17-315.1 text."
   },
   {
-    source: "Manually normalized transcript of NYC Administrative Code § 17-315",
+    source: "NYC Administrative Code § 17-315",
     canonical_url:
       "https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-214723",
     retrieval_date: "2026-08-21",
-    sha256: EXPECTED_SHA256[SECTION_315_RECEIPT],
-    raw_bytes_committed: false,
+    sha256: EXPECTED_SHA256[SECTION_315_PDF],
+    raw_bytes_committed: true,
     verification_scope:
-      "The SHA-256 binds only the committed manually normalized transcript bytes. The original interactive browser buffer was not retained, so no source-page byte hash is asserted and the frozen raw-source gap remains open."
+      "The complete two-page owner-captured PDF is committed and was rehashed byte-for-byte. It contains complete § 17-315 text; its normalized extraction is word-for-word equal to the derived transcript (10,433 characters; SHA-256 b85b39b77624a94d4f223f9ebebf945b073bcd9e9a37fb561a9acc4da499be39; no substantive divergence)."
   }
 ];
 
@@ -144,6 +166,18 @@ function sha256(bytes) {
   return crypto.createHash("sha256").update(bytes).digest("hex");
 }
 
+function normalizeSectionText(value) {
+  return value.replace(/[\s\f]+/gu, " ").trim();
+}
+
+function parseNormalizedTextBinding(receipt) {
+  const match = receipt.match(
+    /## Machine-checkable normalized-text binding\n\n```json\n(?<binding>[\s\S]*?)\n```/u
+  );
+  assert.ok(match?.groups?.binding, "missing normalized-text binding object");
+  return JSON.parse(match.groups.binding);
+}
+
 function readArtifact(relativePath) {
   const resolved = path.resolve(ROOT, relativePath);
   const relative = path.relative(ROOT, resolved);
@@ -191,25 +225,60 @@ function evidenceById(draft, evidenceId) {
   return evidence;
 }
 
-test("NYC source artifacts are exact and preserve the section 17-315 raw-source gap", () => {
+test("NYC source artifacts exactly bind the section 17-315 capture and transcript", () => {
   for (const [artifact, expectedDigest] of Object.entries(EXPECTED_SHA256)) {
     assert.equal(sha256(readArtifact(artifact)), expectedDigest, artifact);
   }
   assert.equal(fs.statSync(path.join(ROOT, SECTION_307_PDF)).size, 49_781);
+  assert.equal(fs.statSync(path.join(ROOT, SECTION_315_PDF)).size, 34_843);
 
   const sourceManifest = readArtifact(SOURCE_MANIFEST).toString("utf8");
   const section315 = readArtifact(SECTION_315_RECEIPT).toString("utf8");
+  const textBinding = parseNormalizedTextBinding(section315);
+  const transcriptMarker = "\n## Complete normalized section transcript\n\n";
+  const transcriptMarkerIndex = section315.indexOf(transcriptMarker);
+  assert.notEqual(transcriptMarkerIndex, -1);
+  const normalizedTranscriptBody = normalizeSectionText(
+    section315.slice(transcriptMarkerIndex + transcriptMarker.length)
+  );
+
   assert.equal(sourceManifest.includes("NO FROZEN RECEIPT"), false);
-  assert.match(sourceManifest, /frozen raw-source gap for § 17-315 remains open/u);
+  assert.match(sourceManifest, /nyc-admin-code-17-315-owner-capture-2026-08-21\.pdf/u);
+  assert.match(sourceManifest, /The PDF contains the complete § 17-315 section text/u);
+  assert.match(sourceManifest, /both are 10,433 characters/u);
   assert.match(
     sourceManifest,
     /borough-only E03 result cannot\s+establish a block-face\/day\/time answer/u
   );
-  assert.match(section315, /^# NYC Administrative Code § 17-315 manually normalized transcript/mu);
-  assert.match(section315, /original browser buffer was not retained/u);
-  assert.match(section315, /binds only these manually normalized\s+transcript bytes/u);
-  assert.match(section315, /does not authenticate or freeze the source-page\s+bytes/u);
-  assert.match(section315, /frozen raw-source gap for § 17-315 remains open/u);
+  assert.match(section315, /^# NYC Administrative Code § 17-315 derived readability transcript/mu);
+  assert.match(
+    section315,
+    /committed\s+owner-captured PDF is the authoritative primary receipt/u
+  );
+  assert.match(section315, /there is no substantive divergence/u);
+  assert.deepEqual(textBinding, EXPECTED_NORMALIZED_TEXT_BINDING);
+  assert.equal(
+    normalizedTranscriptBody.length,
+    EXPECTED_NORMALIZED_TEXT_BINDING.transcript_normalized_characters
+  );
+  assert.equal(
+    sha256(Buffer.from(normalizedTranscriptBody, "utf8")),
+    EXPECTED_NORMALIZED_TEXT_BINDING.transcript_normalized_sha256
+  );
+  assert.equal(
+    textBinding.capture_normalized_characters,
+    textBinding.transcript_normalized_characters
+  );
+  assert.equal(
+    textBinding.capture_normalized_sha256,
+    textBinding.transcript_normalized_sha256
+  );
+  assert.equal(textBinding.exact_word_equality, true);
+  assert.equal(textBinding.substantive_divergence, false);
+  assert.doesNotMatch(
+    `${sourceManifest}\n${section315}`,
+    /raw[- ]source gap|original browser buffer was not retained/iu
+  );
   assert.equal(section315.includes("complete rendered section `innerText`"), false);
   assert.equal(section315.includes("8f954399"), false);
   assert.match(section315, /twenty feet from exits, including service exits/u);
@@ -268,13 +337,18 @@ test("the NYC correction draft is canonical, receipt-bound, unsigned, and pointe
       kind: "committed_primary_source_capture"
     },
     {
+      artifact: SECTION_315_PDF,
+      sha256: EXPECTED_SHA256[SECTION_315_PDF],
+      kind: "committed_primary_source_capture"
+    },
+    {
       artifact: SECTION_315_RECEIPT,
       sha256: EXPECTED_SHA256[SECTION_315_RECEIPT],
-      kind: "committed_manually_normalized_transcript"
+      kind: "committed_derived_readability_transcript"
     }
   ];
   assert.deepEqual(draft.hash_receipts, expectedReceipts);
-  assert.equal(new Set(draft.hash_receipts.map((receipt) => receipt.artifact)).size, 5);
+  assert.equal(new Set(draft.hash_receipts.map((receipt) => receipt.artifact)).size, 6);
   for (const receipt of draft.hash_receipts) {
     assert.equal(sha256(readArtifact(receipt.artifact)), receipt.sha256);
   }
@@ -282,7 +356,7 @@ test("the NYC correction draft is canonical, receipt-bound, unsigned, and pointe
     draft.archived_primary_source_pins,
     EXPECTED_ARCHIVED_PRIMARY_SOURCE_PINS
   );
-  for (const [index, artifact] of [SECTION_307_PDF, SECTION_315_RECEIPT].entries()) {
+  for (const [index, artifact] of [SECTION_307_PDF, SECTION_315_PDF].entries()) {
     const receipt = draft.hash_receipts.find((candidate) => candidate.artifact === artifact);
     assert.ok(receipt, `missing hash receipt for archived source ${artifact}`);
     assert.equal(
@@ -291,6 +365,12 @@ test("the NYC correction draft is canonical, receipt-bound, unsigned, and pointe
       `archived source pin does not bind ${artifact}`
     );
   }
+  assert.equal(
+    draft.archived_primary_source_pins.some(
+      (pin) => pin.sha256 === EXPECTED_SHA256[SECTION_315_RECEIPT]
+    ),
+    false
+  );
   assert.deepEqual(draft.defect.invalidated_evidence_ids, ["E01", "E02", "E03"]);
   assert.deepEqual(draft.defect.affected_live_json_pointers, EXPECTED_AFFECTED_POINTERS);
   assert.equal(new Set(draft.defect.affected_live_json_pointers).size, EXPECTED_AFFECTED_POINTERS.length);
@@ -373,7 +453,20 @@ test("the proposed source facts are exact while all operational results remain p
   assert.equal(proposed.includes("2023-01-15"), false);
   assert.equal(proposed.includes("Food trucks are not permitted on residential streets"), false);
   assert.match(draft.proposed_action_text_draft, /exact block face, day and time/u);
-  assert.match(draft.gold_rationale_draft, /frozen raw-source gap for that section/u);
+  assert.match(
+    draft.excluded_or_unresolved_evidence.find((item) => item.evidence_id === "E01").reason,
+    /committed primary-source captures establish draft source facts/u
+  );
+  assert.match(
+    draft.gold_rationale_draft,
+    /committed PDFs close the frozen primary-source gaps for §§ 17-307 and 17-315/u
+  );
+  assert.match(draft.gold_rationale_draft, /Source binding alone does not recertify/u);
+  assert.match(
+    draft.open_questions.join("\n"),
+    /intended evaluation date and source-currentness or supersession determination/u
+  );
+  assert.doesNotMatch(JSON.stringify(draft), /raw[- ]source gap/iu);
   assert.doesNotMatch(JSON.stringify(draft), /publisher's warning|lag newly adopted legislation/iu);
 });
 

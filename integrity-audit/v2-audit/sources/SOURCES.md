@@ -3,9 +3,9 @@
 Source artifacts and manifests are listed below. Unless a subsection
 says otherwise, sources were retrieved by non-interactive fetch on the
 stated dates. A frozen receipt binds hashed source bytes, not merely a
-live URL; a manually normalized transcript whose source buffer was not
-retained is identified as such and is not treated as a frozen raw-source
-receipt. Copyrighted retrievals are NOT committed to this repository:
+live URL; a derived normalized transcript is identified as such and is
+not treated as an independent primary-source receipt. Copyrighted
+retrievals are NOT committed to this repository:
 for those, the receipt is a compact manifest (canonical source,
 version/section, retrieval date, SHA-256 of the raw download, a short
 controlling excerpt, and redistribution status). The hashed raw
@@ -104,15 +104,25 @@ cites).
   The PDF contains complete § 17-307 plus § 17-315.1; § 17-315.1 is a
   separate cleanliness-and-waste section and is not a substitute for
   § 17-315.
-- Section 17-315 manually normalized transcript:
-  `nyc-admin-code-17-315-browser-receipt.md`, SHA-256
-  `c558e71d5b50aeb257a90e5541b03927ed18a96aad8fd4ca3212622bed9194e4`.
-  It records a manually normalized transcription of the section text
-  observed on 2026-08-21 at
+- Section 17-315 owner capture:
+  `nyc-admin-code-17-315-owner-capture-2026-08-21.pdf`, 34,843 bytes,
+  2 pages, SHA-256
+  `ab7ce6d39d096413b51968817f818807539ef71c5d3c2a156c2684feb0884aa0`.
+  The owner printed the current American Legal section page to PDF on
+  2026-08-21 from
   https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-214723.
-  This file hash binds only the committed transcript bytes. The original
-  interactive browser buffer was not retained, so the transcript is not
-  a frozen raw-source receipt and no hash of source-page bytes is asserted.
+  The PDF contains the complete § 17-315 section text and is the
+  authoritative primary receipt for that section.
+- Section 17-315 derived readability transcript:
+  `nyc-admin-code-17-315-browser-receipt.md`, SHA-256
+  `562bef92e36f751945fa67a13bebf0611eebf299234e3ca4c8a99adc34e7e95c`.
+  After runs of whitespace/form-feed characters are collapsed to one
+  ASCII space and the result is trimmed, the PDF text extraction and
+  transcript body are word-for-word equal: both are 10,433 characters
+  with normalized SHA-256
+  `b85b39b77624a94d4f223f9ebebf945b073bcd9e9a37fb561a9acc4da499be39`.
+  There is no substantive divergence. The transcript is a derived
+  readability aid, not an independent primary-source receipt.
 - Controlling source findings:
   - § 17-307 is titled "Licenses, permits required; restrictions; term,"
     not "Restrictions on mobile food vending." It requires licenses and
@@ -130,16 +140,15 @@ cites).
     day and hour. These provisions contradict the row's blanket
     residential-street answer and do not support its commercial-corridor
     wording.
-- Status: the committed PDF closes the frozen § 17-307 source gap. The
-  manually normalized § 17-315 transcript is enough to diagnose the
-  frozen answer, but because its original browser buffer was not retained,
-  the frozen raw-source gap for § 17-315 remains open. The row remains
-  blocked at Checkpoint 4. Its current E01 title/date and E02 consistency
+- Status: the committed PDFs close the frozen primary-source gaps for
+  §§ 17-307 and 17-315. This source binding does not recertify the frozen
+  continue label or supply fresh operational results. The row remains
+  blocked at Checkpoint 4: its current E01 title/date and E02 consistency
   result are false or unsupported, and a borough-only E03 result cannot
-  establish a block-face/day/time answer. Correction requires a frozen
-  § 17-315 source capture, a new exact answer, fresh operational receipts
-  bound to those bytes, and dated scientific-owner source/gold
-  recertification for the intended evaluation date.
+  establish a block-face/day/time answer. Correction still requires a new
+  exact answer, fresh operational receipts bound to the captured source
+  bytes, and dated scientific-owner source/gold recertification for the
+  intended evaluation date.
 
 ## Paper source pins (hand-authored-table finding)
 

@@ -214,13 +214,16 @@ this partial matrix into the final aggregate before Gate 1.
   raw-download SHA-256, short controlling excerpt, and redistribution
   status. NYC Administrative Code: the complete owner-captured
   five-page PDF for § 17-307 is committed and byte-pinned; it also
-  contains a separate § 17-315.1, not § 17-315. The committed
-  § 17-315 artifact is only a manually normalized transcript whose
-  original interactive browser buffer was not retained, so it asserts
-  no source-page byte hash. The frozen raw-source gap for § 17-315
-  remains open and continues to block Checkpoint 4 for that row. The row-cited UMBC
-  Therac PDF is dead (196-byte non-PDF response, 2026-08-17); citation
-  corrected at Checkpoint 4.
+  contains a separate § 17-315.1, not § 17-315. A separate complete
+  two-page owner-captured PDF for § 17-315 is committed and byte-pinned
+  at SHA-256 `ab7ce6d3...`. Its normalized extracted text is
+  word-for-word equal to the derived readability transcript after
+  whitespace/form-feed normalization (10,433 characters; normalized
+  SHA-256 `b85b39b7...`; no substantive divergence). The two PDFs close
+  the frozen primary-source gaps, but do not recertify the NYC row's
+  reference action or replace its required fresh operational receipts and
+  owner review. The row-cited UMBC Therac PDF is dead (196-byte non-PDF
+  response, 2026-08-17); citation corrected at Checkpoint 4.
 - Paper pins for the hand-authored-table finding (dual, in
   `sources/SOURCES.md`): PUBLIC pin — arXiv:2608.12654v1 source
   package, tarball SHA-256 `7d0658f3...`, `main.tex` SHA-256
