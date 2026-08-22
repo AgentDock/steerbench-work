@@ -3,7 +3,7 @@
   "checkpoint": 4,
   "status": "CP4_BLOCKED_PENDING_OWNER_RECERTIFICATION",
   "production_v2": null,
-  "required_subtest_count": 42,
+  "required_subtest_count": 48,
   "all_required_subtests_executed": true,
   "all_bad_fixtures_exited_nonzero_before_replacement": true,
   "all_corrected_fixtures_passed": true,
@@ -11,17 +11,17 @@
     "VALIDATION_PLAN.md": "eac119afb6454ee85dbc4b678f3b6be5b12fdd2a2674da72a0640d354da4f6ec",
     "CP4_RECERTIFICATION_SCHEMA.json": "29664745db200c9311fb57f43763a4269c814944ab08b0887fd1c9668c93ee46",
     "CP4_RECERTIFICATION.json": "e7ce45529dc62ea8cf7e563235d59620fa2761407c38fbb41ce4d395a1fbada7",
-    "SHORTCUT_DEPENDENCY_SPEC.json": "a6f79ef1df99f2c117e3a7c0850128d3500c7c9ddfdd12c60d1fa1fbec7c7f5e",
+    "SHORTCUT_DEPENDENCY_SPEC.json": "501de47629f700d6a937a60be0f2242a3acbd8af1d8df00b8b572498cfaf2654",
     "SHORTCUT_FEATURE_SPEC.json": "02c2759ee851fc1cb4a6e9233bba656b230d8c4d65394e6af480cf3ec8d949e2",
     "HISTORICAL_V1_SHORTCUT_ROWS.json": "82a8058c2c0d217ab6126972975d37d76b588991d2992b77680fe9a6a0741112",
     "results/v2026-05/release-manifest.json": "c05ffd155ffa0d2eead1148a9f148f8c0a6ddeab4ad79845a8a0a05ade8f9352",
     "sources/cp4/xstest-adaptation-source-receipt.json": "cc7bf718dbb18199acbedaa897e8fc92cd1a189d362d9b7f6d827752354d36cf",
     "sources/cp4/or-bench-adaptation-source-receipt.json": "6ad2305b4788029cff1dd6d733a29beec3988e1d273dfbf4c2b60484e2a8f514",
     "src/cp4-recertification.mjs": "53ed76efc1184211b594932e406447fa7b49f14aaad59648fd5fee783e853f0e",
-    "src/cp4-dependency-ledger.mjs": "4d6554fff902d928a54cbf5b6e44a2a887ec5729a8f4b048d4240d92a7b67ffa",
-    "src/shortcut-gate.mjs": "53362ef0be186a4ffb648086821b9c9f74f54e697235279deb1341b654c24bce",
+    "src/cp4-dependency-ledger.mjs": "36c6d667866c60f703396ac488c5bf16756699988e7047590edc63d048f0ef31",
+    "src/shortcut-gate.mjs": "06c5231ed679ff619821a80e2a5c2cc0c0093fd790f0210dc2312ce57588c904",
     "scripts/generate-cp4-recertification.mjs": "8399a01f95e7390435651af0c015272fb427fe37e66b65dc32e6cfc597bb4991",
-    "integrity-audit/v2-audit/cp4-red-fixtures.mjs": "49b4992248ba3bd5974d4a73596995bcb25df17681f07a0ed6f847652de75353"
+    "integrity-audit/v2-audit/cp4-red-fixtures.mjs": "ee90317899aaf0b1d2106022adc10b67058da175fc3782df354e2b801daec220"
   },
   "measurements": {
     "scientific_status": "CP4_BLOCKED_PENDING_OWNER_RECERTIFICATION",
@@ -353,6 +353,54 @@
       "bad_exit_nonzero": true,
       "corrected_exit_zero": true,
       "label": "dependency component drift"
+    },
+    {
+      "subtest_id": "cp4-activation-cp4-payload-forgery",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "activation rejects a forged CP4 payload"
+    },
+    {
+      "subtest_id": "cp4-activation-dependency-envelope-missing",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "activation requires the dependency signature envelope"
+    },
+    {
+      "subtest_id": "cp4-activation-generated-ledger-mismatch",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "activation rejects generated-versus-committed dependency drift"
+    },
+    {
+      "subtest_id": "cp4-activation-ledger-digest-mismatch",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "activation rejects a false canonical dependency-ledger digest"
+    },
+    {
+      "subtest_id": "cp4-activation-timestamp-invalid",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "activation rejects an invalid dependency timestamp"
+    },
+    {
+      "subtest_id": "cp4-activation-timestamp-inconsistent",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "activation rejects inconsistent dependency timestamps"
     },
     {
       "subtest_id": "cp4-adaptation-dataset",

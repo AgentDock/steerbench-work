@@ -20,7 +20,7 @@ const DRAFT_ARTIFACT = "integrity-audit/v2-audit/cp4-drafts/dependency-claims-dr
 const PAIR_RECEIPT_ARTIFACT = "integrity-audit/v2-audit/cp4-drafts/dependency-pair-source-receipt-draft.json";
 const DRAFT_PATH = path.join(ROOT, DRAFT_ARTIFACT);
 const PAIR_RECEIPT_PATH = path.join(ROOT, PAIR_RECEIPT_ARTIFACT);
-const DRAFT_SHA256 = "d9463c92f64ce7299f078fb5edb6f738391cc37a12a79044d4a6bfe7d470ba3b";
+const DRAFT_SHA256 = "dd2e785e59b4df17b15b5df131acd2a13636e0a6683e3358b274d1518b0753d5";
 const PAIR_RECEIPT_SHA256 = "3d6ee038f0742f800f4bc71af1bfc81f28be73224434e3b0d96513f844cf3bc6";
 const RECERTIFICATION = JSON.parse(fs.readFileSync(path.join(ROOT, "CP4_RECERTIFICATION.json"), "utf8"));
 const DEPENDENCY_SPEC = JSON.parse(fs.readFileSync(path.join(ROOT, "SHORTCUT_DEPENDENCY_SPEC.json"), "utf8"));
@@ -196,8 +196,20 @@ test("dependency drafts have exact canonical bytes, shapes, coverage, and confin
   assert.equal(PAIR_RECEIPT.status, "draft_pending_owner_recertification");
   assert.equal(PAIR_RECEIPT.signature_envelope, null);
   assert.equal(DRAFT.candidate_output.production_status, "blocked_pending_owner_recertification");
+  assertExactKeys(DEPENDENCY_SPEC.ledger, [
+    "status",
+    "recertified_at",
+    "scenario_ids",
+    "edges",
+    "components",
+    "signature_envelope"
+  ], "pending dependency ledger");
   assert.equal(DEPENDENCY_SPEC.ledger.status, "pending_cp4_recertification");
-  assert.equal(DEPENDENCY_SPEC.ledger.owner_signature, null);
+  assert.equal(DEPENDENCY_SPEC.ledger.recertified_at, null);
+  assert.equal(DEPENDENCY_SPEC.ledger.signature_envelope, null);
+  assert.equal(DEPENDENCY_SPEC.ledger.scenario_ids, null);
+  assert.equal(DEPENDENCY_SPEC.ledger.edges, null);
+  assert.equal(DEPENDENCY_SPEC.ledger.components, null);
   assert.equal(DRAFT.corpus_id_set_sha256, DEPENDENCY_SPEC.corpus_id_set_sha256);
   assert.deepEqual(DRAFT.pair_source_receipt, {
     artifact: PAIR_RECEIPT_ARTIFACT,

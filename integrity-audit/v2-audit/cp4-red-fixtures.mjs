@@ -31,7 +31,10 @@ import {
   validateCp4Recertification
 } from "../../src/cp4-recertification.mjs";
 import {
+  DEPENDENCY_OWNER_ATTESTATION,
   assertDependencyLedgerMatches,
+  dependencyLedgerPayloadSha256,
+  validateDependencyActivation,
   generateCp4DependencyLedger
 } from "../../src/cp4-dependency-ledger.mjs";
 import {
@@ -100,6 +103,12 @@ const SUBTESTS = [
   ["cp4-dependency-omitted-edge", 12, "omitted dependency edge"],
   ["cp4-dependency-invented-edge", 12, "invented dependency edge"],
   ["cp4-dependency-component-drift", 12, "dependency component drift"],
+  ["cp4-activation-cp4-payload-forgery", 5, "activation rejects a forged CP4 payload"],
+  ["cp4-activation-dependency-envelope-missing", 12, "activation requires the dependency signature envelope"],
+  ["cp4-activation-generated-ledger-mismatch", 12, "activation rejects generated-versus-committed dependency drift"],
+  ["cp4-activation-ledger-digest-mismatch", 12, "activation rejects a false canonical dependency-ledger digest"],
+  ["cp4-activation-timestamp-invalid", 12, "activation rejects an invalid dependency timestamp"],
+  ["cp4-activation-timestamp-inconsistent", 12, "activation rejects inconsistent dependency timestamps"],
   ["cp4-adaptation-dataset", 15, "adaptation dataset binding"],
   ["cp4-adaptation-revision", 15, "adaptation immutable revision binding"],
   ["cp4-adaptation-upstream-hash", 15, "adaptation upstream artifact hash binding"],
@@ -342,17 +351,43 @@ function addDependencyClaim(artifact, scenarioIds, kind, id, receipt) {
   }
 }
 
-function ownerDependencySpec(candidate) {
+function signDependencySpec(spec, cp4Artifact = null) {
+  const signedAt = spec.ledger.recertified_at;
+  spec.ledger.signature_envelope = {
+    owner_id: "synthetic-red-fixture-owner",
+    signed_at: signedAt,
+    cp4_payload_sha256: cp4Artifact ? cp4PayloadSha256(cp4Artifact) : DIGEST,
+    ledger_payload_sha256: DIGEST,
+    attestation: DEPENDENCY_OWNER_ATTESTATION,
+    signature: "synthetic-red-fixture-opaque-dependency-attestation"
+  };
+  spec.ledger.signature_envelope.ledger_payload_sha256 =
+    dependencyLedgerPayloadSha256(spec.ledger);
+  return spec;
+}
+
+function ownerDependencySpec(candidate, cp4Artifact = null) {
   const spec = structuredClone(DEPENDENCY_SPEC);
   spec.ledger = {
     status: "owner_recertified",
-    owner_signature: "synthetic-red-fixture-owner",
     recertified_at: "2026-08-21T12:34:56Z",
     scenario_ids: structuredClone(candidate.scenario_ids),
     edges: structuredClone(candidate.edges),
-    components: structuredClone(candidate.components)
+    components: structuredClone(candidate.components),
+    signature_envelope: null
   };
-  return spec;
+  return signDependencySpec(spec, cp4Artifact);
+}
+
+function completeActivationFixture() {
+  const cp4Artifact = completeWithFrozenWrappers();
+  const generated = generateCp4DependencyLedger(cp4Artifact, {
+    dependencySpec: DEPENDENCY_SPEC
+  });
+  return {
+    cp4Artifact,
+    dependencySpec: ownerDependencySpec(generated, cp4Artifact)
+  };
 }
 
 function historicalReleaseBinding() {
@@ -605,6 +640,55 @@ function runSubtest(id, variant) {
       committed.ledger.components = EXPECTED_SCENARIO_IDS.map((scenarioId) => [scenarioId]);
     }
     assertDependencyLedgerMatches(generated, committed);
+    return;
+  }
+
+  if ([
+    "cp4-activation-cp4-payload-forgery",
+    "cp4-activation-dependency-envelope-missing",
+    "cp4-activation-generated-ledger-mismatch",
+    "cp4-activation-ledger-digest-mismatch",
+    "cp4-activation-timestamp-invalid",
+    "cp4-activation-timestamp-inconsistent"
+  ].includes(id)) {
+    const { cp4Artifact, dependencySpec } = completeActivationFixture();
+    if (bad && id === "cp4-activation-cp4-payload-forgery") {
+      cp4Artifact.records[0].reference_rationale += " forged after owner signature";
+    }
+    if (bad && id === "cp4-activation-dependency-envelope-missing") {
+      dependencySpec.ledger.signature_envelope = null;
+    }
+    if (bad && id === "cp4-activation-generated-ledger-mismatch") {
+      const inventedClaims = structuredClone(cp4Artifact);
+      addDependencyClaim(
+        inventedClaims,
+        EXPECTED_SCENARIO_IDS.slice(0, 2),
+        "recertified_pair_or_mirror_id",
+        "invented-activation-pair",
+        receiptFor("VALIDATION_PLAN.md")
+      );
+      const inventedLedger = generateCp4DependencyLedger(inventedClaims, {
+        dependencySpec: DEPENDENCY_SPEC
+      });
+      dependencySpec.ledger.scenario_ids = inventedLedger.scenario_ids;
+      dependencySpec.ledger.edges = inventedLedger.edges;
+      dependencySpec.ledger.components = inventedLedger.components;
+      signDependencySpec(dependencySpec, cp4Artifact);
+    }
+    if (bad && id === "cp4-activation-ledger-digest-mismatch") {
+      dependencySpec.ledger.signature_envelope.ledger_payload_sha256 = "0".repeat(64);
+    }
+    if (bad && id === "cp4-activation-timestamp-invalid") {
+      dependencySpec.ledger.recertified_at = "2026-02-30T12:34:56Z";
+      dependencySpec.ledger.signature_envelope.ledger_payload_sha256 =
+        dependencyLedgerPayloadSha256(dependencySpec.ledger);
+    }
+    if (bad && id === "cp4-activation-timestamp-inconsistent") {
+      dependencySpec.ledger.recertified_at = "2026-08-21T12:34:55Z";
+      dependencySpec.ledger.signature_envelope.ledger_payload_sha256 =
+        dependencyLedgerPayloadSha256(dependencySpec.ledger);
+    }
+    validateDependencyActivation(cp4Artifact, dependencySpec);
     return;
   }
 

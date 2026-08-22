@@ -3,8 +3,8 @@
   "checkpoint": 4,
   "status": "CP4_BLOCKED_PENDING_OWNER_RECERTIFICATION",
   "production_v2": null,
-  "required_subtest_count": 42,
-  "receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753",
+  "required_subtest_count": 48,
+  "receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299",
   "aggregate": {
     "unique_subtest_ids": true,
     "all_required_subtests_present": true,
@@ -22,7 +22,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "exact 106-row count: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-corpus-order",
@@ -32,7 +32,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "exact sorted scenario order: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-corpus-id",
@@ -42,7 +42,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "exact frozen scenario IDs: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-committed-artifact-binding",
@@ -52,7 +52,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "committed pending artifact and generator byte binding: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-authority-cohort-omission",
@@ -62,7 +62,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "authority cohort omission: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-authority-cohort-addition",
@@ -72,7 +72,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "authority cohort addition: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-adaptation-cohort-omission",
@@ -82,7 +82,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "adaptation cohort omission: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-adaptation-cohort-addition",
@@ -92,7 +92,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "adaptation cohort addition: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-provisional-cohort-omission",
@@ -102,7 +102,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "provisional cohort omission: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-provisional-cohort-addition",
@@ -112,7 +112,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "provisional cohort addition: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-missing-plan-field",
@@ -122,7 +122,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "missing recertification plan field: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-receipt-absolute",
@@ -132,7 +132,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "absolute source receipt path: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-receipt-traversal",
@@ -142,7 +142,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "traversing source receipt path: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-receipt-symlink",
@@ -152,7 +152,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "symlink source receipt path: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-receipt-hash",
@@ -162,7 +162,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "source receipt raw-byte hash: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-pending-signature",
@@ -172,7 +172,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "signature forbidden while pending: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-owner-envelope-missing",
@@ -182,7 +182,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "owner envelope required when complete: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-owner-envelope-stale",
@@ -192,7 +192,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "owner envelope binds current payload: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-owner-envelope-invalid-utc",
@@ -202,7 +202,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "owner envelope strict UTC timestamp: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-action-continue",
@@ -212,7 +212,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "exact reference action continue: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-action-proceed",
@@ -222,7 +222,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "exact reference action proceed: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-action-block",
@@ -232,7 +232,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "exact reference action block: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-action-request-approval",
@@ -242,7 +242,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "exact reference action request_approval: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-action-escalate",
@@ -252,7 +252,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "exact reference action escalate: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-action-ask-clarification",
@@ -262,7 +262,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "exact reference action ask_clarification: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-action-unknown",
@@ -272,7 +272,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "unknown reference action: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-dependency-missing",
@@ -282,7 +282,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "missing dependency claims: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-dependency-broad",
@@ -292,7 +292,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "forbidden broad dependency source: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-dependency-receipt-mismatch",
@@ -302,7 +302,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "shared dependency receipt mismatch: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-dependency-clique",
@@ -312,7 +312,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "dependency clique expansion: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-dependency-omitted-edge",
@@ -322,7 +322,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "omitted dependency edge: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-dependency-invented-edge",
@@ -332,7 +332,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "invented dependency edge: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-dependency-component-drift",
@@ -342,7 +342,67 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "dependency component drift: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
+    },
+    {
+      "subtest_id": "cp4-activation-cp4-payload-forgery",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "known_bad_fixture": "activation rejects a forged CP4 payload: isolated scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "activation rejects a forged CP4 payload: isolated synthetic contract fixture",
+      "expected_pass": "separate child process exits zero without claiming scientific recertification",
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
+    },
+    {
+      "subtest_id": "cp4-activation-dependency-envelope-missing",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "known_bad_fixture": "activation requires the dependency signature envelope: isolated scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "activation requires the dependency signature envelope: isolated synthetic contract fixture",
+      "expected_pass": "separate child process exits zero without claiming scientific recertification",
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
+    },
+    {
+      "subtest_id": "cp4-activation-generated-ledger-mismatch",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "known_bad_fixture": "activation rejects generated-versus-committed dependency drift: isolated scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "activation rejects generated-versus-committed dependency drift: isolated synthetic contract fixture",
+      "expected_pass": "separate child process exits zero without claiming scientific recertification",
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
+    },
+    {
+      "subtest_id": "cp4-activation-ledger-digest-mismatch",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "known_bad_fixture": "activation rejects a false canonical dependency-ledger digest: isolated scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "activation rejects a false canonical dependency-ledger digest: isolated synthetic contract fixture",
+      "expected_pass": "separate child process exits zero without claiming scientific recertification",
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
+    },
+    {
+      "subtest_id": "cp4-activation-timestamp-invalid",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "known_bad_fixture": "activation rejects an invalid dependency timestamp: isolated scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "activation rejects an invalid dependency timestamp: isolated synthetic contract fixture",
+      "expected_pass": "separate child process exits zero without claiming scientific recertification",
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
+    },
+    {
+      "subtest_id": "cp4-activation-timestamp-inconsistent",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "known_bad_fixture": "activation rejects inconsistent dependency timestamps: isolated scratch mutation",
+      "expected_gate_failure": "separate child process exits nonzero",
+      "corrected_fixture": "activation rejects inconsistent dependency timestamps: isolated synthetic contract fixture",
+      "expected_pass": "separate child process exits zero without claiming scientific recertification",
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-adaptation-dataset",
@@ -352,7 +412,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "adaptation dataset binding: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-adaptation-revision",
@@ -362,7 +422,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "adaptation immutable revision binding: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-adaptation-upstream-hash",
@@ -372,7 +432,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "adaptation upstream artifact hash binding: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-adaptation-local-mapping",
@@ -382,7 +442,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "adaptation local scenario mapping: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-adaptation-upstream-id",
@@ -392,7 +452,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "adaptation upstream example ID binding: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-adaptation-license",
@@ -402,7 +462,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "adaptation license binding: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-historical-coordinated-tamper",
@@ -412,7 +472,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "historical coordinated projection tamper: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-pending-owner-blocks",
@@ -422,7 +482,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "pending owner state stays blocking: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     },
     {
       "subtest_id": "cp4-pending-dependency-blocks",
@@ -432,7 +492,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "pending dependency state stays blocking: isolated synthetic contract fixture",
       "expected_pass": "separate child process exits zero without claiming scientific recertification",
-      "executed_receipt_sha256": "165ab900b1628cd5c7316973d067304e208d9ab8062d7548598172f08cd29753"
+      "executed_receipt_sha256": "a30b6db1e2f0d62e6527b53c2f12f00dcfe114555e2e9b1a133f678386017299"
     }
   ]
 }

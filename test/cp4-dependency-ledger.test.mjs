@@ -13,9 +13,20 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 import {
+  DEPENDENCY_OWNER_ATTESTATION,
   assertDependencyLedgerMatches,
+  canonicalizeDependencyLedgerPayload,
+  dependencyLedgerPayloadSha256,
+  validateDependencyActivation,
   generateCp4DependencyLedger
 } from "../src/cp4-dependency-ledger.mjs";
+import { cp4PayloadSha256 } from "../src/cp4-recertification.mjs";
+import {
+  ACTIVATION_TEST_SIGNED_AT,
+  activationTestReceipt,
+  createCompleteActivationTestCp4,
+  signActivationTestCp4
+} from "./cp4-activation-fixture.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const CORPUS = path.join(ROOT, "scenario-sets/steerbench-work-2026-05");
@@ -70,15 +81,26 @@ function addClaim(recertification, scenarioIds, kind, id, receipt = sourceReceip
   }
 }
 
-function committedSpec(candidate) {
+function committedSpec(candidate, {
+  cp4Artifact = null,
+  signedAt = "2026-08-22T01:02:03Z"
+} = {}) {
   const spec = structuredClone(DEPENDENCY_SPEC);
   spec.ledger = {
     status: "owner_recertified",
-    owner_signature: "fixture-scientific-owner",
-    recertified_at: "2026-08-21T00:00:00Z",
+    recertified_at: signedAt,
     scenario_ids: structuredClone(candidate.scenario_ids),
     edges: structuredClone(candidate.edges),
-    components: structuredClone(candidate.components)
+    components: structuredClone(candidate.components),
+    signature_envelope: null
+  };
+  spec.ledger.signature_envelope = {
+    owner_id: "fixture-scientific-owner",
+    signed_at: signedAt,
+    cp4_payload_sha256: cp4Artifact === null ? DIGEST : cp4PayloadSha256(cp4Artifact),
+    ledger_payload_sha256: dependencyLedgerPayloadSha256(spec.ledger),
+    attestation: DEPENDENCY_OWNER_ATTESTATION,
+    signature: "test-only-owner-supplied-opaque-attestation"
   };
   return spec;
 }
@@ -267,4 +289,163 @@ test("rejects self and duplicate edges in a committed ledger", () => {
     }
   ];
   assert.throws(() => assertDependencyLedgerMatches(generated, duplicate), /duplicate dependency edge/u);
+});
+
+test("canonical dependency payload excludes only the envelope and has a stable digest", () => {
+  const cp4 = createCompleteActivationTestCp4();
+  const candidate = generateCp4DependencyLedger(cp4, { dependencySpec: DEPENDENCY_SPEC });
+  const spec = committedSpec(candidate, { cp4Artifact: cp4 });
+  const expectedPayload = {
+    components: spec.ledger.components,
+    edges: spec.ledger.edges,
+    recertified_at: spec.ledger.recertified_at,
+    scenario_ids: spec.ledger.scenario_ids,
+    status: spec.ledger.status
+  };
+
+  assert.equal(
+    canonicalizeDependencyLedgerPayload(spec.ledger),
+    JSON.stringify(expectedPayload)
+  );
+  assert.equal(
+    spec.ledger.signature_envelope.ledger_payload_sha256,
+    dependencyLedgerPayloadSha256(spec.ledger)
+  );
+  const digest = dependencyLedgerPayloadSha256(spec.ledger);
+  spec.ledger.signature_envelope.signature = "different opaque owner record";
+  assert.equal(dependencyLedgerPayloadSha256(spec.ledger), digest);
+  spec.ledger.recertified_at = "2026-08-22T01:02:04Z";
+  assert.notEqual(dependencyLedgerPayloadSha256(spec.ledger), digest);
+});
+
+test("activation clears only for a complete signed CP4 and regenerated hash-bound ledger", () => {
+  const cp4 = createCompleteActivationTestCp4();
+  const candidate = generateCp4DependencyLedger(cp4, { dependencySpec: DEPENDENCY_SPEC });
+  const spec = committedSpec(candidate, {
+    cp4Artifact: cp4,
+    signedAt: "2026-08-22T01:02:03Z"
+  });
+
+  assert.notEqual(spec.ledger.recertified_at, cp4.signature_envelope.signed_at);
+  assert.deepEqual(validateDependencyActivation(cp4, spec, { repositoryRoot: ROOT }), {
+    cp4_payload_sha256: cp4PayloadSha256(cp4),
+    ledger_payload_sha256: dependencyLedgerPayloadSha256(spec.ledger),
+    signed_at: "2026-08-22T01:02:03Z"
+  });
+});
+
+test("activation rejects missing, malformed, and unbound CP4 owner envelopes", async (t) => {
+  const validCp4 = createCompleteActivationTestCp4();
+  const candidate = generateCp4DependencyLedger(validCp4, { dependencySpec: DEPENDENCY_SPEC });
+  const spec = committedSpec(candidate, { cp4Artifact: validCp4 });
+
+  await t.test("missing envelope", () => {
+    const cp4 = structuredClone(validCp4);
+    cp4.signature_envelope = null;
+    assert.throws(
+      () => validateDependencyActivation(cp4, spec, { repositoryRoot: ROOT }),
+      /signature_envelope is required for owner_recertified status/u
+    );
+  });
+
+  await t.test("malformed envelope", () => {
+    const cp4 = structuredClone(validCp4);
+    delete cp4.signature_envelope.attestation;
+    assert.throws(
+      () => validateDependencyActivation(cp4, spec, { repositoryRoot: ROOT }),
+      /artifact\.signature_envelope\.attestation is required/u
+    );
+  });
+
+  await t.test("payload digest does not bind signed CP4 bytes", () => {
+    const cp4 = structuredClone(validCp4);
+    cp4.records[0].reference_rationale += " changed after the envelope was recorded";
+    assert.throws(
+      () => validateDependencyActivation(cp4, spec, { repositoryRoot: ROOT }),
+      /payload_sha256 does not bind the canonical payload/u
+    );
+  });
+});
+
+test("activation rejects a ledger not regenerated from the signed CP4 dependency claims", () => {
+  const cp4 = createCompleteActivationTestCp4();
+  const staleCandidate = generateCp4DependencyLedger(cp4, { dependencySpec: DEPENDENCY_SPEC });
+  const receipt = activationTestReceipt();
+  addClaim(
+    cp4,
+    [SCENARIO_IDS[0], SCENARIO_IDS[1]],
+    KINDS[0],
+    "signed-pair-added-after-stale-ledger-generation",
+    receipt
+  );
+  signActivationTestCp4(cp4);
+  const staleSpecBoundToCurrentCp4 = committedSpec(staleCandidate, { cp4Artifact: cp4 });
+
+  assert.throws(
+    () => validateDependencyActivation(cp4, staleSpecBoundToCurrentCp4, { repositoryRoot: ROOT }),
+    /committed dependency edge bytes differ from generated bytes/u
+  );
+});
+
+test("activation rejects dependency-envelope digests that do not bind CP4 or ledger payloads", async (t) => {
+  const cp4 = createCompleteActivationTestCp4();
+  const candidate = generateCp4DependencyLedger(cp4, { dependencySpec: DEPENDENCY_SPEC });
+
+  await t.test("CP4 payload digest mismatch", () => {
+    const spec = committedSpec(candidate, { cp4Artifact: cp4 });
+    spec.ledger.signature_envelope.cp4_payload_sha256 = "b".repeat(64);
+    assert.throws(
+      () => validateDependencyActivation(cp4, spec, { repositoryRoot: ROOT }),
+      /does not bind the signed canonical CP4 payload/u
+    );
+  });
+
+  await t.test("dependency ledger payload digest mismatch", () => {
+    const spec = committedSpec(candidate, { cp4Artifact: cp4 });
+    spec.ledger.signature_envelope.ledger_payload_sha256 = "b".repeat(64);
+    assert.throws(
+      () => validateDependencyActivation(cp4, spec, { repositoryRoot: ROOT }),
+      /does not bind its canonical payload/u
+    );
+  });
+});
+
+test("activation rejects malformed, impossible, and internally nonmatching dependency timestamps", async (t) => {
+  const cp4 = createCompleteActivationTestCp4({ signedAt: ACTIVATION_TEST_SIGNED_AT });
+  const candidate = generateCp4DependencyLedger(cp4, { dependencySpec: DEPENDENCY_SPEC });
+
+  await t.test("malformed offset timestamp", () => {
+    const spec = committedSpec(candidate, {
+      cp4Artifact: cp4,
+      signedAt: "2026-08-22T01:02:03Z"
+    });
+    spec.ledger.signature_envelope.signed_at = "2026-08-22T01:02:03+00:00";
+    assert.throws(
+      () => validateDependencyActivation(cp4, spec, { repositoryRoot: ROOT }),
+      /signature_envelope\.signed_at must be strict UTC RFC3339/u
+    );
+  });
+
+  await t.test("non-real calendar timestamp", () => {
+    const spec = committedSpec(candidate, {
+      cp4Artifact: cp4,
+      signedAt: "2026-02-30T01:02:03Z"
+    });
+    assert.throws(
+      () => validateDependencyActivation(cp4, spec, { repositoryRoot: ROOT }),
+      /recertified_at is not a real UTC timestamp/u
+    );
+  });
+
+  await t.test("recertified_at differs from envelope signed_at", () => {
+    const spec = committedSpec(candidate, {
+      cp4Artifact: cp4,
+      signedAt: "2026-08-22T01:02:03Z"
+    });
+    spec.ledger.signature_envelope.signed_at = "2026-08-22T01:02:04Z";
+    assert.throws(
+      () => validateDependencyActivation(cp4, spec, { repositoryRoot: ROOT }),
+      /recertified_at must equal its envelope signed_at/u
+    );
+  });
 });

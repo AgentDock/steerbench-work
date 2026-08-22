@@ -27,6 +27,10 @@ import {
   hashSourcePath
 } from "../../scripts/check-shortcuts.mjs";
 import {
+  DEPENDENCY_OWNER_ATTESTATION,
+  dependencyLedgerPayloadSha256
+} from "../../src/cp4-dependency-ledger.mjs";
+import {
   PENDING_CP4_STATUS,
   calibrateHistoricalV1InSample,
   enumerateShortcutCandidates,
@@ -39,6 +43,10 @@ import {
   unicodeCodePointLength,
   unicodeWhitespaceTokenLength
 } from "../../src/shortcut-gate.mjs";
+import {
+  ACTIVATION_TEST_SIGNED_AT,
+  createCompleteActivationTestCp4
+} from "../../test/cp4-activation-fixture.mjs";
 import { MATERIAL_WARNING_NAMES, WARNING_NAMES } from "../../src/taxonomy.mjs";
 import {
   WARNING_RULES,
@@ -84,6 +92,7 @@ const PROVISIONAL_ROWS = Object.freeze({
   "eval-leakage-001": "evaluation_evidence_provenance_risk",
   "fixture-regenerate-authorized-adversarial-006": null
 });
+const COMPLETE_CP4 = createCompleteActivationTestCp4();
 
 const sha256 = (value) => crypto.createHash("sha256").update(value).digest("hex");
 const stableBytes = (value) => `${JSON.stringify(value, null, 2)}\n`;
@@ -230,18 +239,27 @@ function rowArtifact(rows, hashes) {
 
 function syntheticDependency(rows) {
   const scenarioIds = rows.map((row) => row.scenario_id).sort();
-  return {
+  const spec = {
     ...structuredClone(DEPENDENCY_SPEC),
     corpus_id_set_sha256: sha256(JSON.stringify(scenarioIds)),
     ledger: {
       status: "owner_recertified",
-      owner_signature: "cp3-synthetic-red-fixture-only",
-      recertified_at: "2026-08-19T00:00:00Z",
+      recertified_at: ACTIVATION_TEST_SIGNED_AT,
       scenario_ids: scenarioIds,
       edges: [],
-      components: scenarioIds.map((id) => [id])
+      components: scenarioIds.map((id) => [id]),
+      signature_envelope: null
     }
   };
+  spec.ledger.signature_envelope = {
+    owner_id: "cp3-synthetic-red-fixture-only",
+    signed_at: ACTIVATION_TEST_SIGNED_AT,
+    cp4_payload_sha256: COMPLETE_CP4.signature_envelope.payload_sha256,
+    ledger_payload_sha256: dependencyLedgerPayloadSha256(spec.ledger),
+    attestation: DEPENDENCY_OWNER_ATTESTATION,
+    signature: "cp3-test-only-owner-supplied-opaque-attestation"
+  };
+  return spec;
 }
 
 function selectedSourceRecords(raw) {
@@ -837,9 +855,11 @@ function runSubtest(id, variant) {
       evaluateShortcutGate({
         featureSpec: FEATURE_SPEC,
         dependencySpec: syntheticDependency(rows),
+        cp4Recertification: COMPLETE_CP4,
         rowArtifact: rowArtifact(rows, hashes),
         actualSourceHashes: hashes,
-        scenarioPatterns: SCENARIO_PATTERNS
+        scenarioPatterns: SCENARIO_PATTERNS,
+        repositoryRoot: ROOT
       });
       return;
     }
@@ -855,9 +875,11 @@ function runSubtest(id, variant) {
         evaluateShortcutGate({
           featureSpec: FEATURE_SPEC,
           dependencySpec: syntheticDependency(rows),
+          cp4Recertification: COMPLETE_CP4,
           rowArtifact: rowArtifact(rows, hashes),
           actualSourceHashes: hashes,
-          scenarioPatterns: SCENARIO_PATTERNS
+          scenarioPatterns: SCENARIO_PATTERNS,
+          repositoryRoot: ROOT
         });
         return;
       }
@@ -1002,12 +1024,20 @@ function orchestratorMain() {
   }
   const measurements = cp3Measurements();
   const auditSources = [
+    "CP4_RECERTIFICATION_SCHEMA.json",
+    "SHORTCUT_DEPENDENCY_SPEC.json",
+    "VALIDATION_PLAN.md",
     "integrity-audit/v2-audit/cp3-red-fixtures.mjs",
     "integrity-audit/v2-audit/v1-defect-adapter.mjs",
     "HISTORICAL_V1_SHORTCUT_ROWS.json",
     "results/v2026-05/release-manifest.json",
     "scripts/check-shortcuts.mjs",
-    "src/shortcut-gate.mjs"
+    "sources/cp4/or-bench-adaptation-source-receipt.json",
+    "sources/cp4/xstest-adaptation-source-receipt.json",
+    "src/cp4-dependency-ledger.mjs",
+    "src/cp4-recertification.mjs",
+    "src/shortcut-gate.mjs",
+    "test/cp4-activation-fixture.mjs"
   ];
   const receipt = {
     schema_version: "steerbench.red-test-receipt.v1",

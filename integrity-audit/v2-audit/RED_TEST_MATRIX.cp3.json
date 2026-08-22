@@ -2,7 +2,7 @@
   "schema_version": "steerbench.red-test-matrix.partial.v1",
   "checkpoint": 3,
   "required_subtest_count": 43,
-  "receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2",
+  "receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b",
   "aggregate": {
     "unique_subtest_ids": true,
     "all_required_subtests_present": true,
@@ -18,7 +18,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "decision-point confidence only: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f02-legacy-action-confidence-only",
@@ -28,7 +28,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "legacy-action confidence only: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f02-joint-confidence-mutation-deletion",
@@ -38,7 +38,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "joint confidence mutation and deletion: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f02-derived-threshold-warning-restored",
@@ -48,7 +48,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "former confidence warning restoration: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f03-selected-evidence-exact-once-order",
@@ -58,7 +58,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "selected evidence count and order: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f03-tool-payload-recursive-deep-equal",
@@ -68,7 +68,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "recursive tool payload equality: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f03-evidence-bearing-row-census",
@@ -78,7 +78,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "evidence-bearing row census: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f03-source-key-census-reserved-provenance",
@@ -88,7 +88,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "source-key census and reserved provenance: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f03-forbidden-source-fields-opaque",
@@ -98,7 +98,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "forbidden evidence metadata opacity: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f03-unknown-top-level-rejected",
@@ -108,7 +108,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "unknown top-level evidence key: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f03-wrong-type-rejected",
@@ -118,7 +118,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "wrong evidence type: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f03-nested-payload-unknown-keys-allowed",
@@ -128,7 +128,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "nested payload extension preservation: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f03-recursive-object-key-sorting",
@@ -138,7 +138,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "recursive canonical object sorting: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f03-array-order-primitives-preserved",
@@ -148,7 +148,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "array order and primitive preservation: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f03-backtick-fence-injection-contained",
@@ -158,7 +158,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "backtick fence containment: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-single-warning-surface",
@@ -168,7 +168,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "single structured warning surface: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-exact-sixteen-warning-registry",
@@ -178,7 +178,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "exact sixteen-name warning registry: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-warning-schema-category-failure",
@@ -188,7 +188,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "warning schema and category validation: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-trace-replay",
@@ -198,7 +198,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "deterministic warning trace replay: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-dangling-source-rejected",
@@ -208,7 +208,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "dangling warning source rejection: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-proposed-access-runtime-id-join",
@@ -218,7 +218,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "proposed access uses matched runtime evidence id: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-rendered-exact-authorization",
@@ -228,7 +228,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "warning rebuttal requires rendered exact authorization: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-hidden-field-invariance",
@@ -238,7 +238,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "hidden author-field invariance: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-commit-point-boundary-only",
@@ -248,7 +248,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "commit point boundary only: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-safe-status-control",
@@ -258,7 +258,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "safe-status authored no-trap control: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-provisional-heldout-audit-blocked",
@@ -268,7 +268,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "heldout-audit pending recertification: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-provisional-eval-leakage-blocked",
@@ -278,7 +278,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "eval-leakage pending recertification: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f04-provisional-fixture-regenerate-blocked",
@@ -288,7 +288,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "fixture-regenerate pending recertification: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-historical-calibration-98-100-103-106",
@@ -298,7 +298,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "historical in-sample calibration: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-canonical-label-mapping",
@@ -308,7 +308,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "canonical scoring label mapping: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-typed-missing-null-empty-false-zero",
@@ -318,7 +318,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "typed missing-value categories: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-unicode-length-definitions",
@@ -328,7 +328,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "Unicode length definitions: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-unordered-pair-uniqueness",
@@ -338,7 +338,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "unique unordered feature pairs: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-training-fold-unseen-fallback",
@@ -348,7 +348,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "training-fold unseen fallback: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-tie-to-hold",
@@ -358,7 +358,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "lookup and global tie to hold: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-inclusive-ninety-percent-threshold",
@@ -368,7 +368,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "inclusive ninety-percent threshold: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-nonempty-exemption-rejected",
@@ -378,7 +378,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "frozen empty exemption list: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-absent-cp4-ledger-pending",
@@ -388,7 +388,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "pending CP4 blocks production number: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-new-visible-field-without-extractor-rejected",
@@ -398,7 +398,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "new visible field without extractor: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-row-artifact-visible-parsed-from-wire",
@@ -408,7 +408,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "shortcut row projection parsed from wire: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-caller-visible-projection-rejected",
@@ -418,7 +418,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "caller visible projection rejected: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-integrity-leaf-feature-coverage",
@@ -428,7 +428,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "all integrity leaf families covered: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     },
     {
       "subtest_id": "cp3-f12-integrity-record-association",
@@ -438,7 +438,7 @@
       "expected_gate_failure": "separate child process exits nonzero",
       "corrected_fixture": "integrity record associations preserved: canonical current implementation",
       "expected_pass": "separate child process exits zero",
-      "executed_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2"
+      "executed_receipt_sha256": "e7270ba7f5fcf88ca6074e498ef1b0ff9472a3d00808f08facacd00e24301a7b"
     }
   ]
 }

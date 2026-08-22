@@ -426,12 +426,20 @@ check("CP3 receipt exact execution keys", [...new Set(cp3Receipt.executions.map(
 ]);
 check("CP3 receipt every execution belongs to checkpoint 3", cp3Receipt.executions.filter((row) => row.owning_checkpoint !== 3).map((row) => row.subtest_id), []);
 const cp3ExpectedAuditSourceHashes = {
+  "CP4_RECERTIFICATION_SCHEMA.json": sha256(fs.readFileSync(path.join(ROOT, "CP4_RECERTIFICATION_SCHEMA.json"))),
+  "SHORTCUT_DEPENDENCY_SPEC.json": sha256(fs.readFileSync(path.join(ROOT, "SHORTCUT_DEPENDENCY_SPEC.json"))),
+  "VALIDATION_PLAN.md": sha256(fs.readFileSync(path.join(ROOT, "VALIDATION_PLAN.md"))),
   "integrity-audit/v2-audit/cp3-red-fixtures.mjs": sha256(fs.readFileSync(path.join(ROOT, "integrity-audit/v2-audit/cp3-red-fixtures.mjs"))),
   "integrity-audit/v2-audit/v1-defect-adapter.mjs": sha256(fs.readFileSync(path.join(ROOT, "integrity-audit/v2-audit/v1-defect-adapter.mjs"))),
   "HISTORICAL_V1_SHORTCUT_ROWS.json": sha256(fs.readFileSync(path.join(ROOT, "HISTORICAL_V1_SHORTCUT_ROWS.json"))),
   "results/v2026-05/release-manifest.json": sha256(fs.readFileSync(path.join(ROOT, "results/v2026-05/release-manifest.json"))),
   "scripts/check-shortcuts.mjs": sha256(fs.readFileSync(path.join(ROOT, "scripts/check-shortcuts.mjs"))),
-  "src/shortcut-gate.mjs": sha256(fs.readFileSync(path.join(ROOT, "src/shortcut-gate.mjs")))
+  "sources/cp4/or-bench-adaptation-source-receipt.json": sha256(fs.readFileSync(path.join(ROOT, "sources/cp4/or-bench-adaptation-source-receipt.json"))),
+  "sources/cp4/xstest-adaptation-source-receipt.json": sha256(fs.readFileSync(path.join(ROOT, "sources/cp4/xstest-adaptation-source-receipt.json"))),
+  "src/cp4-dependency-ledger.mjs": sha256(fs.readFileSync(path.join(ROOT, "src/cp4-dependency-ledger.mjs"))),
+  "src/cp4-recertification.mjs": sha256(fs.readFileSync(path.join(ROOT, "src/cp4-recertification.mjs"))),
+  "src/shortcut-gate.mjs": sha256(fs.readFileSync(path.join(ROOT, "src/shortcut-gate.mjs"))),
+  "test/cp4-activation-fixture.mjs": sha256(fs.readFileSync(path.join(ROOT, "test/cp4-activation-fixture.mjs")))
 };
 check("CP3 receipt audit-source hashes", cp3Receipt.audit_source_hashes, cp3ExpectedAuditSourceHashes);
 

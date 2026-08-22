@@ -1,13 +1,20 @@
-// Deterministic restricted-input shortcut diagnostic for SteerBench-Work.
+// Deterministic offline restricted-input shortcut diagnostic for
+// SteerBench-Work.
 //
-// This module is intentionally pure: it accepts an explicit, hashed row
-// artifact and frozen specifications. It never renders benchmark inputs and
-// never calls a model or provider.
+// The gate accepts explicit artifacts and frozen specifications. CP4
+// activation also resolves committed source receipts beneath the configured
+// repository root. It never renders benchmark inputs and never calls a model
+// or provider.
 
 import crypto from "node:crypto";
 import { isDeepStrictEqual } from "node:util";
 
 import { canonicalJson } from "./evidence-rendering.mjs";
+import {
+  DEPENDENCY_SIGNATURE_TRUST_BOUNDARY,
+  validateCp4DependencySpec,
+  validateDependencyActivation
+} from "./cp4-dependency-ledger.mjs";
 import { CANONICAL_SCORING_MAPPING } from "./scorer.mjs";
 
 export const PENDING_CP4_STATUS = "CORPUS_BLOCKED_PENDING_CP4";
@@ -825,8 +832,7 @@ function validateDependencyLedger(dependencySpec, scenarioIds, expectedCount) {
   if (!isPlainObject(ledger) || ledger.status !== "owner_recertified") {
     return { status: PENDING_CP4_STATUS, components: null, edges: null };
   }
-  assertExactKeys(ledger, ["status", "owner_signature", "recertified_at", "scenario_ids", "edges", "components"], "dependency_spec.ledger", ["status", "owner_signature", "recertified_at", "scenario_ids", "edges", "components"]);
-  assertString(ledger.owner_signature, "dependency_spec.ledger.owner_signature", { nonempty: true });
+  assertExactKeys(ledger, ["status", "recertified_at", "scenario_ids", "edges", "components", "signature_envelope"], "dependency_spec.ledger", ["status", "recertified_at", "scenario_ids", "edges", "components", "signature_envelope"]);
   assertString(ledger.recertified_at, "dependency_spec.ledger.recertified_at", { nonempty: true });
   assertStringArray(ledger.scenario_ids, "dependency_spec.ledger.scenario_ids", { unique: true });
   if (ledger.scenario_ids.length !== expectedCount) throw new Error("dependency ledger has the wrong scenario count");
@@ -1057,19 +1063,24 @@ function constructionPatternInput(patterns) {
  * @param {object} args Gate inputs.
  * @param {object} args.featureSpec Frozen feature spec.
  * @param {object} args.dependencySpec Frozen dependency spec.
+ * @param {object|null} [args.cp4Recertification] Signed CP4 recertification artifact.
  * @param {object|null} [args.rowArtifact] Explicit rendered-row artifact.
  * @param {object} [args.actualSourceHashes] Independently measured source hashes.
  * @param {object} [args.scenarioPatterns] Construction-pattern sidecar.
+ * @param {string} [args.repositoryRoot] Absolute root used to resolve CP4 receipts.
  * @returns {object} Gate result. Pending results contain no v2 metrics.
  */
 export function evaluateShortcutGate({
   featureSpec,
   dependencySpec,
+  cp4Recertification = null,
   rowArtifact = null,
   actualSourceHashes = {},
-  scenarioPatterns = {}
+  scenarioPatterns = {},
+  repositoryRoot
 }) {
   validateFeatureSpec(featureSpec);
+  validateCp4DependencySpec(dependencySpec);
   validateDependencySpecHeader(dependencySpec, featureSpec.expected_scenario_count);
   if (dependencySpec?.ledger?.status !== "owner_recertified") {
     return {
@@ -1079,6 +1090,14 @@ export function evaluateShortcutGate({
       production_v2: null
     };
   }
+  if (cp4Recertification === null) {
+    throw new Error("owner-recertified dependency evaluation requires the signed CP4 artifact");
+  }
+  const dependencyActivation = validateDependencyActivation(
+    cp4Recertification,
+    dependencySpec,
+    repositoryRoot === undefined ? {} : { repositoryRoot }
+  );
   if (rowArtifact === null) throw new Error("production shortcut evaluation requires a row artifact");
   if (rowArtifact.purpose !== "production_v2" && rowArtifact.purpose !== "synthetic_red_fixture") {
     throw new Error("shortcut evaluation requires a production_v2 or synthetic_red_fixture artifact");
@@ -1122,7 +1141,11 @@ export function evaluateShortcutGate({
       dependency_edges: dependency.edges,
       dependency_proof: {
         cross_fold_edge_count: 0,
-        every_row_held_out_exactly_once: true
+        every_row_held_out_exactly_once: true,
+        cp4_payload_sha256: dependencyActivation.cp4_payload_sha256,
+        ledger_payload_sha256: dependencyActivation.ledger_payload_sha256,
+        dependency_signed_at: dependencyActivation.signed_at,
+        signature_trust_boundary: DEPENDENCY_SIGNATURE_TRUST_BOUNDARY
       },
       candidate_count: results.length,
       blockers_by_class: blockersByClass,

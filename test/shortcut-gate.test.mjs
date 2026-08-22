@@ -23,6 +23,15 @@ import {
   serializeHistoricalV1ShortcutRows
 } from "../scripts/generate-historical-v1-shortcut-rows.mjs";
 import {
+  DEPENDENCY_OWNER_ATTESTATION,
+  DEPENDENCY_SIGNATURE_TRUST_BOUNDARY,
+  dependencyLedgerPayloadSha256
+} from "../src/cp4-dependency-ledger.mjs";
+import {
+  EXPECTED_SCENARIO_IDS,
+  cp4PayloadSha256
+} from "../src/cp4-recertification.mjs";
+import {
   PENDING_CP4_STATUS,
   SHORTCUT_BLOCKED_STATUS,
   SHORTCUT_PASS_STATUS,
@@ -38,6 +47,10 @@ import {
   unicodeCodePointLength,
   unicodeWhitespaceTokenLength
 } from "../src/shortcut-gate.mjs";
+import {
+  ACTIVATION_TEST_SIGNED_AT,
+  createCompleteActivationTestCp4
+} from "./cp4-activation-fixture.mjs";
 
 const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SET = path.join(ROOT, "scenario-sets/steerbench-work-2026-05");
@@ -49,6 +62,7 @@ const RELEASE_MANIFEST_PATH = path.join(ROOT, "results/v2026-05/release-manifest
 const RELEASE_MANIFEST_BYTES = fs.readFileSync(RELEASE_MANIFEST_PATH);
 const RELEASE_MANIFEST = JSON.parse(RELEASE_MANIFEST_BYTES.toString("utf8"));
 const DIGEST = "a".repeat(64);
+const COMPLETE_CP4 = createCompleteActivationTestCp4();
 
 function historicalReleaseBinding() {
   return {
@@ -147,7 +161,7 @@ function syntheticRows({ labelCorrelatedMode = false } = {}) {
     };
     const { wireText, sections } = renderedRowParts(visible);
     return {
-      scenario_id: `synthetic-${index.toString().padStart(3, "0")}`,
+      scenario_id: EXPECTED_SCENARIO_IDS[index],
       expected_action: expectedAction,
       wire_text: wireText,
       sections
@@ -169,18 +183,27 @@ function rerenderRow(row, mutateVisible) {
 
 function ownerRecertifiedDependency(rows) {
   const scenarioIds = rows.map((row) => row.scenario_id).sort();
-  return {
+  const spec = {
     ...structuredClone(PENDING_DEPENDENCY_SPEC),
     corpus_id_set_sha256: crypto.createHash("sha256").update(JSON.stringify(scenarioIds)).digest("hex"),
     ledger: {
       status: "owner_recertified",
-      owner_signature: "fixture-owner",
-      recertified_at: "2026-08-19T00:00:00Z",
+      recertified_at: ACTIVATION_TEST_SIGNED_AT,
       scenario_ids: scenarioIds,
       edges: [],
-      components: scenarioIds.map((id) => [id])
+      components: scenarioIds.map((id) => [id]),
+      signature_envelope: null
     }
   };
+  spec.ledger.signature_envelope = {
+    owner_id: "fixture-owner",
+    signed_at: ACTIVATION_TEST_SIGNED_AT,
+    cp4_payload_sha256: cp4PayloadSha256(COMPLETE_CP4),
+    ledger_payload_sha256: dependencyLedgerPayloadSha256(spec.ledger),
+    attestation: DEPENDENCY_OWNER_ATTESTATION,
+    signature: "test-only-owner-supplied-opaque-attestation"
+  };
+  return spec;
 }
 
 function artifactFor(rows) {
@@ -283,8 +306,10 @@ test("service_signature detection is exact, recursive, and payload-scoped", () =
     () => evaluateShortcutGate({
       featureSpec: FEATURE_SPEC,
       dependencySpec: ownerRecertifiedDependency(syntheticRows()),
+      cp4Recertification: COMPLETE_CP4,
       rowArtifact: artifactFor([row, ...syntheticRows().slice(1)]),
-      actualSourceHashes: sourceHashes()
+      actualSourceHashes: sourceHashes(),
+      repositoryRoot: ROOT
     }),
     /not registered/
   );
@@ -328,8 +353,10 @@ test("unknown expected actions and scoring-map drift fail closed", () => {
   assert.throws(() => evaluateShortcutGate({
     featureSpec: FEATURE_SPEC,
     dependencySpec: ownerRecertifiedDependency(rows),
+    cp4Recertification: COMPLETE_CP4,
     rowArtifact: artifactFor(rows),
-    actualSourceHashes: sourceHashes()
+    actualSourceHashes: sourceHashes(),
+    repositoryRoot: ROOT
   }), /CANONICAL_SCORING_MAPPING/);
 
   const drifted = structuredClone(FEATURE_SPEC);
@@ -345,6 +372,99 @@ test("missing CP4 ledger blocks without emitting a production number", () => {
   assert.equal(report.status, PENDING_CP4_STATUS);
   assert.equal(report.production_v2, null);
   assert.doesNotMatch(JSON.stringify(report), /denominator|accuracy|correct|candidate_count/u);
+});
+
+test("pending status cannot mask a malformed dependency signing contract", async (t) => {
+  for (const [name, mutate, expectedError] of [
+    [
+      "unknown top-level policy field",
+      (dependencySpec) => { dependencySpec.unreviewed_policy = true; },
+      /shortcut dependency spec must contain exactly/u
+    ],
+    [
+      "unknown edge-rule field",
+      (dependencySpec) => { dependencySpec.edge_rules.unreviewed_policy = true; },
+      /edge_rules must contain exactly/u
+    ],
+    [
+      "unknown component-rule field",
+      (dependencySpec) => { dependencySpec.component_rule.unreviewed_policy = true; },
+      /component_rule must contain exactly/u
+    ]
+  ]) {
+    await t.test(name, () => {
+      const dependencySpec = structuredClone(PENDING_DEPENDENCY_SPEC);
+      mutate(dependencySpec);
+      assert.throws(
+        () => evaluateShortcutGate({ featureSpec: FEATURE_SPEC, dependencySpec }),
+        expectedError
+      );
+    });
+  }
+
+  await t.test("drifted canonicalization", () => {
+    const dependencySpec = structuredClone(PENDING_DEPENDENCY_SPEC);
+    dependencySpec.ledger_contract.canonicalization = "plain_JSON_stringify";
+    assert.throws(
+      () => evaluateShortcutGate({ featureSpec: FEATURE_SPEC, dependencySpec }),
+      /ledger_contract signature metadata differ from the frozen CP4 contract/u
+    );
+  });
+
+  await t.test("underspecified pending fields", () => {
+    const dependencySpec = structuredClone(PENDING_DEPENDENCY_SPEC);
+    delete dependencySpec.ledger.signature_envelope;
+    assert.throws(
+      () => evaluateShortcutGate({ featureSpec: FEATURE_SPEC, dependencySpec }),
+      /dependency ledger must contain exactly/u
+    );
+  });
+
+  await t.test("non-null pending activation field", () => {
+    const dependencySpec = structuredClone(PENDING_DEPENDENCY_SPEC);
+    dependencySpec.ledger.recertified_at = "2026-08-22T01:02:03Z";
+    assert.throws(
+      () => evaluateShortcutGate({ featureSpec: FEATURE_SPEC, dependencySpec }),
+      /pending dependency ledger\.recertified_at must be null/u
+    );
+  });
+});
+
+test("neither accepted row purpose can bypass owner-recertified activation", async (t) => {
+  const rows = syntheticRows();
+  const dependencySpec = ownerRecertifiedDependency(rows);
+
+  assert.throws(
+    () => evaluateShortcutGate({
+      featureSpec: FEATURE_SPEC,
+      dependencySpec,
+      rowArtifact: artifactFor(rows),
+      actualSourceHashes: sourceHashes(),
+      repositoryRoot: ROOT
+    }),
+    /requires the signed CP4 artifact/u
+  );
+
+  for (const purpose of ["synthetic_red_fixture", "production_v2"]) {
+    await t.test(purpose, () => {
+      const cp4Recertification = structuredClone(COMPLETE_CP4);
+      cp4Recertification.records[0].reference_rationale +=
+        " mutated after the owner envelope was recorded";
+      const rowArtifact = artifactFor(rows);
+      rowArtifact.purpose = purpose;
+      assert.throws(
+        () => evaluateShortcutGate({
+          featureSpec: FEATURE_SPEC,
+          dependencySpec,
+          cp4Recertification,
+          rowArtifact,
+          actualSourceHashes: sourceHashes(),
+          repositoryRoot: ROOT
+        }),
+        /payload_sha256 does not bind the canonical payload/u
+      );
+    });
+  }
 });
 
 test("offline CLI labels v1 in-sample calibration and exits blocked before CP4", () => {
@@ -530,8 +650,10 @@ test("row artifacts require exact independently supplied source hashes and bound
   assert.throws(() => evaluateShortcutGate({
     featureSpec: FEATURE_SPEC,
     dependencySpec,
+    cp4Recertification: COMPLETE_CP4,
     rowArtifact: artifactFor(rows),
-    actualSourceHashes: mismatchedHashes
+    actualSourceHashes: mismatchedHashes,
+    repositoryRoot: ROOT
   }), /source hash mismatch/);
 
   const badSpanRows = syntheticRows();
@@ -539,8 +661,10 @@ test("row artifacts require exact independently supplied source hashes and bound
   assert.throws(() => evaluateShortcutGate({
     featureSpec: FEATURE_SPEC,
     dependencySpec: ownerRecertifiedDependency(badSpanRows),
+    cp4Recertification: COMPLETE_CP4,
     rowArtifact: artifactFor(badSpanRows),
-    actualSourceHashes: sourceHashes()
+    actualSourceHashes: sourceHashes(),
+    repositoryRoot: ROOT
   }), /sections do not equal spans independently parsed/);
 });
 
@@ -555,8 +679,10 @@ test("the exact wire is the sole visible truth and caller projections cannot fab
   assert.throws(() => evaluateShortcutGate({
     featureSpec: FEATURE_SPEC,
     dependencySpec: ownerRecertifiedDependency(rows),
+    cp4Recertification: COMPLETE_CP4,
     rowArtifact: artifactFor(rows),
-    actualSourceHashes: sourceHashes()
+    actualSourceHashes: sourceHashes(),
+    repositoryRoot: ROOT
   }), /visible is not registered/);
 });
 
@@ -695,9 +821,11 @@ test("dependency components are exact undirected components with singletons", ()
   assert.throws(() => evaluateShortcutGate({
     featureSpec: FEATURE_SPEC,
     dependencySpec,
+    cp4Recertification: COMPLETE_CP4,
     rowArtifact: artifactFor(rows),
-    actualSourceHashes: sourceHashes()
-  }), /edge kind topic is not allowed/);
+    actualSourceHashes: sourceHashes(),
+    repositoryRoot: ROOT
+  }), /dependency\.edges\[0\]\.kind is unsupported/u);
 });
 
 test("inclusive 90 percent threshold blocks a synthetic label shortcut", () => {
@@ -705,9 +833,11 @@ test("inclusive 90 percent threshold blocks a synthetic label shortcut", () => {
   const report = evaluateShortcutGate({
     featureSpec: FEATURE_SPEC,
     dependencySpec: ownerRecertifiedDependency(rows),
+    cp4Recertification: COMPLETE_CP4,
     rowArtifact: artifactFor(rows),
     actualSourceHashes: sourceHashes(),
-    scenarioPatterns: { scenarios: {} }
+    scenarioPatterns: { scenarios: {} },
+    repositoryRoot: ROOT
   });
   assert.equal(report.status, SHORTCUT_BLOCKED_STATUS);
   const mode = report.production_v2.results.find((result) => result.features.length === 1 && result.features[0] === "mode");
@@ -721,14 +851,26 @@ test("balanced constant synthetic rows pass the prespecified views", () => {
   const report = evaluateShortcutGate({
     featureSpec: FEATURE_SPEC,
     dependencySpec: ownerRecertifiedDependency(rows),
+    cp4Recertification: COMPLETE_CP4,
     rowArtifact: artifactFor(rows),
     actualSourceHashes: sourceHashes(),
-    scenarioPatterns: { scenarios: {} }
+    scenarioPatterns: { scenarios: {} },
+    repositoryRoot: ROOT
   });
   assert.equal(report.status, SHORTCUT_PASS_STATUS);
   assert.equal(report.production_v2.denominator, 106);
   assert.equal(report.production_v2.results.every((result) => result.total === 106), true);
   assert.equal(report.production_v2.results.some((result) => result.threshold_met), false);
+  assert.deepEqual(report.production_v2.dependency_proof, {
+    cross_fold_edge_count: 0,
+    every_row_held_out_exactly_once: true,
+    cp4_payload_sha256: cp4PayloadSha256(COMPLETE_CP4),
+    ledger_payload_sha256: dependencyLedgerPayloadSha256(
+      ownerRecertifiedDependency(rows).ledger
+    ),
+    dependency_signed_at: ACTIVATION_TEST_SIGNED_AT,
+    signature_trust_boundary: DEPENDENCY_SIGNATURE_TRUST_BOUNDARY
+  });
 });
 
 test("non-empty shortcut exemptions are forbidden", () => {

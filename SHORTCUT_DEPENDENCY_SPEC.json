@@ -35,12 +35,24 @@
     "recertified_status": "owner_recertified",
     "required_keys": [
       "status",
-      "owner_signature",
       "recertified_at",
       "scenario_ids",
       "edges",
-      "components"
+      "components",
+      "signature_envelope"
     ],
+    "signature_envelope_keys": [
+      "owner_id",
+      "signed_at",
+      "cp4_payload_sha256",
+      "ledger_payload_sha256",
+      "attestation",
+      "signature"
+    ],
+    "canonicalization": "recursive_unicode_code_point_object_keys_arrays_preserved_utf8",
+    "signature_payload": "all_ledger_fields_except_signature_envelope",
+    "owner_attestation": "I attest that I reviewed and recertified this CP4 dependency ledger.",
+    "signature_trust_boundary": "First-hand owner approval recorded in chat and bound in Git is the trust boundary; the signature envelope is a tamper-evident payload-hash binding, not cryptographic authentication.",
     "edge_keys": [
       "left",
       "right",
@@ -54,9 +66,10 @@
   },
   "ledger": {
     "status": "pending_cp4_recertification",
-    "owner_signature": null,
+    "recertified_at": null,
     "scenario_ids": null,
     "edges": null,
-    "components": null
+    "components": null,
+    "signature_envelope": null
   }
 }

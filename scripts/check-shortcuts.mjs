@@ -17,6 +17,7 @@ const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const DEFAULT_CORPUS = path.join(ROOT, "scenario-sets/steerbench-work-2026-05");
 const DEFAULT_FEATURE_SPEC = path.join(ROOT, "SHORTCUT_FEATURE_SPEC.json");
 const DEFAULT_DEPENDENCY_SPEC = path.join(ROOT, "SHORTCUT_DEPENDENCY_SPEC.json");
+const DEFAULT_CP4_RECERTIFICATION = path.join(ROOT, "CP4_RECERTIFICATION.json");
 const DEFAULT_HISTORICAL_ROWS = path.join(ROOT, "HISTORICAL_V1_SHORTCUT_ROWS.json");
 const HISTORICAL_RELEASE_MANIFEST = path.join(ROOT, "results/v2026-05/release-manifest.json");
 
@@ -123,6 +124,7 @@ function parseArguments(argv) {
       "--out",
       "--feature-spec",
       "--dependency-spec",
+      "--cp4-recertification",
       "--corpus",
       "--patterns"
     ].includes(argument)) {
@@ -165,6 +167,13 @@ export function main(argv = process.argv.slice(2)) {
   const patternsPath = path.resolve(options.patterns || path.join(corpusPath, "_SCENARIO_PATTERNS.json"));
   const featureSpec = readJson(featureSpecPath, "shortcut feature spec");
   const dependencySpec = readJson(dependencySpecPath, "shortcut dependency spec");
+  const cp4RecertificationPath = path.resolve(
+    options.cp4_recertification || DEFAULT_CP4_RECERTIFICATION
+  );
+  const cp4Recertification = readJson(
+    cp4RecertificationPath,
+    "CP4 recertification artifact"
+  );
   const historicalRowsPath = path.resolve(options.historical_rows || DEFAULT_HISTORICAL_ROWS);
   const historicalRows = readJson(historicalRowsPath, "historical v1 shortcut rows");
   const historicalRelease = readJsonDocument(
@@ -184,7 +193,12 @@ export function main(argv = process.argv.slice(2)) {
 
   let productionGate;
   if (!options.rows) {
-    productionGate = evaluateShortcutGate({ featureSpec, dependencySpec });
+    productionGate = evaluateShortcutGate({
+      featureSpec,
+      dependencySpec,
+      cp4Recertification,
+      repositoryRoot: ROOT
+    });
   } else {
     const rowArtifactPath = path.resolve(options.rows);
     const rowArtifact = readJson(rowArtifactPath, "shortcut row artifact");
@@ -204,9 +218,11 @@ export function main(argv = process.argv.slice(2)) {
     productionGate = evaluateShortcutGate({
       featureSpec,
       dependencySpec,
+      cp4Recertification,
       rowArtifact,
       actualSourceHashes,
-      scenarioPatterns: readJson(patternsPath, "scenario patterns")
+      scenarioPatterns: readJson(patternsPath, "scenario patterns"),
+      repositoryRoot: ROOT
     });
   }
 
