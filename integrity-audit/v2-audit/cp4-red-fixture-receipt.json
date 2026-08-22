@@ -1,0 +1,430 @@
+{
+  "schema_version": "steerbench.red-test-receipt.v1",
+  "checkpoint": 4,
+  "status": "CP4_BLOCKED_PENDING_OWNER_RECERTIFICATION",
+  "production_v2": null,
+  "required_subtest_count": 42,
+  "all_required_subtests_executed": true,
+  "all_bad_fixtures_exited_nonzero_before_replacement": true,
+  "all_corrected_fixtures_passed": true,
+  "audit_source_hashes": {
+    "VALIDATION_PLAN.md": "eac119afb6454ee85dbc4b678f3b6be5b12fdd2a2674da72a0640d354da4f6ec",
+    "CP4_RECERTIFICATION_SCHEMA.json": "29664745db200c9311fb57f43763a4269c814944ab08b0887fd1c9668c93ee46",
+    "CP4_RECERTIFICATION.json": "e7ce45529dc62ea8cf7e563235d59620fa2761407c38fbb41ce4d395a1fbada7",
+    "SHORTCUT_DEPENDENCY_SPEC.json": "a6f79ef1df99f2c117e3a7c0850128d3500c7c9ddfdd12c60d1fa1fbec7c7f5e",
+    "SHORTCUT_FEATURE_SPEC.json": "02c2759ee851fc1cb4a6e9233bba656b230d8c4d65394e6af480cf3ec8d949e2",
+    "HISTORICAL_V1_SHORTCUT_ROWS.json": "82a8058c2c0d217ab6126972975d37d76b588991d2992b77680fe9a6a0741112",
+    "results/v2026-05/release-manifest.json": "c05ffd155ffa0d2eead1148a9f148f8c0a6ddeab4ad79845a8a0a05ade8f9352",
+    "sources/cp4/xstest-adaptation-source-receipt.json": "cc7bf718dbb18199acbedaa897e8fc92cd1a189d362d9b7f6d827752354d36cf",
+    "sources/cp4/or-bench-adaptation-source-receipt.json": "6ad2305b4788029cff1dd6d733a29beec3988e1d273dfbf4c2b60484e2a8f514",
+    "src/cp4-recertification.mjs": "53ed76efc1184211b594932e406447fa7b49f14aaad59648fd5fee783e853f0e",
+    "src/cp4-dependency-ledger.mjs": "4d6554fff902d928a54cbf5b6e44a2a887ec5729a8f4b048d4240d92a7b67ffa",
+    "src/shortcut-gate.mjs": "53362ef0be186a4ffb648086821b9c9f74f54e697235279deb1341b654c24bce",
+    "scripts/generate-cp4-recertification.mjs": "8399a01f95e7390435651af0c015272fb427fe37e66b65dc32e6cfc597bb4991",
+    "integrity-audit/v2-audit/cp4-red-fixtures.mjs": "49b4992248ba3bd5974d4a73596995bcb25df17681f07a0ed6f847652de75353"
+  },
+  "measurements": {
+    "scientific_status": "CP4_BLOCKED_PENDING_OWNER_RECERTIFICATION",
+    "production_v2": null,
+    "scenario_count": 106,
+    "scenario_ids_sha256": "549af6d6d7b63e18720d90e7446fde0d4399b7d3766e34e1212017ee667c62fc",
+    "scenario_ids_match_current_corpus": true,
+    "current_corpus_tree": {
+      "algorithm": "sha256(JSON.stringify(sorted[{filename,raw_sha256}]))",
+      "file_count": 106,
+      "sorted_filename_raw_sha256_manifest": "048d45f6fb23522b2bc37192553da003d6d450685cfe6d905a9cbdd9e5853208"
+    },
+    "authority_cohort_count": 7,
+    "adaptation_cohort_count": 5,
+    "provisional_cohort_count": 3,
+    "exact_reference_actions": [
+      "continue",
+      "proceed",
+      "block",
+      "request_approval",
+      "escalate",
+      "ask_clarification"
+    ],
+    "current_corpus_action_counts": {
+      "block": 46,
+      "continue": 56,
+      "escalate": 3,
+      "request_approval": 1
+    },
+    "owner_recertification_status": "pending_owner_recertification",
+    "owner_signature_envelope": null,
+    "owner_signature_trust_boundary": "First-hand owner approval recorded in chat and bound in Git is the trust boundary; the signature envelope is a tamper-evident payload-hash binding, not cryptographic authentication.",
+    "committed_cp4_artifact": {
+      "artifact": "CP4_RECERTIFICATION.json",
+      "sha256": "e7ce45529dc62ea8cf7e563235d59620fa2761407c38fbb41ce4d395a1fbada7",
+      "generator": "scripts/generate-cp4-recertification.mjs",
+      "generator_byte_identical": true,
+      "scenario_count": 106,
+      "signature_envelope": null
+    },
+    "dependency_ledger_status": "pending_cp4_recertification",
+    "dependency_production_v2": null,
+    "adaptation_source_receipts": {
+      "XSTest": {
+        "artifact": "sources/cp4/xstest-adaptation-source-receipt.json",
+        "sha256": "cc7bf718dbb18199acbedaa897e8fc92cd1a189d362d9b7f6d827752354d36cf",
+        "review_status": "pending_owner_review",
+        "signature_envelope": null,
+        "mapping_count": 3
+      },
+      "OR-Bench": {
+        "artifact": "sources/cp4/or-bench-adaptation-source-receipt.json",
+        "sha256": "6ad2305b4788029cff1dd6d733a29beec3988e1d273dfbf4c2b60484e2a8f514",
+        "review_status": "pending_owner_review",
+        "signature_envelope": null,
+        "mapping_count": 2
+      }
+    },
+    "historical_v1_calibration": {
+      "scope": "historical_in_sample_not_held_out",
+      "signature_presence_correct": 98,
+      "literal_tool_call_evidence_ids_correct": 100,
+      "evidence_count_status_correct": 103,
+      "evidence_count_status_plus_signature_correct": 106
+    },
+    "scientific_limit": "Synthetic fixtures validate CP4 mechanics only. No row is claimed repaired, source-recertified, gold-recertified, owner-signed, or ready for production-v2 scoring."
+  },
+  "executions": [
+    {
+      "subtest_id": "cp4-corpus-count",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "exact 106-row count"
+    },
+    {
+      "subtest_id": "cp4-corpus-order",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "exact sorted scenario order"
+    },
+    {
+      "subtest_id": "cp4-corpus-id",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "exact frozen scenario IDs"
+    },
+    {
+      "subtest_id": "cp4-committed-artifact-binding",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "committed pending artifact and generator byte binding"
+    },
+    {
+      "subtest_id": "cp4-authority-cohort-omission",
+      "finding_id": 11,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "authority cohort omission"
+    },
+    {
+      "subtest_id": "cp4-authority-cohort-addition",
+      "finding_id": 11,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "authority cohort addition"
+    },
+    {
+      "subtest_id": "cp4-adaptation-cohort-omission",
+      "finding_id": 15,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "adaptation cohort omission"
+    },
+    {
+      "subtest_id": "cp4-adaptation-cohort-addition",
+      "finding_id": 15,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "adaptation cohort addition"
+    },
+    {
+      "subtest_id": "cp4-provisional-cohort-omission",
+      "finding_id": 4,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "provisional cohort omission"
+    },
+    {
+      "subtest_id": "cp4-provisional-cohort-addition",
+      "finding_id": 4,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "provisional cohort addition"
+    },
+    {
+      "subtest_id": "cp4-missing-plan-field",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "missing recertification plan field"
+    },
+    {
+      "subtest_id": "cp4-receipt-absolute",
+      "finding_id": 3,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "absolute source receipt path"
+    },
+    {
+      "subtest_id": "cp4-receipt-traversal",
+      "finding_id": 3,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "traversing source receipt path"
+    },
+    {
+      "subtest_id": "cp4-receipt-symlink",
+      "finding_id": 3,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "symlink source receipt path"
+    },
+    {
+      "subtest_id": "cp4-receipt-hash",
+      "finding_id": 3,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "source receipt raw-byte hash"
+    },
+    {
+      "subtest_id": "cp4-pending-signature",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "signature forbidden while pending"
+    },
+    {
+      "subtest_id": "cp4-owner-envelope-missing",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "owner envelope required when complete"
+    },
+    {
+      "subtest_id": "cp4-owner-envelope-stale",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "owner envelope binds current payload"
+    },
+    {
+      "subtest_id": "cp4-owner-envelope-invalid-utc",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "owner envelope strict UTC timestamp"
+    },
+    {
+      "subtest_id": "cp4-action-continue",
+      "finding_id": 7,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "exact reference action continue"
+    },
+    {
+      "subtest_id": "cp4-action-proceed",
+      "finding_id": 7,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "exact reference action proceed"
+    },
+    {
+      "subtest_id": "cp4-action-block",
+      "finding_id": 7,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "exact reference action block"
+    },
+    {
+      "subtest_id": "cp4-action-request-approval",
+      "finding_id": 7,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "exact reference action request_approval"
+    },
+    {
+      "subtest_id": "cp4-action-escalate",
+      "finding_id": 7,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "exact reference action escalate"
+    },
+    {
+      "subtest_id": "cp4-action-ask-clarification",
+      "finding_id": 7,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "exact reference action ask_clarification"
+    },
+    {
+      "subtest_id": "cp4-action-unknown",
+      "finding_id": 7,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "unknown reference action"
+    },
+    {
+      "subtest_id": "cp4-dependency-missing",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "missing dependency claims"
+    },
+    {
+      "subtest_id": "cp4-dependency-broad",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "forbidden broad dependency source"
+    },
+    {
+      "subtest_id": "cp4-dependency-receipt-mismatch",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "shared dependency receipt mismatch"
+    },
+    {
+      "subtest_id": "cp4-dependency-clique",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "dependency clique expansion"
+    },
+    {
+      "subtest_id": "cp4-dependency-omitted-edge",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "omitted dependency edge"
+    },
+    {
+      "subtest_id": "cp4-dependency-invented-edge",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "invented dependency edge"
+    },
+    {
+      "subtest_id": "cp4-dependency-component-drift",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "dependency component drift"
+    },
+    {
+      "subtest_id": "cp4-adaptation-dataset",
+      "finding_id": 15,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "adaptation dataset binding"
+    },
+    {
+      "subtest_id": "cp4-adaptation-revision",
+      "finding_id": 15,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "adaptation immutable revision binding"
+    },
+    {
+      "subtest_id": "cp4-adaptation-upstream-hash",
+      "finding_id": 15,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "adaptation upstream artifact hash binding"
+    },
+    {
+      "subtest_id": "cp4-adaptation-local-mapping",
+      "finding_id": 15,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "adaptation local scenario mapping"
+    },
+    {
+      "subtest_id": "cp4-adaptation-upstream-id",
+      "finding_id": 15,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "adaptation upstream example ID binding"
+    },
+    {
+      "subtest_id": "cp4-adaptation-license",
+      "finding_id": 15,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "adaptation license binding"
+    },
+    {
+      "subtest_id": "cp4-historical-coordinated-tamper",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "historical coordinated projection tamper"
+    },
+    {
+      "subtest_id": "cp4-pending-owner-blocks",
+      "finding_id": 5,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "pending owner state stays blocking"
+    },
+    {
+      "subtest_id": "cp4-pending-dependency-blocks",
+      "finding_id": 12,
+      "owning_checkpoint": 4,
+      "bad_exit_nonzero": true,
+      "corrected_exit_zero": true,
+      "label": "pending dependency state stays blocking"
+    }
+  ]
+}

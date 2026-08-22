@@ -428,6 +428,8 @@ check("CP3 receipt every execution belongs to checkpoint 3", cp3Receipt.executio
 const cp3ExpectedAuditSourceHashes = {
   "integrity-audit/v2-audit/cp3-red-fixtures.mjs": sha256(fs.readFileSync(path.join(ROOT, "integrity-audit/v2-audit/cp3-red-fixtures.mjs"))),
   "integrity-audit/v2-audit/v1-defect-adapter.mjs": sha256(fs.readFileSync(path.join(ROOT, "integrity-audit/v2-audit/v1-defect-adapter.mjs"))),
+  "HISTORICAL_V1_SHORTCUT_ROWS.json": sha256(fs.readFileSync(path.join(ROOT, "HISTORICAL_V1_SHORTCUT_ROWS.json"))),
+  "results/v2026-05/release-manifest.json": sha256(fs.readFileSync(path.join(ROOT, "results/v2026-05/release-manifest.json"))),
   "scripts/check-shortcuts.mjs": sha256(fs.readFileSync(path.join(ROOT, "scripts/check-shortcuts.mjs"))),
   "src/shortcut-gate.mjs": sha256(fs.readFileSync(path.join(ROOT, "src/shortcut-gate.mjs")))
 };

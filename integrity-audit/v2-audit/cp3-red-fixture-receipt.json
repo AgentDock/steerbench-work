@@ -6,10 +6,12 @@
   "all_bad_fixtures_exited_nonzero_before_replacement": true,
   "all_corrected_fixtures_passed": true,
   "audit_source_hashes": {
-    "integrity-audit/v2-audit/cp3-red-fixtures.mjs": "e52d45b140ca20fd25c382b8fd52940f78ade12dfc0cc8298dfc99d3a8945f64",
+    "integrity-audit/v2-audit/cp3-red-fixtures.mjs": "5bdf81015c43fc025453957e77e8c8f826cd15a709199afdce6e440c1c7d5dc9",
     "integrity-audit/v2-audit/v1-defect-adapter.mjs": "ba8f4ad3632e2473d3cca02819411d41c3f581a33546046b1cd837d7262a6a2f",
-    "scripts/check-shortcuts.mjs": "f7f6b770ce03b36366d01dc698fc98986a913142e7b4ca40688774fe66239d88",
-    "src/shortcut-gate.mjs": "f7e0f4faa20c1cdde7e822bbae281263555ab299e1cf7763b549bd4f376c5d25"
+    "HISTORICAL_V1_SHORTCUT_ROWS.json": "82a8058c2c0d217ab6126972975d37d76b588991d2992b77680fe9a6a0741112",
+    "results/v2026-05/release-manifest.json": "c05ffd155ffa0d2eead1148a9f148f8c0a6ddeab4ad79845a8a0a05ade8f9352",
+    "scripts/check-shortcuts.mjs": "275bc997bb014e71464c9d02f601d843391f3195d159b10185ef3f9e0a665853",
+    "src/shortcut-gate.mjs": "53362ef0be186a4ffb648086821b9c9f74f54e697235279deb1341b654c24bce"
   },
   "measurements": {
     "corpus_rows": 106,
@@ -93,7 +95,7 @@
       "row_artifact_schema": "steerbench.shortcut_rows.v1",
       "row_artifact_purpose": "synthetic_red_fixture",
       "row_artifact_rows": 106,
-      "row_artifact_sha256": "7c4202de2fd11408a1e838f0c7753970e41422eed3b0ad64ea7e7a5a1ca8cf6d",
+      "row_artifact_sha256": "e5e694a6c7aff9609ca41d5b699c84be06a4dc62a274531f3042acb41fcaca3a",
       "visible_values_source": "production_parser_from_exact_wire_with_verified_spans",
       "caller_visible_projection": "forbidden_by_exact_row_schema",
       "integrity_leaf_family_count": 33,
@@ -102,7 +104,7 @@
     },
     "source_hashes": {
       "corpus": "5c2c1f7eeb00c2f4ea9d7002789491d4bbc63126d559af7066a2373b9b1730be",
-      "renderer": "6e9e98277bffdcdc0e16770565e8e72edf4659e560fa024e42df84d7d00ab98e",
+      "renderer": "074a2eed36088ae154ed8d4d91bfa7ea9a4de6d2b4bdb7eff0808bb5c36b1ab8",
       "feature_spec": "02c2759ee851fc1cb4a6e9233bba656b230d8c4d65394e6af480cf3ec8d949e2",
       "dependency_spec": "a6f79ef1df99f2c117e3a7c0850128d3500c7c9ddfdd12c60d1fa1fbec7c7f5e",
       "evidence_schema": "3d1eeafe11be9d078d735f6f2e002b7799285256c94b8553253cde2e03d131b2",

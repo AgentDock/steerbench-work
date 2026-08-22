@@ -13,8 +13,12 @@ import { CANONICAL_SCORING_MAPPING } from "./scorer.mjs";
 export const PENDING_CP4_STATUS = "CORPUS_BLOCKED_PENDING_CP4";
 export const SHORTCUT_BLOCKED_STATUS = "CORPUS_BLOCKED_SHORTCUTS";
 export const SHORTCUT_PASS_STATUS = "PASS";
+export const HISTORICAL_V1_SHORTCUT_ROWS_SCHEMA_VERSION =
+  "steerbench.shortcut_historical_rows.v1";
 
 const SHA256_RE = /^[0-9a-f]{64}$/u;
+const EXPECTED_HISTORICAL_V1_SHORTCUT_ROWS_SHA256 =
+  "7689928ecb91ba621bf7f305ba04f32bf979a124a89fd270e9b3d6712a27af7f";
 const HEX_CHARACTER_RE = /^[0-9a-f]$/u;
 const LETTER_RE = /^\p{L}$/u;
 const NUMBER_RE = /^\p{N}$/u;
@@ -1142,42 +1146,152 @@ function historicalMajority(rows, keyFor) {
   return correct;
 }
 
+function validateHistoricalV1ShortcutRows(rowArtifact, featureSpec, releaseBinding) {
+  assertExactKeys(
+    releaseBinding,
+    ["release_manifest_sha256", "scenario_hashes"],
+    "historical_release_binding",
+    ["release_manifest_sha256", "scenario_hashes"]
+  );
+  if (!SHA256_RE.test(releaseBinding.release_manifest_sha256)) {
+    throw new Error("historical_release_binding.release_manifest_sha256 must be a SHA-256 digest");
+  }
+  assertExactKeys(
+    rowArtifact,
+    ["schema_version", "release_manifest_sha256", "scenario_count", "scenario_hashes", "rows"],
+    "historical_v1_shortcut_rows",
+    ["schema_version", "release_manifest_sha256", "scenario_count", "scenario_hashes", "rows"]
+  );
+  if (rowArtifact.schema_version !== HISTORICAL_V1_SHORTCUT_ROWS_SCHEMA_VERSION) {
+    throw new Error("unsupported historical v1 shortcut rows artifact");
+  }
+  const artifactSha256 = hashCanonicalArtifact(rowArtifact);
+  if (artifactSha256 !== EXPECTED_HISTORICAL_V1_SHORTCUT_ROWS_SHA256) {
+    throw new Error(
+      `historical v1 shortcut rows immutable SHA-256 mismatch: expected ${EXPECTED_HISTORICAL_V1_SHORTCUT_ROWS_SHA256}, observed ${artifactSha256}`
+    );
+  }
+  if (!SHA256_RE.test(rowArtifact.release_manifest_sha256)) {
+    throw new Error("historical_v1_shortcut_rows.release_manifest_sha256 must be a SHA-256 digest");
+  }
+  if (rowArtifact.release_manifest_sha256 !== releaseBinding.release_manifest_sha256) {
+    throw new Error("historical v1 shortcut rows release-manifest hash mismatch");
+  }
+  if (rowArtifact.scenario_count !== featureSpec.expected_scenario_count) {
+    throw new Error("historical v1 shortcut rows require the frozen scenario count");
+  }
+  if (!Array.isArray(rowArtifact.rows) || rowArtifact.rows.length !== rowArtifact.scenario_count) {
+    throw new Error("historical_v1_shortcut_rows.scenario_count must equal rows.length");
+  }
+
+  const artifactScenarioIds = Object.keys(rowArtifact.scenario_hashes);
+  const releaseScenarioIds = Object.keys(releaseBinding.scenario_hashes);
+  const expectedScenarioIds = sortedStrings(artifactScenarioIds);
+  if (!isDeepStrictEqual(artifactScenarioIds, expectedScenarioIds)) {
+    throw new Error("historical_v1_shortcut_rows.scenario_hashes must use sorted scenario IDs");
+  }
+  if (!isDeepStrictEqual(releaseScenarioIds, sortedStrings(releaseScenarioIds))) {
+    throw new Error("historical_release_binding.scenario_hashes must use sorted scenario IDs");
+  }
+  if (artifactScenarioIds.length !== rowArtifact.scenario_count
+    || releaseScenarioIds.length !== rowArtifact.scenario_count) {
+    throw new Error("historical v1 shortcut rows require one scenario hash per frozen row");
+  }
+  assertExactKeys(
+    rowArtifact.scenario_hashes,
+    releaseScenarioIds,
+    "historical_v1_shortcut_rows.scenario_hashes",
+    releaseScenarioIds
+  );
+  for (const scenarioId of releaseScenarioIds) {
+    const artifactHash = rowArtifact.scenario_hashes[scenarioId];
+    const releaseHash = releaseBinding.scenario_hashes[scenarioId];
+    if (!SHA256_RE.test(releaseHash)) {
+      throw new Error(`historical_release_binding.scenario_hashes.${scenarioId} must be a SHA-256 digest`);
+    }
+    if (!SHA256_RE.test(artifactHash)) {
+      throw new Error(`historical_v1_shortcut_rows.scenario_hashes.${scenarioId} must be a SHA-256 digest`);
+    }
+    if (artifactHash !== releaseHash) {
+      throw new Error(`historical v1 shortcut rows scenario hash mismatch for ${scenarioId}`);
+    }
+  }
+
+  const labels = new Set(Object.values(CANONICAL_SCORING_MAPPING));
+  const rowScenarioIds = [];
+  for (const [index, row] of rowArtifact.rows.entries()) {
+    const location = `historical_v1_shortcut_rows.rows[${index}]`;
+    assertExactKeys(row, [
+      "scenario_id",
+      "label",
+      "evidence_count_status",
+      "signature_presence",
+      "literal_tool_call_evidence_ids"
+    ], location, [
+      "scenario_id",
+      "label",
+      "evidence_count_status",
+      "signature_presence",
+      "literal_tool_call_evidence_ids"
+    ]);
+    assertString(row.scenario_id, `${location}.scenario_id`, { nonempty: true });
+    rowScenarioIds.push(row.scenario_id);
+    if (!labels.has(row.label)) throw new Error(`${location}.label is outside the canonical scoring mapping`);
+    if (!Array.isArray(row.evidence_count_status) || row.evidence_count_status.length !== 2) {
+      throw new Error(`${location}.evidence_count_status must be [count, status_multiset]`);
+    }
+    const [evidenceCount, statusMultiset] = row.evidence_count_status;
+    if (!Number.isInteger(evidenceCount) || evidenceCount < 0) {
+      throw new Error(`${location}.evidence_count_status[0] must be a non-negative integer`);
+    }
+    assertStringArray(statusMultiset, `${location}.evidence_count_status[1]`);
+    assertExactArray(
+      statusMultiset,
+      typedSortedMultiset(statusMultiset),
+      `${location}.evidence_count_status[1]`
+    );
+    if (typeof row.signature_presence !== "boolean") {
+      throw new Error(`${location}.signature_presence must be a boolean`);
+    }
+    assertStringArray(row.literal_tool_call_evidence_ids, `${location}.literal_tool_call_evidence_ids`);
+    assertExactArray(
+      row.literal_tool_call_evidence_ids,
+      typedSortedMultiset(row.literal_tool_call_evidence_ids),
+      `${location}.literal_tool_call_evidence_ids`
+    );
+  }
+  if (!isDeepStrictEqual(rowScenarioIds, expectedScenarioIds)) {
+    throw new Error("historical v1 shortcut rows must contain the exact sorted scenario IDs");
+  }
+  return rowArtifact.rows;
+}
+
 /**
  * Reproduce the four historical v1 in-sample calibration figures.
  *
- * This function deliberately reads all raw v1 evidence records. Its output is
- * labeled in-sample and must never be presented as production v2 or held-out
- * evidence.
+ * Raw v1 scenarios are accepted only by the separately invoked frozen-row
+ * generator. Production calibration consumes the generated audit-only rows
+ * after independently checking their release-manifest and scenario-hash
+ * bindings.
  *
- * @param {Array<object>} scenarios Frozen v1 scenario JSON objects.
+ * @param {object} rowArtifact Frozen historical audit-row artifact.
  * @param {object} featureSpec Frozen feature specification.
+ * @param {object} releaseBinding Independently read release-manifest binding.
  * @returns {object} Historical calibration receipt.
  */
-export function calibrateHistoricalV1InSample(scenarios, featureSpec) {
+export function calibrateHistoricalV1InSample(rowArtifact, featureSpec, releaseBinding) {
   validateFeatureSpec(featureSpec);
-  if (!Array.isArray(scenarios) || scenarios.length !== featureSpec.expected_scenario_count) {
-    throw new Error("historical v1 calibration requires the frozen scenario count");
-  }
-  const rows = scenarios.map((scenario, index) => {
-    const expected = scenario.expected_behavior?.correct_action;
-    if (!Object.hasOwn(CANONICAL_SCORING_MAPPING, expected)) {
-      throw new Error(`historical scenario[${index}] has an unknown expected action`);
-    }
-    const evidence = scenario.evidence || [];
-    if (!Array.isArray(evidence)) throw new Error(`historical scenario[${index}].evidence must be an array`);
-    return {
-      label: CANONICAL_SCORING_MAPPING[expected],
-      countStatus: [evidence.length, typedSortedMultiset(evidence.map((record) => record.status ?? ""))],
-      signature: evidence.some((record) => hasExactServiceSignatureKey(record.tool_call_result)),
-      literalToolCallEvidenceIds: typedSortedMultiset(evidence
-        .filter((record) => record.source_type === "tool_call")
-        .map((record) => record.legacy_id || record.id))
-    };
-  });
-  const countStatus = historicalMajority(rows, (row) => typedCanonicalKey(row.countStatus));
-  const signature = historicalMajority(rows, (row) => typedCanonicalKey(row.signature));
-  const pair = historicalMajority(rows, (row) => typedCanonicalKey([row.countStatus, row.signature]));
-  const literalToolCallEvidenceIds = historicalMajority(rows, (row) => typedCanonicalKey(row.literalToolCallEvidenceIds));
+  const rows = validateHistoricalV1ShortcutRows(rowArtifact, featureSpec, releaseBinding);
+  const countStatus = historicalMajority(rows, (row) => typedCanonicalKey(row.evidence_count_status));
+  const signature = historicalMajority(rows, (row) => typedCanonicalKey(row.signature_presence));
+  const pair = historicalMajority(rows, (row) => typedCanonicalKey([
+    row.evidence_count_status,
+    row.signature_presence
+  ]));
+  const literalToolCallEvidenceIds = historicalMajority(
+    rows,
+    (row) => typedCanonicalKey(row.literal_tool_call_evidence_ids)
+  );
   const expected = featureSpec.historical_v1_in_sample_calibration;
   const observed = {
     evidence_count_status_correct: countStatus,

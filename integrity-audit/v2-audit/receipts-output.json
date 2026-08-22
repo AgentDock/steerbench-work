@@ -397,8 +397,8 @@
     ]
   },
   "checkpoint_3": {
-    "red_fixture_receipt_sha256": "ba28d23388e29437651cd67db0f0ebc22c5788ed827405c239ac08bdb9016541",
-    "red_test_matrix_sha256": "d9ef1eef39d44e5df034b9f44b5ad03058c6c1f5b2a45d705f9a2a27be87e9cd",
+    "red_fixture_receipt_sha256": "03dbd03290b2fd74f4a95d0f3af80c9aed4fee77c085d8b23cb9d2b8697a22f2",
+    "red_test_matrix_sha256": "ad7d8f534f844561b30cb541cc8b08004e9f9709c82517ab440804be4a6b9be4",
     "required_subtests": 43,
     "measurements": {
       "corpus_rows": 106,
@@ -482,7 +482,7 @@
         "row_artifact_schema": "steerbench.shortcut_rows.v1",
         "row_artifact_purpose": "synthetic_red_fixture",
         "row_artifact_rows": 106,
-        "row_artifact_sha256": "7c4202de2fd11408a1e838f0c7753970e41422eed3b0ad64ea7e7a5a1ca8cf6d",
+        "row_artifact_sha256": "e5e694a6c7aff9609ca41d5b699c84be06a4dc62a274531f3042acb41fcaca3a",
         "visible_values_source": "production_parser_from_exact_wire_with_verified_spans",
         "caller_visible_projection": "forbidden_by_exact_row_schema",
         "integrity_leaf_family_count": 33,
@@ -491,7 +491,7 @@
       },
       "source_hashes": {
         "corpus": "5c2c1f7eeb00c2f4ea9d7002789491d4bbc63126d559af7066a2373b9b1730be",
-        "renderer": "6e9e98277bffdcdc0e16770565e8e72edf4659e560fa024e42df84d7d00ab98e",
+        "renderer": "074a2eed36088ae154ed8d4d91bfa7ea9a4de6d2b4bdb7eff0808bb5c36b1ab8",
         "feature_spec": "02c2759ee851fc1cb4a6e9233bba656b230d8c4d65394e6af480cf3ec8d949e2",
         "dependency_spec": "a6f79ef1df99f2c117e3a7c0850128d3500c7c9ddfdd12c60d1fa1fbec7c7f5e",
         "evidence_schema": "3d1eeafe11be9d078d735f6f2e002b7799285256c94b8553253cde2e03d131b2",

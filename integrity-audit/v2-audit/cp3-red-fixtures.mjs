@@ -65,9 +65,14 @@ const RECEIPT_PATH = fileURLToPath(new URL("./cp3-red-fixture-receipt.json", imp
 const MATRIX_PATH = fileURLToPath(new URL("./RED_TEST_MATRIX.cp3.json", import.meta.url));
 const FEATURE_SPEC_PATH = path.join(ROOT, "SHORTCUT_FEATURE_SPEC.json");
 const DEPENDENCY_SPEC_PATH = path.join(ROOT, "SHORTCUT_DEPENDENCY_SPEC.json");
+const HISTORICAL_ROWS_PATH = path.join(ROOT, "HISTORICAL_V1_SHORTCUT_ROWS.json");
+const RELEASE_MANIFEST_PATH = path.join(ROOT, "results/v2026-05/release-manifest.json");
 const PATTERNS_PATH = path.join(SET, "_SCENARIO_PATTERNS.json");
 const FEATURE_SPEC = JSON.parse(fs.readFileSync(FEATURE_SPEC_PATH, "utf8"));
 const DEPENDENCY_SPEC = JSON.parse(fs.readFileSync(DEPENDENCY_SPEC_PATH, "utf8"));
+const HISTORICAL_ROWS = JSON.parse(fs.readFileSync(HISTORICAL_ROWS_PATH, "utf8"));
+const RELEASE_MANIFEST_BYTES = fs.readFileSync(RELEASE_MANIFEST_PATH);
+const RELEASE_MANIFEST = JSON.parse(RELEASE_MANIFEST_BYTES.toString("utf8"));
 const SCENARIO_PATTERNS = JSON.parse(fs.readFileSync(PATTERNS_PATH, "utf8"));
 const FILES = fs.readdirSync(SET)
   .filter((name) => name.endsWith(".json") && !name.startsWith("_"))
@@ -328,7 +333,14 @@ function guardProvisional(raw) {
 }
 
 function historicalCalibration() {
-  const receipt = calibrateHistoricalV1InSample(SCENARIOS, FEATURE_SPEC);
+  const receipt = calibrateHistoricalV1InSample(
+    HISTORICAL_ROWS,
+    FEATURE_SPEC,
+    {
+      release_manifest_sha256: sha256(RELEASE_MANIFEST_BYTES),
+      scenario_hashes: RELEASE_MANIFEST.scenario_hashes
+    }
+  );
   assertEqual([
     receipt.signature_presence_correct,
     receipt.literal_tool_call_evidence_ids_correct,
@@ -992,6 +1004,8 @@ function orchestratorMain() {
   const auditSources = [
     "integrity-audit/v2-audit/cp3-red-fixtures.mjs",
     "integrity-audit/v2-audit/v1-defect-adapter.mjs",
+    "HISTORICAL_V1_SHORTCUT_ROWS.json",
+    "results/v2026-05/release-manifest.json",
     "scripts/check-shortcuts.mjs",
     "src/shortcut-gate.mjs"
   ];

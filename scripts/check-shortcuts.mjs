@@ -17,6 +17,8 @@ const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const DEFAULT_CORPUS = path.join(ROOT, "scenario-sets/steerbench-work-2026-05");
 const DEFAULT_FEATURE_SPEC = path.join(ROOT, "SHORTCUT_FEATURE_SPEC.json");
 const DEFAULT_DEPENDENCY_SPEC = path.join(ROOT, "SHORTCUT_DEPENDENCY_SPEC.json");
+const DEFAULT_HISTORICAL_ROWS = path.join(ROOT, "HISTORICAL_V1_SHORTCUT_ROWS.json");
+const HISTORICAL_RELEASE_MANIFEST = path.join(ROOT, "results/v2026-05/release-manifest.json");
 
 /**
  * Resolve the complete frozen source set that a shortcut-row artifact binds.
@@ -49,12 +51,17 @@ export function defaultShortcutSourcePaths({
   };
 }
 
-function readJson(filePath, label) {
+function readJsonDocument(filePath, label) {
   try {
-    return JSON.parse(fs.readFileSync(filePath, "utf8"));
+    const bytes = fs.readFileSync(filePath);
+    return { bytes, value: JSON.parse(bytes.toString("utf8")) };
   } catch (error) {
     throw new Error(`cannot read ${label} at ${filePath}: ${error.message}`);
   }
+}
+
+function readJson(filePath, label) {
+  return readJsonDocument(filePath, label).value;
 }
 
 function compareCodePointStrings(left, right) {
@@ -110,7 +117,15 @@ function parseArguments(argv) {
   const parsed = { sources: {} };
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
-    if (["--rows", "--out", "--feature-spec", "--dependency-spec", "--corpus", "--patterns"].includes(argument)) {
+    if ([
+      "--rows",
+      "--historical-rows",
+      "--out",
+      "--feature-spec",
+      "--dependency-spec",
+      "--corpus",
+      "--patterns"
+    ].includes(argument)) {
       if (index + 1 >= argv.length) throw new Error(`${argument} requires a value`);
       parsed[argument.slice(2).replaceAll("-", "_")] = argv[++index];
       continue;
@@ -128,13 +143,6 @@ function parseArguments(argv) {
     throw new Error(`unknown argument ${argument}`);
   }
   return parsed;
-}
-
-function loadHistoricalScenarios(corpusPath) {
-  return fs.readdirSync(corpusPath)
-    .filter((name) => name.endsWith(".json") && !name.startsWith("_"))
-    .sort(compareCodePointStrings)
-    .map((name) => readJson(path.join(corpusPath, name), `scenario ${name}`));
 }
 
 function writeReport(report, outputPath) {
@@ -157,8 +165,22 @@ export function main(argv = process.argv.slice(2)) {
   const patternsPath = path.resolve(options.patterns || path.join(corpusPath, "_SCENARIO_PATTERNS.json"));
   const featureSpec = readJson(featureSpecPath, "shortcut feature spec");
   const dependencySpec = readJson(dependencySpecPath, "shortcut dependency spec");
-  const scenarios = loadHistoricalScenarios(corpusPath);
-  const historical = calibrateHistoricalV1InSample(scenarios, featureSpec);
+  const historicalRowsPath = path.resolve(options.historical_rows || DEFAULT_HISTORICAL_ROWS);
+  const historicalRows = readJson(historicalRowsPath, "historical v1 shortcut rows");
+  const historicalRelease = readJsonDocument(
+    HISTORICAL_RELEASE_MANIFEST,
+    "historical v1 release manifest"
+  );
+  if (historicalRelease.value?.schema_version !== "steerbench.release_manifest.v1"
+    || historicalRelease.value?.release !== "v2026-05"
+    || historicalRelease.value?.scenario_set !== "steerbench-work-2026-05"
+    || historicalRelease.value?.scenario_count !== featureSpec.expected_scenario_count) {
+    throw new Error("historical v1 release manifest differs from the frozen release contract");
+  }
+  const historical = calibrateHistoricalV1InSample(historicalRows, featureSpec, {
+    release_manifest_sha256: sha256Bytes(historicalRelease.bytes),
+    scenario_hashes: historicalRelease.value.scenario_hashes
+  });
 
   let productionGate;
   if (!options.rows) {

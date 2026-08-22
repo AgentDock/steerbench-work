@@ -1,5 +1,21 @@
 # v2 audit receipts
 
+## Pre-handoff receipt checklist
+
+After the final source or artifact edit, a candidate is not ready for review
+until this complete offline chain is green, in order:
+
+1. `node integrity-audit/v2-audit/cp3-red-fixtures.mjs`
+2. `node integrity-audit/v2-audit/cp4-red-fixtures.mjs`
+3. `node integrity-audit/v2-audit/receipts.mjs`
+4. `pnpm test`
+5. `git diff --check`, then compute the superseding exact-file fingerprint
+
+The master `receipts.mjs` run is mandatory even when the changed checkpoint's
+focused fixtures and the full test suite pass. A source-hash mismatch is a
+blocking result; receipts are regenerated and replaced, never deleted or
+bypassed.
+
 Scope of this file's guarantee: ONLY the executable sections below
 (the main receipts, the checkpoint probes, and the red fixtures) are
 machine-checked assertions — a committed script asserts each exact value and

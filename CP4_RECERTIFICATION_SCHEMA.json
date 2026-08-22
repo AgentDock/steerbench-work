@@ -1,0 +1,1356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://steerbench.org/schemas/cp4-recertification.v1.json",
+  "title": "SteerBench Checkpoint-4 recertification artifact",
+  "description": "Fail-closed row-level source and gold recertification contract. The repository validator enforces completed-state and receipt filesystem invariants in addition to this shape.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "status",
+    "scenario_count",
+    "scenario_ids_sha256",
+    "records",
+    "signature_envelope"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "steerbench.cp4_recertification.v1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending_owner_recertification",
+        "owner_recertified"
+      ]
+    },
+    "scenario_count": {
+      "const": 106
+    },
+    "scenario_ids_sha256": {
+      "const": "549af6d6d7b63e18720d90e7446fde0d4399b7d3766e34e1212017ee667c62fc"
+    },
+    "records": {
+      "type": "array",
+      "minItems": 106,
+      "maxItems": 106,
+      "items": {
+        "$ref": "#/$defs/record"
+      }
+    },
+    "signature_envelope": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/signature_envelope"
+        }
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "pending_owner_recertification"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "signature_envelope": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "owner_recertified"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "signature_envelope": {
+            "$ref": "#/$defs/signature_envelope"
+          }
+        }
+      }
+    }
+  ],
+  "x-steerbench": {
+    "expected_scenario_ids": [
+      "account-cancellation-001",
+      "air-canada-bereavement-policy-promise-realworld-010",
+      "amazon-hiring-mirror-advance-candidate-tier-b-005",
+      "angry-customer-escalation-001",
+      "apple-card-mirror-credit-extension-tier-b-004",
+      "bard-jwst-mirror-fact-checked-claim-tier-b-009",
+      "bing-sydney-conversation-end-refusal-tier-a-016",
+      "bulk-email-001",
+      "calendar-booking-001",
+      "calendar-invite-prompt-injection-004",
+      "chatgpt-1200-line-script-refusal-tier-a-008",
+      "chatgpt-as-ai-language-model-disclaimer-refusal-tier-a-019",
+      "chatgpt-ctf-direct-answer-refusal-tier-a-013",
+      "chatgpt-election-candidate-image-refusal-tier-a-015",
+      "chatgpt-mammogram-pregnancy-refusal-tier-a-018",
+      "chatgpt-teams-write-code-refusal-tier-a-006",
+      "claude-april-2026-aup-surge-class-refusal-tier-a-020",
+      "claude-opus-cyber-exemption-ignored-refusal-tier-a-005",
+      "claude-opus-malware-check-annotation-refusal-tier-a-001",
+      "claude-opus-pdf-toy-ad-aup-refusal-tier-a-004",
+      "claude-opus-russian-prompts-aup-refusal-tier-a-002",
+      "claude-opus-structural-biology-pdb-refusal-tier-a-003",
+      "claude-sonnet-scientific-discourse-refusal-tier-a-017",
+      "clearview-ai-scrape-faces-eu-citizens-high-impact-016",
+      "cloudflare-regex-mirror-dry-run-deploy-tier-b-016",
+      "codemod-broad-touch-adversarial-001",
+      "codex-git-commit-flipflop-refusal-tier-a-012",
+      "codex-sandbox-network-refusal-tier-a-003",
+      "codex-vscode-network-danger-full-access-refusal-tier-a-011",
+      "copilot-security-review-pattern-refusal-tier-a-004",
+      "crowdstrike-mirror-staged-sensor-update-tier-b-015",
+      "cruise-incident-omitted-detail-disclosure-high-impact-009",
+      "cursor-line-count-cap-refusal-tier-a-001",
+      "customer-data-export-001",
+      "data-deletion-001",
+      "deposition-statute-of-limitations-003",
+      "destructive-migration-001",
+      "dpd-chatbot-open-persona-realworld-011",
+      "equifax-mirror-emergency-patch-tier-b-012",
+      "eval-leakage-001",
+      "executive-impersonation-wire-fraud-005",
+      "executive-report-001",
+      "facebook-bgp-mirror-canaried-config-tier-b-014",
+      "fixture-regenerate-authorized-adversarial-006",
+      "flash-crash-mass-sell-program-high-impact-015",
+      "gemini-image-ethnicity-refusal-tier-a-014",
+      "generated-code-unrelated-001",
+      "google-bard-demo-marketing-claim-high-impact-020",
+      "gpt4-academic-translation-refusal-tier-a-009",
+      "gpt4-browser-code-generation-refusal-tier-a-007",
+      "gpt4-lazy-translate-refusal-tier-a-002",
+      "gpt4o-swedish-bulgarian-translation-refusal-tier-a-010",
+      "hawaii-alert-mirror-two-person-rule-tier-b-018",
+      "heldout-audit-authorized-adversarial-003",
+      "hertz-stolen-vehicle-police-report-high-impact-008",
+      "horizon-mirror-reconciled-adjustment-tier-b-011",
+      "horizon-shortfall-prosecution-recommend-high-impact-003",
+      "identity-change-001",
+      "itutorgroup-applicant-birthdate-screen-high-impact-019",
+      "knight-capital-trading-deploy-realworld-007",
+      "legal-boundary-001",
+      "licensed-professional-medical-refusal-tier-a-005",
+      "lockfile-drift-001",
+      "mata-avianca-fabricated-citation-realworld-008",
+      "medical-boundary-001",
+      "metric-rename-equivalent-adversarial-005",
+      "migration-rollback-pre-approved-adversarial-007",
+      "nyc-chatbot-mirror-compliant-answer-tier-b-006",
+      "optum-health-need-cost-proxy-deployment-high-impact-018",
+      "orbench-illegal-bypass-rate-limit-tier-c-015",
+      "orbench-privacy-public-record-lookup-tier-c-014",
+      "patient-records-employer-disclosure-002",
+      "payment-dispute-001",
+      "permission-scope-001",
+      "policy-update-is-the-task-adversarial-004",
+      "pr-review-blocker-001",
+      "production-deploy-001",
+      "protected-code-001",
+      "refund-policy-001",
+      "replit-production-freeze-violation-realworld-006",
+      "robodebt-income-averaging-debt-notice-high-impact-004",
+      "robodebt-mirror-eligible-notice-tier-b-010",
+      "safe-changelog-entry-001",
+      "safe-internal-note-001",
+      "safe-readme-typo-001",
+      "safe-shipping-status-001",
+      "safe-status-summary-001",
+      "samsung-chatgpt-source-code-paste-high-impact-013",
+      "secret-exposure-001",
+      "secret-rotation-in-vault-adversarial-008",
+      "telehealth-marketing-pixel-disclosure-001",
+      "tesla-autopilot-fsd-claim-confirm-high-impact-010",
+      "tesla-autopilot-mirror-lane-change-tier-b-008",
+      "test-rewrite-001",
+      "test-was-stale-adversarial-002",
+      "therac25-mirror-interlock-cleared-tier-b-020",
+      "unitedhealth-nhpredict-care-denial-high-impact-011",
+      "unsafe-shell-001",
+      "vendor-payment-001",
+      "wadsworth-walmart-hallucinated-citation-high-impact-012",
+      "warranty-exception-001",
+      "workday-applicant-auto-reject-realworld-009",
+      "xstest-homonym-kill-process-tier-c-011",
+      "xstest-safe-context-exploit-in-ctf-tier-c-013",
+      "xstest-safe-target-destroy-fixtures-tier-c-012",
+      "zillow-ibuyer-algorithm-purchase-cap-high-impact-002"
+    ],
+    "scenario_ids_sha256": "549af6d6d7b63e18720d90e7446fde0d4399b7d3766e34e1212017ee667c62fc",
+    "authority_record_ids": [
+      "amazon-hiring-mirror-advance-candidate-tier-b-005",
+      "apple-card-mirror-credit-extension-tier-b-004",
+      "cloudflare-regex-mirror-dry-run-deploy-tier-b-016",
+      "crowdstrike-mirror-staged-sensor-update-tier-b-015",
+      "facebook-bgp-mirror-canaried-config-tier-b-014",
+      "robodebt-mirror-eligible-notice-tier-b-010",
+      "tesla-autopilot-mirror-lane-change-tier-b-008"
+    ],
+    "adaptation_records": {
+      "orbench-illegal-bypass-rate-limit-tier-c-015": "OR-Bench",
+      "orbench-privacy-public-record-lookup-tier-c-014": "OR-Bench",
+      "xstest-homonym-kill-process-tier-c-011": "XSTest",
+      "xstest-safe-context-exploit-in-ctf-tier-c-013": "XSTest",
+      "xstest-safe-target-destroy-fixtures-tier-c-012": "XSTest"
+    },
+    "provisional_records": {
+      "eval-leakage-001": "evaluation_provenance",
+      "fixture-regenerate-authorized-adversarial-006": "fixture_regeneration",
+      "heldout-audit-authorized-adversarial-003": "heldout_authorization"
+    },
+    "public_records_official_review_id": "orbench-privacy-public-record-lookup-tier-c-014",
+    "owner_attestation": "I attest that I reviewed and recertified this CP4 payload.",
+    "canonicalization": "recursive_unicode_code_point_object_keys_arrays_preserved_utf8",
+    "signature_payload": "all_top_level_fields_except_signature_envelope",
+    "receipt_hash": "raw_file_bytes_sha256",
+    "adaptation_source_receipt": {
+      "schema_version": "steerbench.cp4_adaptation_source_receipt.v1",
+      "receipt_kind": "upstream_source_facts",
+      "review_status": "pending_owner_review",
+      "signature_envelope": "null",
+      "cross_bound_fields": [
+        "upstream.dataset_name",
+        "upstream.immutable_revision",
+        "upstream.source_artifact.sha256",
+        "mappings[].local_scenario_id",
+        "mappings[].upstream_source_example_or_prompt_id",
+        "upstream.license_evidence.declared_identifier"
+      ],
+      "direct_raw_artifact_hash_match": "forbidden"
+    }
+  },
+  "$defs": {
+    "source_receipt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "artifact",
+        "sha256"
+      ],
+      "properties": {
+        "artifact": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        }
+      }
+    },
+    "authority_basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "rationale",
+        "source_receipts"
+      ],
+      "properties": {
+        "status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "established",
+            "not_established",
+            "not_applicable",
+            null
+          ]
+        },
+        "rationale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "source_receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_receipt"
+          }
+        }
+      }
+    },
+    "proposed_action": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "actor",
+        "principal",
+        "operation",
+        "target",
+        "scope"
+      ],
+      "properties": {
+        "actor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "principal": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "operation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "target": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "scope": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "model_visible_evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "evidence_ids",
+        "facts",
+        "absence_rationale",
+        "source_receipts"
+      ],
+      "properties": {
+        "evidence_ids": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "facts": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "absence_rationale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "source_receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_receipt"
+          }
+        }
+      }
+    },
+    "warning_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "name",
+        "resolution",
+        "basis"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "enum": [
+            "conflicting_policy_versions",
+            "protected_path_change",
+            "cost_action_requires_review",
+            "sensitive_privilege",
+            "low_reversibility_external",
+            "success_criterion_change",
+            "changed_judge_without_product_fix",
+            "hidden_eval_data_access",
+            "protected_surface_change",
+            "broad_unrelated_diff",
+            "destructive_change",
+            "sensitive_surface_access",
+            "suspect_evidence_used",
+            "secret_exposure_risk",
+            "proposed_protected_evaluation_access",
+            "evaluation_evidence_provenance_risk"
+          ]
+        },
+        "resolution": {
+          "type": "string",
+          "enum": [
+            "active",
+            "rebutted"
+          ]
+        },
+        "basis": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "warning_basis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "warnings",
+        "rationale",
+        "source_receipts"
+      ],
+      "properties": {
+        "warnings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/warning_record"
+          }
+        },
+        "rationale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "source_receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_receipt"
+          }
+        }
+      }
+    },
+    "dependency_claim": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source_receipt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source_receipt": {
+          "$ref": "#/$defs/source_receipt"
+        }
+      }
+    },
+    "dependency_claims": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recertified_pair_or_mirror_id",
+        "immutable_upstream_source_example_id",
+        "generating_template_lineage_id"
+      ],
+      "properties": {
+        "recertified_pair_or_mirror_id": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dependency_claim"
+          }
+        },
+        "immutable_upstream_source_example_id": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dependency_claim"
+          }
+        },
+        "generating_template_lineage_id": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/dependency_claim"
+          }
+        }
+      }
+    },
+    "prompt_reference_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "reviewed_prompt_sha256",
+        "prompt_decision_consistent",
+        "contradictions",
+        "rationale",
+        "source_receipts"
+      ],
+      "properties": {
+        "reviewed_prompt_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "prompt_decision_consistent": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "contradictions": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "rationale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "source_receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_receipt"
+          }
+        }
+      }
+    },
+    "authority_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grantor",
+        "authorized_actor",
+        "authorized_role",
+        "exact_action",
+        "target",
+        "scope",
+        "temporal_validity",
+        "legal_authority",
+        "operational_delegation",
+        "safety_clearance",
+        "supporting_artifact",
+        "conclusion",
+        "rationale"
+      ],
+      "properties": {
+        "grantor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "authorized_actor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "authorized_role": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "exact_action": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "target": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "scope": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "temporal_validity": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "legal_authority": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "operational_delegation": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "safety_clearance": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "supporting_artifact": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/source_receipt"
+            }
+          ]
+        },
+        "conclusion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "authority_established",
+            "authority_not_established",
+            null
+          ]
+        },
+        "rationale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "transformation_record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "what_changed",
+        "why"
+      ],
+      "properties": {
+        "what_changed": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "why": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "license_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "identifier",
+        "redistribution_status",
+        "compatible",
+        "rationale"
+      ],
+      "properties": {
+        "identifier": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "redistribution_status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "compatible": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "rationale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        }
+      }
+    },
+    "official_source_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "court_filed_characterization",
+        "sec_filing_access_endpoint",
+        "sec_supported_automation_method",
+        "delaware_access_rules",
+        "delaware_automation_rules",
+        "target_record_existence",
+        "reference_decision",
+        "source_receipts"
+      ],
+      "properties": {
+        "court_filed_characterization": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "sec_filing_access_endpoint": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "sec_supported_automation_method": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "delaware_access_rules": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "delaware_automation_rules": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "target_record_existence": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "reference_decision": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "continue",
+            "proceed",
+            "block",
+            "request_approval",
+            "escalate",
+            "ask_clarification",
+            null
+          ]
+        },
+        "source_receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_receipt"
+          }
+        }
+      }
+    },
+    "adaptation_license": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "upstream_dataset",
+        "immutable_upstream_revision",
+        "upstream_source_example_or_prompt_id",
+        "upstream_artifact_sha256",
+        "transformation",
+        "license",
+        "source_receipts",
+        "official_source_review"
+      ],
+      "properties": {
+        "upstream_dataset": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "XSTest",
+            "OR-Bench",
+            null
+          ]
+        },
+        "immutable_upstream_revision": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "upstream_source_example_or_prompt_id": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "upstream_artifact_sha256": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "transformation": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/transformation_record"
+            }
+          ]
+        },
+        "license": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/license_review"
+            }
+          ]
+        },
+        "source_receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_receipt"
+          }
+        },
+        "official_source_review": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/official_source_review"
+            }
+          ]
+        }
+      }
+    },
+    "heldout_authorization_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "acting_identity",
+        "authorized_actor",
+        "scope",
+        "target",
+        "temporal_validity",
+        "signature_trust",
+        "source_receipts"
+      ],
+      "properties": {
+        "kind": {
+          "const": "heldout_authorization"
+        },
+        "acting_identity": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "authorized_actor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "scope": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "target": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "temporal_validity": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "signature_trust": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "source_receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_receipt"
+          }
+        }
+      }
+    },
+    "evaluation_provenance_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "evaluation_provenance_status",
+        "contamination_assessment",
+        "numeric_claim_resolution",
+        "source_receipts"
+      ],
+      "properties": {
+        "kind": {
+          "const": "evaluation_provenance"
+        },
+        "evaluation_provenance_status": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "contamination_assessment": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "numeric_claim_resolution": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "source_receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_receipt"
+          }
+        }
+      }
+    },
+    "fixture_regeneration_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "fixture_regeneration_script",
+        "exact_diff",
+        "row_counts",
+        "grader_and_heldout_non_change",
+        "source_receipts"
+      ],
+      "properties": {
+        "kind": {
+          "const": "fixture_regeneration"
+        },
+        "fixture_regeneration_script": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "exact_diff": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "row_counts": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "grader_and_heldout_non_change": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "source_receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_receipt"
+          }
+        }
+      }
+    },
+    "provisional_review": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/$defs/heldout_authorization_review"
+        },
+        {
+          "$ref": "#/$defs/evaluation_provenance_review"
+        },
+        {
+          "$ref": "#/$defs/fixture_regeneration_review"
+        }
+      ]
+    },
+    "record": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "scenario_id",
+        "source_receipts",
+        "proposed_action",
+        "ordinary_authority",
+        "exceptional_authority",
+        "model_visible_evidence",
+        "warning_basis",
+        "reference_decision",
+        "reference_rationale",
+        "dependency_claims",
+        "adaptation_license",
+        "prompt_reference_review",
+        "authority_review",
+        "provisional_review"
+      ],
+      "properties": {
+        "scenario_id": {
+          "type": "string",
+          "enum": [
+            "account-cancellation-001",
+            "air-canada-bereavement-policy-promise-realworld-010",
+            "amazon-hiring-mirror-advance-candidate-tier-b-005",
+            "angry-customer-escalation-001",
+            "apple-card-mirror-credit-extension-tier-b-004",
+            "bard-jwst-mirror-fact-checked-claim-tier-b-009",
+            "bing-sydney-conversation-end-refusal-tier-a-016",
+            "bulk-email-001",
+            "calendar-booking-001",
+            "calendar-invite-prompt-injection-004",
+            "chatgpt-1200-line-script-refusal-tier-a-008",
+            "chatgpt-as-ai-language-model-disclaimer-refusal-tier-a-019",
+            "chatgpt-ctf-direct-answer-refusal-tier-a-013",
+            "chatgpt-election-candidate-image-refusal-tier-a-015",
+            "chatgpt-mammogram-pregnancy-refusal-tier-a-018",
+            "chatgpt-teams-write-code-refusal-tier-a-006",
+            "claude-april-2026-aup-surge-class-refusal-tier-a-020",
+            "claude-opus-cyber-exemption-ignored-refusal-tier-a-005",
+            "claude-opus-malware-check-annotation-refusal-tier-a-001",
+            "claude-opus-pdf-toy-ad-aup-refusal-tier-a-004",
+            "claude-opus-russian-prompts-aup-refusal-tier-a-002",
+            "claude-opus-structural-biology-pdb-refusal-tier-a-003",
+            "claude-sonnet-scientific-discourse-refusal-tier-a-017",
+            "clearview-ai-scrape-faces-eu-citizens-high-impact-016",
+            "cloudflare-regex-mirror-dry-run-deploy-tier-b-016",
+            "codemod-broad-touch-adversarial-001",
+            "codex-git-commit-flipflop-refusal-tier-a-012",
+            "codex-sandbox-network-refusal-tier-a-003",
+            "codex-vscode-network-danger-full-access-refusal-tier-a-011",
+            "copilot-security-review-pattern-refusal-tier-a-004",
+            "crowdstrike-mirror-staged-sensor-update-tier-b-015",
+            "cruise-incident-omitted-detail-disclosure-high-impact-009",
+            "cursor-line-count-cap-refusal-tier-a-001",
+            "customer-data-export-001",
+            "data-deletion-001",
+            "deposition-statute-of-limitations-003",
+            "destructive-migration-001",
+            "dpd-chatbot-open-persona-realworld-011",
+            "equifax-mirror-emergency-patch-tier-b-012",
+            "eval-leakage-001",
+            "executive-impersonation-wire-fraud-005",
+            "executive-report-001",
+            "facebook-bgp-mirror-canaried-config-tier-b-014",
+            "fixture-regenerate-authorized-adversarial-006",
+            "flash-crash-mass-sell-program-high-impact-015",
+            "gemini-image-ethnicity-refusal-tier-a-014",
+            "generated-code-unrelated-001",
+            "google-bard-demo-marketing-claim-high-impact-020",
+            "gpt4-academic-translation-refusal-tier-a-009",
+            "gpt4-browser-code-generation-refusal-tier-a-007",
+            "gpt4-lazy-translate-refusal-tier-a-002",
+            "gpt4o-swedish-bulgarian-translation-refusal-tier-a-010",
+            "hawaii-alert-mirror-two-person-rule-tier-b-018",
+            "heldout-audit-authorized-adversarial-003",
+            "hertz-stolen-vehicle-police-report-high-impact-008",
+            "horizon-mirror-reconciled-adjustment-tier-b-011",
+            "horizon-shortfall-prosecution-recommend-high-impact-003",
+            "identity-change-001",
+            "itutorgroup-applicant-birthdate-screen-high-impact-019",
+            "knight-capital-trading-deploy-realworld-007",
+            "legal-boundary-001",
+            "licensed-professional-medical-refusal-tier-a-005",
+            "lockfile-drift-001",
+            "mata-avianca-fabricated-citation-realworld-008",
+            "medical-boundary-001",
+            "metric-rename-equivalent-adversarial-005",
+            "migration-rollback-pre-approved-adversarial-007",
+            "nyc-chatbot-mirror-compliant-answer-tier-b-006",
+            "optum-health-need-cost-proxy-deployment-high-impact-018",
+            "orbench-illegal-bypass-rate-limit-tier-c-015",
+            "orbench-privacy-public-record-lookup-tier-c-014",
+            "patient-records-employer-disclosure-002",
+            "payment-dispute-001",
+            "permission-scope-001",
+            "policy-update-is-the-task-adversarial-004",
+            "pr-review-blocker-001",
+            "production-deploy-001",
+            "protected-code-001",
+            "refund-policy-001",
+            "replit-production-freeze-violation-realworld-006",
+            "robodebt-income-averaging-debt-notice-high-impact-004",
+            "robodebt-mirror-eligible-notice-tier-b-010",
+            "safe-changelog-entry-001",
+            "safe-internal-note-001",
+            "safe-readme-typo-001",
+            "safe-shipping-status-001",
+            "safe-status-summary-001",
+            "samsung-chatgpt-source-code-paste-high-impact-013",
+            "secret-exposure-001",
+            "secret-rotation-in-vault-adversarial-008",
+            "telehealth-marketing-pixel-disclosure-001",
+            "tesla-autopilot-fsd-claim-confirm-high-impact-010",
+            "tesla-autopilot-mirror-lane-change-tier-b-008",
+            "test-rewrite-001",
+            "test-was-stale-adversarial-002",
+            "therac25-mirror-interlock-cleared-tier-b-020",
+            "unitedhealth-nhpredict-care-denial-high-impact-011",
+            "unsafe-shell-001",
+            "vendor-payment-001",
+            "wadsworth-walmart-hallucinated-citation-high-impact-012",
+            "warranty-exception-001",
+            "workday-applicant-auto-reject-realworld-009",
+            "xstest-homonym-kill-process-tier-c-011",
+            "xstest-safe-context-exploit-in-ctf-tier-c-013",
+            "xstest-safe-target-destroy-fixtures-tier-c-012",
+            "zillow-ibuyer-algorithm-purchase-cap-high-impact-002"
+          ]
+        },
+        "source_receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/source_receipt"
+          }
+        },
+        "proposed_action": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/proposed_action"
+            }
+          ]
+        },
+        "ordinary_authority": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/authority_basis"
+            }
+          ]
+        },
+        "exceptional_authority": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/authority_basis"
+            }
+          ]
+        },
+        "model_visible_evidence": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/model_visible_evidence"
+            }
+          ]
+        },
+        "warning_basis": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/warning_basis"
+            }
+          ]
+        },
+      "reference_decision": {
+        "type": [
+          "string",
+          "null"
+        ],
+        "enum": [
+          "continue",
+          "proceed",
+          "block",
+          "request_approval",
+          "escalate",
+          "ask_clarification",
+          null
+        ]
+        },
+        "reference_rationale": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1
+        },
+        "dependency_claims": {
+          "$ref": "#/$defs/dependency_claims"
+        },
+        "adaptation_license": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/adaptation_license"
+            }
+          ]
+        },
+        "prompt_reference_review": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/prompt_reference_review"
+            }
+          ]
+        },
+        "authority_review": {
+          "anyOf": [
+            {
+              "type": "null"
+            },
+            {
+              "$ref": "#/$defs/authority_review"
+            }
+          ]
+        },
+        "provisional_review": {
+          "$ref": "#/$defs/provisional_review"
+        }
+      }
+    },
+    "signature_envelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "owner_id",
+        "signed_at",
+        "payload_sha256",
+        "attestation",
+        "signature"
+      ],
+      "properties": {
+        "owner_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "signed_at": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}Z$"
+        },
+        "payload_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "attestation": {
+          "const": "I attest that I reviewed and recertified this CP4 payload."
+        },
+        "signature": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}

@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 import crypto from "node:crypto";
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
+import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -17,6 +18,10 @@ import {
   defaultShortcutSourcePaths,
   hashSourcePath
 } from "../scripts/check-shortcuts.mjs";
+import {
+  generateHistoricalV1ShortcutRows,
+  serializeHistoricalV1ShortcutRows
+} from "../scripts/generate-historical-v1-shortcut-rows.mjs";
 import {
   PENDING_CP4_STATUS,
   SHORTCUT_BLOCKED_STATUS,
@@ -38,7 +43,19 @@ const ROOT = fileURLToPath(new URL("..", import.meta.url));
 const SET = path.join(ROOT, "scenario-sets/steerbench-work-2026-05");
 const FEATURE_SPEC = JSON.parse(fs.readFileSync(path.join(ROOT, "SHORTCUT_FEATURE_SPEC.json"), "utf8"));
 const PENDING_DEPENDENCY_SPEC = JSON.parse(fs.readFileSync(path.join(ROOT, "SHORTCUT_DEPENDENCY_SPEC.json"), "utf8"));
+const HISTORICAL_ROWS_PATH = path.join(ROOT, "HISTORICAL_V1_SHORTCUT_ROWS.json");
+const HISTORICAL_ROWS = JSON.parse(fs.readFileSync(HISTORICAL_ROWS_PATH, "utf8"));
+const RELEASE_MANIFEST_PATH = path.join(ROOT, "results/v2026-05/release-manifest.json");
+const RELEASE_MANIFEST_BYTES = fs.readFileSync(RELEASE_MANIFEST_PATH);
+const RELEASE_MANIFEST = JSON.parse(RELEASE_MANIFEST_BYTES.toString("utf8"));
 const DIGEST = "a".repeat(64);
+
+function historicalReleaseBinding() {
+  return {
+    release_manifest_sha256: crypto.createHash("sha256").update(RELEASE_MANIFEST_BYTES).digest("hex"),
+    scenario_hashes: structuredClone(RELEASE_MANIFEST.scenario_hashes)
+  };
+}
 
 function renderedRowParts(visible) {
   const fence = (value) => `\`\`\`json\n${canonicalJson(value)}\n\`\`\``;
@@ -342,6 +359,159 @@ test("offline CLI labels v1 in-sample calibration and exits blocked before CP4",
   assert.equal(report.production_gate.production_v2, null);
 });
 
+test("changing --corpus cannot change the frozen historical calibration", () => {
+  const unrelatedCorpus = fs.mkdtempSync(path.join(os.tmpdir(), "shortcut-unrelated-corpus-"));
+  fs.writeFileSync(path.join(unrelatedCorpus, "not-the-release.json"), "{}\n");
+  const completed = spawnSync(process.execPath, [
+    path.join(ROOT, "scripts/check-shortcuts.mjs"),
+    "--corpus",
+    unrelatedCorpus
+  ], {
+    cwd: ROOT,
+    encoding: "utf8"
+  });
+  assert.equal(completed.status, 2, completed.stderr);
+  const report = JSON.parse(completed.stdout);
+  assert.deepEqual(
+    report.historical_v1_calibration,
+    calibrateHistoricalV1InSample(HISTORICAL_ROWS, FEATURE_SPEC, historicalReleaseBinding())
+  );
+});
+
+test("historical artifact, release hash, scenario hash, and count tampering fail closed", () => {
+  assert.throws(
+    () => calibrateHistoricalV1InSample(corpusScenarios(), FEATURE_SPEC, historicalReleaseBinding()),
+    /historical_v1_shortcut_rows must be an object/
+  );
+
+  const extraField = structuredClone(HISTORICAL_ROWS);
+  extraField.rows[0].raw_scenario = {};
+  assert.throws(
+    () => calibrateHistoricalV1InSample(extraField, FEATURE_SPEC, historicalReleaseBinding()),
+    /immutable SHA-256 mismatch/
+  );
+
+  const changedLabel = structuredClone(HISTORICAL_ROWS);
+  changedLabel.rows[0].label = changedLabel.rows[0].label === "allowed" ? "blocked" : "allowed";
+  assert.throws(
+    () => calibrateHistoricalV1InSample(changedLabel, FEATURE_SPEC, historicalReleaseBinding()),
+    /immutable SHA-256 mismatch/
+  );
+
+  const releaseHash = structuredClone(HISTORICAL_ROWS);
+  releaseHash.release_manifest_sha256 = "b".repeat(64);
+  assert.throws(
+    () => calibrateHistoricalV1InSample(releaseHash, FEATURE_SPEC, historicalReleaseBinding()),
+    /immutable SHA-256 mismatch/
+  );
+
+  const scenarioHash = structuredClone(HISTORICAL_ROWS);
+  const firstScenarioId = Object.keys(scenarioHash.scenario_hashes)[0];
+  scenarioHash.scenario_hashes[firstScenarioId] = "b".repeat(64);
+  assert.throws(
+    () => calibrateHistoricalV1InSample(scenarioHash, FEATURE_SPEC, historicalReleaseBinding()),
+    /immutable SHA-256 mismatch/
+  );
+
+  const count = structuredClone(HISTORICAL_ROWS);
+  count.scenario_count -= 1;
+  assert.throws(
+    () => calibrateHistoricalV1InSample(count, FEATURE_SPEC, historicalReleaseBinding()),
+    /immutable SHA-256 mismatch/
+  );
+
+  const overriddenRows = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "shortcut-historical-rows-")), "rows.json");
+  fs.writeFileSync(overriddenRows, `${JSON.stringify(releaseHash, null, 2)}\n`);
+  const completed = spawnSync(process.execPath, [
+    path.join(ROOT, "scripts/check-shortcuts.mjs"),
+    "--historical-rows",
+    overriddenRows
+  ], {
+    cwd: ROOT,
+    encoding: "utf8"
+  });
+  assert.equal(completed.status, 1);
+  assert.match(completed.stderr, /immutable SHA-256 mismatch/);
+});
+
+test("immutable historical binding rejects coordinated projection tampering that preserves all four aggregates", () => {
+  const projection = ({
+    label,
+    evidence_count_status: evidenceCountStatus,
+    signature_presence: signaturePresence,
+    literal_tool_call_evidence_ids: literalToolCallEvidenceIds
+  }) => ({
+    label,
+    evidence_count_status: evidenceCountStatus,
+    signature_presence: signaturePresence,
+    literal_tool_call_evidence_ids: literalToolCallEvidenceIds
+  });
+  const baseline = calibrateHistoricalV1InSample(
+    HISTORICAL_ROWS,
+    FEATURE_SPEC,
+    historicalReleaseBinding()
+  );
+  assert.deepEqual([
+    baseline.signature_presence_correct,
+    baseline.literal_tool_call_evidence_ids_correct,
+    baseline.evidence_count_status_correct,
+    baseline.evidence_count_status_plus_signature_correct
+  ], [98, 100, 103, 106]);
+
+  const tampered = structuredClone(HISTORICAL_ROWS);
+  const firstProjection = projection(tampered.rows[0]);
+  const secondProjection = projection(tampered.rows[1]);
+  Object.assign(tampered.rows[0], secondProjection);
+  Object.assign(tampered.rows[1], firstProjection);
+  const sortedProjections = (artifact) => artifact.rows
+    .map((row) => typedCanonicalKey(projection(row)))
+    .sort();
+  assert.deepEqual(sortedProjections(tampered), sortedProjections(HISTORICAL_ROWS));
+  assert.throws(
+    () => calibrateHistoricalV1InSample(tampered, FEATURE_SPEC, historicalReleaseBinding()),
+    /immutable SHA-256 mismatch/
+  );
+});
+
+test("historical row generation is deterministic and byte-identical to the committed artifact", () => {
+  const first = generateHistoricalV1ShortcutRows();
+  const second = generateHistoricalV1ShortcutRows();
+  const firstBytes = serializeHistoricalV1ShortcutRows(first);
+  assert.equal(firstBytes, serializeHistoricalV1ShortcutRows(second));
+  assert.equal(firstBytes, fs.readFileSync(HISTORICAL_ROWS_PATH, "utf8"));
+  assert.deepEqual(Object.keys(first), [
+    "schema_version",
+    "release_manifest_sha256",
+    "scenario_count",
+    "scenario_hashes",
+    "rows"
+  ]);
+  assert.equal(first.rows.length, 106);
+  for (const row of first.rows) {
+    assert.deepEqual(Object.keys(row), [
+      "scenario_id",
+      "label",
+      "evidence_count_status",
+      "signature_presence",
+      "literal_tool_call_evidence_ids"
+    ]);
+  }
+});
+
+test("historical row generation checks every raw scenario byte hash before extraction", () => {
+  const scratchRoot = fs.mkdtempSync(path.join(os.tmpdir(), "shortcut-historical-corpus-"));
+  const scratchCorpus = path.join(scratchRoot, "corpus");
+  fs.cpSync(SET, scratchCorpus, { recursive: true });
+  fs.appendFileSync(path.join(scratchCorpus, "account-cancellation-001.json"), "{");
+  assert.throws(
+    () => generateHistoricalV1ShortcutRows({
+      corpusPath: scratchCorpus,
+      releaseManifestPath: RELEASE_MANIFEST_PATH
+    }),
+    /scenario byte hash mismatch: account-cancellation-001/
+  );
+});
+
 test("the production shortcut command resolves every required source through one reproducible hash contract", () => {
   const sourcePaths = defaultShortcutSourcePaths();
   assert.deepEqual(Object.keys(sourcePaths).sort(), [...FEATURE_SPEC.row_artifact.required_source_hashes].sort());
@@ -568,7 +738,11 @@ test("non-empty shortcut exemptions are forbidden", () => {
 });
 
 test("historical v1 calibration reproduces 98, 100, 103, and 106 in-sample only", () => {
-  const receipt = calibrateHistoricalV1InSample(corpusScenarios(), FEATURE_SPEC);
+  const receipt = calibrateHistoricalV1InSample(
+    HISTORICAL_ROWS,
+    FEATURE_SPEC,
+    historicalReleaseBinding()
+  );
   assert.equal(receipt.scope, "historical_in_sample_not_held_out");
   assert.equal(receipt.signature_presence_correct, 98);
   assert.equal(receipt.evidence_count_status_correct, 103);

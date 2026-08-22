@@ -1,0 +1,346 @@
+/**
+ * @fileoverview Pure deterministic generator for the CP4 dependency ledger.
+ * @module src/cp4-dependency-ledger
+ *
+ * Expands exact recertified dependency claims into receipt-bearing clique
+ * edges, derives every connected component, and compares the result with the
+ * owner-recertified ledger committed in SHORTCUT_DEPENDENCY_SPEC.json.
+ */
+
+import crypto from "node:crypto";
+
+const EXPECTED_SCENARIO_COUNT = 106;
+const EXPECTED_ID_SET_SHA256 = "549af6d6d7b63e18720d90e7446fde0d4399b7d3766e34e1212017ee667c62fc";
+const SHA256_RE = /^[0-9a-f]{64}$/u;
+const ALLOWED_KINDS = [
+  "recertified_pair_or_mirror_id",
+  "immutable_upstream_source_example_id",
+  "generating_template_lineage_id"
+];
+const FORBIDDEN_CLAIMS = [
+  "topic",
+  "domain",
+  "scenario_pattern",
+  "risk_resolved",
+  "detector_conflict",
+  "missing_value"
+];
+
+function isPlainObject(value) {
+  if (value === null || typeof value !== "object" || Array.isArray(value)) return false;
+  const prototype = Object.getPrototypeOf(value);
+  return prototype === Object.prototype || prototype === null;
+}
+
+function compareCodePointStrings(left, right) {
+  const leftPoints = [...left].map((character) => character.codePointAt(0));
+  const rightPoints = [...right].map((character) => character.codePointAt(0));
+  const length = Math.min(leftPoints.length, rightPoints.length);
+  for (let index = 0; index < length; index += 1) {
+    if (leftPoints[index] !== rightPoints[index]) return leftPoints[index] - rightPoints[index];
+  }
+  return leftPoints.length - rightPoints.length;
+}
+
+function sortedStrings(values) {
+  return [...values].sort(compareCodePointStrings);
+}
+
+function jsonBytes(value) {
+  return JSON.stringify(value);
+}
+
+function assertExactKeys(value, keys, location) {
+  if (!isPlainObject(value)) throw new Error(`${location} must be an object`);
+  const actual = sortedStrings(Object.keys(value));
+  const expected = sortedStrings(keys);
+  if (jsonBytes(actual) !== jsonBytes(expected)) {
+    throw new Error(`${location} must contain exactly ${keys.join(", ")}`);
+  }
+}
+
+function assertNonemptyString(value, location) {
+  if (typeof value !== "string" || value.length === 0) {
+    throw new Error(`${location} must be a non-empty string`);
+  }
+}
+
+function normalizeReceipt(value, location) {
+  assertExactKeys(value, ["artifact", "sha256"], location);
+  assertNonemptyString(value.artifact, `${location}.artifact`);
+  if (!SHA256_RE.test(value.sha256)) {
+    throw new Error(`${location}.sha256 must be a lowercase SHA-256 digest`);
+  }
+  return { artifact: value.artifact, sha256: value.sha256 };
+}
+
+function assertSameStringSet(actual, expected, location) {
+  if (!Array.isArray(actual)
+    || actual.some((value) => typeof value !== "string")
+    || jsonBytes(sortedStrings(actual)) !== jsonBytes(sortedStrings(expected))) {
+    throw new Error(`${location} differs from the frozen CP4 contract`);
+  }
+}
+
+function validateDependencySpec(spec) {
+  if (!isPlainObject(spec) || spec.schema_version !== "steerbench.shortcut_dependency_spec.v1") {
+    throw new Error("unsupported shortcut dependency spec");
+  }
+  if (spec.expected_scenario_count !== EXPECTED_SCENARIO_COUNT) {
+    throw new Error("shortcut dependency spec must require exactly 106 scenarios");
+  }
+  if (spec.corpus_id_set_sha256 !== EXPECTED_ID_SET_SHA256) {
+    throw new Error("shortcut dependency spec corpus ID-set hash differs from the frozen CP4 hash");
+  }
+  if (spec.seed !== 20260815) throw new Error("shortcut dependency spec seed differs from the frozen CP4 seed");
+  if (!isPlainObject(spec.edge_rules)) throw new Error("edge_rules must be an object");
+  assertSameStringSet(spec.edge_rules?.allowed_kinds, ALLOWED_KINDS, "edge_rules.allowed_kinds");
+  assertSameStringSet(spec.edge_rules?.forbidden_sources, FORBIDDEN_CLAIMS, "edge_rules.forbidden_sources");
+  if (spec.edge_rules.normalization !== "endpoints_unicode_code_point_sorted"
+    || spec.edge_rules.duplicates !== "forbidden"
+    || spec.edge_rules.self_edges !== "forbidden"
+    || spec.edge_rules.source_receipt !== "required_per_edge") {
+    throw new Error("edge_rules differ from the frozen CP4 contract");
+  }
+  if (!isPlainObject(spec.component_rule)
+    || spec.component_rule.algorithm !== "undirected_connected_components"
+    || spec.component_rule.edge_order !== "stable_sorted"
+    || spec.component_rule.component_members !== "stable_sorted"
+    || spec.component_rule.component_order !== "first_member_stable_sorted"
+    || spec.component_rule.singletons !== "included"
+    || spec.component_rule.cross_fold_edges !== "forbidden"
+    || spec.component_rule.every_row_held_out_exactly_once !== true) {
+    throw new Error("component_rule differs from the frozen CP4 contract");
+  }
+  if (!isPlainObject(spec.ledger_contract)) throw new Error("ledger_contract must be an object");
+  assertSameStringSet(
+    spec.ledger_contract.edge_keys,
+    ["left", "right", "kind", "source_receipt"],
+    "ledger_contract.edge_keys"
+  );
+  assertSameStringSet(
+    spec.ledger_contract.source_receipt_keys,
+    ["artifact", "sha256"],
+    "ledger_contract.source_receipt_keys"
+  );
+}
+
+function validateScenarioIds(values, spec, location, requireSorted = false) {
+  if (!Array.isArray(values)) throw new Error(`${location} must be an array`);
+  const seen = new Set();
+  for (let index = 0; index < values.length; index += 1) {
+    assertNonemptyString(values[index], `${location}[${index}]`);
+    if (seen.has(values[index])) throw new Error(`${location} contains duplicate scenario IDs`);
+    seen.add(values[index]);
+  }
+  if (values.length !== EXPECTED_SCENARIO_COUNT) throw new Error(`${location} must contain exactly 106 scenario IDs`);
+  const sorted = sortedStrings(values);
+  if (requireSorted && jsonBytes(values) !== jsonBytes(sorted)) {
+    throw new Error(`${location} must be Unicode-code-point sorted`);
+  }
+  const digest = crypto.createHash("sha256").update(jsonBytes(sorted)).digest("hex");
+  if (digest !== spec.corpus_id_set_sha256) throw new Error(`${location} does not match the frozen corpus ID-set hash`);
+  return sorted;
+}
+
+function compareEdges(left, right) {
+  return compareCodePointStrings(left.left, right.left)
+    || compareCodePointStrings(left.right, right.right)
+    || compareCodePointStrings(left.kind, right.kind);
+}
+
+function deriveComponents(scenarioIds, edges) {
+  const adjacency = new Map(scenarioIds.map((scenarioId) => [scenarioId, new Set()]));
+  for (const edge of edges) {
+    adjacency.get(edge.left).add(edge.right);
+    adjacency.get(edge.right).add(edge.left);
+  }
+  const visited = new Set();
+  const components = [];
+  for (const scenarioId of scenarioIds) {
+    if (visited.has(scenarioId)) continue;
+    const pending = [scenarioId];
+    const component = [];
+    visited.add(scenarioId);
+    for (let cursor = 0; cursor < pending.length; cursor += 1) {
+      const current = pending[cursor];
+      component.push(current);
+      for (const neighbor of sortedStrings(adjacency.get(current))) {
+        if (!visited.has(neighbor)) {
+          visited.add(neighbor);
+          pending.push(neighbor);
+        }
+      }
+    }
+    components.push(sortedStrings(component));
+  }
+  return components.sort((left, right) => compareCodePointStrings(left[0], right[0]));
+}
+
+function validateEdges(edges, scenarioIds, location) {
+  if (!Array.isArray(edges)) throw new Error(`${location} must be an array`);
+  const corpusIds = new Set(scenarioIds);
+  const pairs = new Set();
+  const normalized = edges.map((edge, index) => {
+    const edgeLocation = `${location}[${index}]`;
+    assertExactKeys(edge, ["left", "right", "kind", "source_receipt"], edgeLocation);
+    assertNonemptyString(edge.left, `${edgeLocation}.left`);
+    assertNonemptyString(edge.right, `${edgeLocation}.right`);
+    if (!corpusIds.has(edge.left) || !corpusIds.has(edge.right)) throw new Error(`${edgeLocation} endpoint is outside the corpus`);
+    if (edge.left === edge.right) throw new Error("dependency self-edges are forbidden");
+    if (compareCodePointStrings(edge.left, edge.right) >= 0) throw new Error(`${edgeLocation} endpoints are not Unicode-code-point sorted`);
+    if (!ALLOWED_KINDS.includes(edge.kind)) throw new Error(`${edgeLocation}.kind is unsupported`);
+    const pair = jsonBytes([edge.left, edge.right]);
+    if (pairs.has(pair)) throw new Error("duplicate dependency edge");
+    pairs.add(pair);
+    return {
+      left: edge.left,
+      right: edge.right,
+      kind: edge.kind,
+      source_receipt: normalizeReceipt(edge.source_receipt, `${edgeLocation}.source_receipt`)
+    };
+  }).sort(compareEdges);
+  if (jsonBytes(edges) !== jsonBytes(normalized)) throw new Error(`${location} is not in deterministic sorted byte order`);
+  return normalized;
+}
+
+function validateComponents(components, scenarioIds, edges, location) {
+  if (!Array.isArray(components)) throw new Error(`${location} must be an array`);
+  for (let index = 0; index < components.length; index += 1) {
+    const component = components[index];
+    if (!Array.isArray(component) || component.length === 0) throw new Error(`${location}[${index}] must be a non-empty array`);
+    for (let member = 0; member < component.length; member += 1) {
+      assertNonemptyString(component[member], `${location}[${index}][${member}]`);
+    }
+  }
+  const derived = deriveComponents(scenarioIds, edges);
+  if (jsonBytes(components) !== jsonBytes(derived)) {
+    throw new Error(`${location} do not equal the edge-derived components`);
+  }
+  return derived;
+}
+
+function validateCandidate(candidate, spec, location) {
+  assertExactKeys(candidate, ["scenario_ids", "edges", "components"], location);
+  const scenarioIds = validateScenarioIds(candidate.scenario_ids, spec, `${location}.scenario_ids`, true);
+  const edges = validateEdges(candidate.edges, scenarioIds, `${location}.edges`);
+  const components = validateComponents(candidate.components, scenarioIds, edges, `${location} components`);
+  return { scenario_ids: scenarioIds, edges, components };
+}
+
+/**
+ * Generate the deterministic dependency-ledger candidate from CP4 records.
+ *
+ * @param {object} recertificationLedger CP4 artifact containing a `records` array.
+ * @param {object} options Generator options.
+ * @param {object} options.dependencySpec Parsed SHORTCUT_DEPENDENCY_SPEC.json.
+ * @returns {{scenario_ids:Array<string>,edges:Array<object>,components:Array<Array<string>>}} Derived candidate ledger.
+ * @throws {Error} If the corpus binding, claims, receipts, or edge provenance are invalid.
+ */
+export function generateCp4DependencyLedger(recertificationLedger, { dependencySpec } = {}) {
+  validateDependencySpec(dependencySpec);
+  if (!isPlainObject(recertificationLedger) || !Array.isArray(recertificationLedger.records)) {
+    throw new Error("recertificationLedger.records must be an array");
+  }
+  const groups = new Map(ALLOWED_KINDS.map((kind) => [kind, new Map()]));
+  const scenarioIds = [];
+  const seenScenarioIds = new Set();
+  recertificationLedger.records.forEach((record, rowIndex) => {
+    const location = `recertificationLedger.records[${rowIndex}]`;
+    if (!isPlainObject(record)) throw new Error(`${location} must be an object`);
+    assertNonemptyString(record.scenario_id, `${location}.scenario_id`);
+    if (seenScenarioIds.has(record.scenario_id)) throw new Error("recertification records contain duplicate scenario IDs");
+    seenScenarioIds.add(record.scenario_id);
+    scenarioIds.push(record.scenario_id);
+    if (!Object.hasOwn(record, "dependency_claims")) throw new Error(`${location}.dependency_claims is required`);
+    if (!isPlainObject(record.dependency_claims)) throw new Error(`${location}.dependency_claims must be an object`);
+    for (const kind of Object.keys(record.dependency_claims)) {
+      if (FORBIDDEN_CLAIMS.includes(kind)) throw new Error(`forbidden broad dependency claim ${kind}`);
+      if (!ALLOWED_KINDS.includes(kind)) throw new Error(`unsupported dependency claim kind ${kind}`);
+    }
+    for (const kind of ALLOWED_KINDS) {
+      const claims = record.dependency_claims[kind];
+      if (!Array.isArray(claims)) throw new Error(`${location}.dependency_claims.${kind} must be an explicit array`);
+      const seenClaims = new Set();
+      for (let claimIndex = 0; claimIndex < claims.length; claimIndex += 1) {
+        if (!Object.hasOwn(claims, claimIndex)) throw new Error(`${location}.dependency_claims.${kind} must not be sparse`);
+        const claim = claims[claimIndex];
+        const claimLocation = `${location}.dependency_claims.${kind}[${claimIndex}]`;
+        assertExactKeys(claim, ["id", "source_receipt"], claimLocation);
+        assertNonemptyString(claim.id, `${claimLocation}.id`);
+        if (seenClaims.has(claim.id)) throw new Error(`${claimLocation}.id duplicates a claim in the same row`);
+        seenClaims.add(claim.id);
+        const receipt = normalizeReceipt(claim.source_receipt, `${claimLocation}.source_receipt`);
+        const kindGroups = groups.get(kind);
+        if (!kindGroups.has(claim.id)) kindGroups.set(claim.id, { receipt, scenarioIds: [] });
+        const group = kindGroups.get(claim.id);
+        if (jsonBytes(group.receipt) !== jsonBytes(receipt)) {
+          throw new Error(`${kind} claim ${JSON.stringify(claim.id)} has conflicting source receipts`);
+        }
+        group.scenarioIds.push(record.scenario_id);
+      }
+    }
+  });
+  const sortedScenarioIds = validateScenarioIds(scenarioIds, dependencySpec, "recertification scenario IDs");
+  const edges = [];
+  const edgeClaims = new Map();
+  for (const kind of ALLOWED_KINDS) {
+    const kindGroups = groups.get(kind);
+    for (const claimId of sortedStrings(kindGroups.keys())) {
+      const group = kindGroups.get(claimId);
+      const members = sortedStrings(group.scenarioIds);
+      for (let leftIndex = 0; leftIndex < members.length; leftIndex += 1) {
+        for (let rightIndex = leftIndex + 1; rightIndex < members.length; rightIndex += 1) {
+          const left = members[leftIndex];
+          const right = members[rightIndex];
+          if (left === right) throw new Error("dependency self-edges are forbidden");
+          const pair = jsonBytes([left, right]);
+          if (edgeClaims.has(pair)) {
+            throw new Error(`endpoint pair ${pair} arises from multiple claims or kinds; owner resolution is required`);
+          }
+          edgeClaims.set(pair, { kind, claimId });
+          edges.push({ left, right, kind, source_receipt: { ...group.receipt } });
+        }
+      }
+    }
+  }
+  edges.sort(compareEdges);
+  return {
+    scenario_ids: sortedScenarioIds,
+    edges,
+    components: deriveComponents(sortedScenarioIds, edges)
+  };
+}
+
+/**
+ * Assert that generated dependency bytes equal the owner-recertified ledger.
+ *
+ * @param {object} generatedLedger Candidate returned by {@link generateCp4DependencyLedger}.
+ * @param {object} committedSpec Parsed committed SHORTCUT_DEPENDENCY_SPEC.json.
+ * @returns {true} True when scenario, edge, and component bytes match exactly.
+ * @throws {Error} If either ledger is malformed or any committed byte differs.
+ */
+export function assertDependencyLedgerMatches(generatedLedger, committedSpec) {
+  validateDependencySpec(committedSpec);
+  const generated = validateCandidate(generatedLedger, committedSpec, "generated dependency ledger");
+  const ledger = committedSpec.ledger;
+  assertExactKeys(ledger, ["status", "owner_signature", "recertified_at", "scenario_ids", "edges", "components"], "committed dependency ledger");
+  if (ledger.status !== "owner_recertified") throw new Error("committed dependency ledger is not owner-recertified");
+  assertNonemptyString(ledger.owner_signature, "committed dependency ledger.owner_signature");
+  assertNonemptyString(ledger.recertified_at, "committed dependency ledger.recertified_at");
+  const committed = validateCandidate({
+    scenario_ids: ledger.scenario_ids,
+    edges: ledger.edges,
+    components: ledger.components
+  }, committedSpec, "committed dependency");
+  if (jsonBytes(generated.scenario_ids) !== jsonBytes(committed.scenario_ids)) {
+    throw new Error("committed dependency scenario ID bytes differ from generated bytes");
+  }
+  if (jsonBytes(generated.edges) !== jsonBytes(committed.edges)) {
+    throw new Error("committed dependency edge bytes differ from generated bytes");
+  }
+  if (jsonBytes(generated.components) !== jsonBytes(committed.components)) {
+    throw new Error("committed dependency component bytes differ from generated bytes");
+  }
+  return true;
+}
