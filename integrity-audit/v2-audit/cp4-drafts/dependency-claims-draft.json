@@ -1,0 +1,221 @@
+{
+  "schema_version": "steerbench.cp4_dependency_claims_draft.v1",
+  "status": "draft_pending_owner_recertification",
+  "scientific_limit": "This unsigned overlay is a review candidate. It cannot activate SHORTCUT_DEPENDENCY_SPEC.json, create production folds, or establish that an unlisted row is independent.",
+  "corpus_id_set_sha256": "549af6d6d7b63e18720d90e7446fde0d4399b7d3766e34e1212017ee667c62fc",
+  "dependency_spec": {
+    "artifact": "SHORTCUT_DEPENDENCY_SPEC.json",
+    "sha256": "a6f79ef1df99f2c117e3a7c0850128d3500c7c9ddfdd12c60d1fa1fbec7c7f5e"
+  },
+  "pair_source_receipt": {
+    "artifact": "integrity-audit/v2-audit/cp4-drafts/dependency-pair-source-receipt-draft.json",
+    "sha256": "3d6ee038f0742f800f4bc71af1bfc81f28be73224434e3b0d96513f844cf3bc6"
+  },
+  "claims_by_scenario": [
+    {
+      "scenario_id": "bard-jwst-mirror-fact-checked-claim-tier-b-009",
+      "dependency_claims": {
+        "generating_template_lineage_id": [],
+        "immutable_upstream_source_example_id": [],
+        "recertified_pair_or_mirror_id": [
+          {
+            "id": "incident-mirror:google-bard-jwst-error",
+            "source_receipt": {
+              "artifact": "integrity-audit/v2-audit/cp4-drafts/dependency-pair-source-receipt-draft.json",
+              "sha256": "3d6ee038f0742f800f4bc71af1bfc81f28be73224434e3b0d96513f844cf3bc6"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "scenario_id": "google-bard-demo-marketing-claim-high-impact-020",
+      "dependency_claims": {
+        "generating_template_lineage_id": [],
+        "immutable_upstream_source_example_id": [],
+        "recertified_pair_or_mirror_id": [
+          {
+            "id": "incident-mirror:google-bard-jwst-error",
+            "source_receipt": {
+              "artifact": "integrity-audit/v2-audit/cp4-drafts/dependency-pair-source-receipt-draft.json",
+              "sha256": "3d6ee038f0742f800f4bc71af1bfc81f28be73224434e3b0d96513f844cf3bc6"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "scenario_id": "horizon-mirror-reconciled-adjustment-tier-b-011",
+      "dependency_claims": {
+        "generating_template_lineage_id": [],
+        "immutable_upstream_source_example_id": [],
+        "recertified_pair_or_mirror_id": [
+          {
+            "id": "incident-mirror:uk-post-office-horizon",
+            "source_receipt": {
+              "artifact": "integrity-audit/v2-audit/cp4-drafts/dependency-pair-source-receipt-draft.json",
+              "sha256": "3d6ee038f0742f800f4bc71af1bfc81f28be73224434e3b0d96513f844cf3bc6"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "scenario_id": "horizon-shortfall-prosecution-recommend-high-impact-003",
+      "dependency_claims": {
+        "generating_template_lineage_id": [],
+        "immutable_upstream_source_example_id": [],
+        "recertified_pair_or_mirror_id": [
+          {
+            "id": "incident-mirror:uk-post-office-horizon",
+            "source_receipt": {
+              "artifact": "integrity-audit/v2-audit/cp4-drafts/dependency-pair-source-receipt-draft.json",
+              "sha256": "3d6ee038f0742f800f4bc71af1bfc81f28be73224434e3b0d96513f844cf3bc6"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "scenario_id": "orbench-illegal-bypass-rate-limit-tier-c-015",
+      "dependency_claims": {
+        "generating_template_lineage_id": [],
+        "immutable_upstream_source_example_id": [
+          {
+            "id": "OR-Bench@e36d8b80e81837c8a8f264bbb2a49f1b32c7e272:or-bench-hard-1k.csv:data-row-282",
+            "source_receipt": {
+              "artifact": "sources/cp4/or-bench-adaptation-source-receipt.json",
+              "sha256": "6ad2305b4788029cff1dd6d733a29beec3988e1d273dfbf4c2b60484e2a8f514"
+            }
+          }
+        ],
+        "recertified_pair_or_mirror_id": []
+      }
+    },
+    {
+      "scenario_id": "orbench-privacy-public-record-lookup-tier-c-014",
+      "dependency_claims": {
+        "generating_template_lineage_id": [],
+        "immutable_upstream_source_example_id": [
+          {
+            "id": "OR-Bench@e36d8b80e81837c8a8f264bbb2a49f1b32c7e272:or-bench-hard-1k.csv:data-row-891",
+            "source_receipt": {
+              "artifact": "sources/cp4/or-bench-adaptation-source-receipt.json",
+              "sha256": "6ad2305b4788029cff1dd6d733a29beec3988e1d273dfbf4c2b60484e2a8f514"
+            }
+          }
+        ],
+        "recertified_pair_or_mirror_id": []
+      }
+    },
+    {
+      "scenario_id": "robodebt-income-averaging-debt-notice-high-impact-004",
+      "dependency_claims": {
+        "generating_template_lineage_id": [],
+        "immutable_upstream_source_example_id": [],
+        "recertified_pair_or_mirror_id": [
+          {
+            "id": "incident-mirror:australian-robodebt",
+            "source_receipt": {
+              "artifact": "integrity-audit/v2-audit/cp4-drafts/dependency-pair-source-receipt-draft.json",
+              "sha256": "3d6ee038f0742f800f4bc71af1bfc81f28be73224434e3b0d96513f844cf3bc6"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "scenario_id": "robodebt-mirror-eligible-notice-tier-b-010",
+      "dependency_claims": {
+        "generating_template_lineage_id": [],
+        "immutable_upstream_source_example_id": [],
+        "recertified_pair_or_mirror_id": [
+          {
+            "id": "incident-mirror:australian-robodebt",
+            "source_receipt": {
+              "artifact": "integrity-audit/v2-audit/cp4-drafts/dependency-pair-source-receipt-draft.json",
+              "sha256": "3d6ee038f0742f800f4bc71af1bfc81f28be73224434e3b0d96513f844cf3bc6"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "scenario_id": "xstest-homonym-kill-process-tier-c-011",
+      "dependency_claims": {
+        "generating_template_lineage_id": [],
+        "immutable_upstream_source_example_id": [
+          {
+            "id": "XSTest@d7bb5bd738c1fcbc36edd83d5e7d1b71a3e2d84d:prompt:1",
+            "source_receipt": {
+              "artifact": "sources/cp4/xstest-adaptation-source-receipt.json",
+              "sha256": "cc7bf718dbb18199acbedaa897e8fc92cd1a189d362d9b7f6d827752354d36cf"
+            }
+          }
+        ],
+        "recertified_pair_or_mirror_id": []
+      }
+    },
+    {
+      "scenario_id": "xstest-safe-context-exploit-in-ctf-tier-c-013",
+      "dependency_claims": {
+        "generating_template_lineage_id": [],
+        "immutable_upstream_source_example_id": [
+          {
+            "id": "XSTest@d7bb5bd738c1fcbc36edd83d5e7d1b71a3e2d84d:prompt:154",
+            "source_receipt": {
+              "artifact": "sources/cp4/xstest-adaptation-source-receipt.json",
+              "sha256": "cc7bf718dbb18199acbedaa897e8fc92cd1a189d362d9b7f6d827752354d36cf"
+            }
+          }
+        ],
+        "recertified_pair_or_mirror_id": []
+      }
+    },
+    {
+      "scenario_id": "xstest-safe-target-destroy-fixtures-tier-c-012",
+      "dependency_claims": {
+        "generating_template_lineage_id": [],
+        "immutable_upstream_source_example_id": [
+          {
+            "id": "XSTest@d7bb5bd738c1fcbc36edd83d5e7d1b71a3e2d84d:prompt:104",
+            "source_receipt": {
+              "artifact": "sources/cp4/xstest-adaptation-source-receipt.json",
+              "sha256": "cc7bf718dbb18199acbedaa897e8fc92cd1a189d362d9b7f6d827752354d36cf"
+            }
+          }
+        ],
+        "recertified_pair_or_mirror_id": []
+      }
+    }
+  ],
+  "candidate_output": {
+    "edge_count": 3,
+    "component_count": 103,
+    "production_status": "blocked_pending_owner_recertification"
+  },
+  "unresolved_mirror_scenario_ids": [
+    "amazon-hiring-mirror-advance-candidate-tier-b-005",
+    "apple-card-mirror-credit-extension-tier-b-004",
+    "cloudflare-regex-mirror-dry-run-deploy-tier-b-016",
+    "crowdstrike-mirror-staged-sensor-update-tier-b-015",
+    "equifax-mirror-emergency-patch-tier-b-012",
+    "facebook-bgp-mirror-canaried-config-tier-b-014",
+    "hawaii-alert-mirror-two-person-rule-tier-b-018",
+    "nyc-chatbot-mirror-compliant-answer-tier-b-006",
+    "tesla-autopilot-mirror-lane-change-tier-b-008",
+    "therac25-mirror-interlock-cleared-tier-b-020"
+  ],
+  "generating_template_lineage_review": {
+    "status": "blocked_missing_exact_lineage_receipts",
+    "activated_claim_count": 0,
+    "reason": "The corpus carries broad construction-pattern metadata but no exact generating-template lineage IDs. Broad patterns and missing values are forbidden dependency sources."
+  },
+  "owner_decisions_required": [
+    "Recertify or reject each of the three proposed exact incident anchor/mirror pair IDs.",
+    "Confirm the five immutable upstream example IDs inside the enclosing signed CP4 payload; they are unique and therefore add no edge by themselves.",
+    "Supply exact generating-template lineage receipts or affirm that no such dependency claim applies; broad scenario patterns cannot substitute.",
+    "Resolve every unlisted mirror without inferring independence from missing metadata."
+  ],
+  "signature_envelope": null
+}

@@ -1,0 +1,202 @@
+{
+  "cp4_field_policy": {
+    "exceptional_authority": "null_until_owner_recertifies",
+    "model_visible_evidence": "null_until_all_selected_evidence_has_source_supported_structured_content",
+    "ordinary_authority": "null_until_owner_recertifies",
+    "prompt_reference_review": "null_until_owner_recertifies",
+    "proposed_action": "null_until_owner_recertifies_actor_principal_operation_target_and_scope",
+    "reference_decision": "null_never_copy_expected_behavior_correct_action",
+    "reference_rationale": "null_never_copy_expected_steering_or_hidden_trap",
+    "signature_envelope": null,
+    "source_receipts": "bind_only_the_raw_authored_legacy_row",
+    "warning_basis": "null_until_owner_recertifies_without_labels_or_hidden_notes"
+  },
+  "evidence_missing_mapping": {
+    "model_visible_absence_rationale": "unresolved_pending_owner_verification",
+    "proposed_status": "missing",
+    "reason": "preserve_verbatim_as_authored_missing_reason_not_as_observed_tool_result",
+    "src": "preserve_as_non_evidentiary_raw_ref_metadata_only",
+    "tool_call_result": null,
+    "unresolved_outcome": "block_row"
+  },
+  "evidence_used_mapping": {
+    "evidence_id": "unresolved",
+    "model_visible_fact": "unresolved",
+    "source_type": "unresolved",
+    "src": "preserve_as_non_evidentiary_raw_ref_metadata_only",
+    "status": "apply_status_normalization_then_require_owner_recertification",
+    "step": "preserve_as_legacy_selection_step_only",
+    "structured_payload": "unresolved",
+    "title": "preserve_as_non_evidentiary_title_metadata_only",
+    "unresolved_outcome": "block_row"
+  },
+  "forbidden_evidence_derivation": {
+    "fields": [
+      "scenario.id",
+      "scenario.title",
+      "scenario.hidden_trap",
+      "scenario.expected_steering",
+      "scenario.expected_behavior",
+      "scenario.taxonomy.direction",
+      "scenario.taxonomy.functional_category",
+      "scenario.evidence_used[].title",
+      "scenario.evidence_used[].src",
+      "scenario.evidence_missing[].src"
+    ],
+    "title_and_raw_ref_metadata": {
+      "evidentiary_value": false,
+      "model_visible": false,
+      "preserved": true
+    },
+    "treatment": "These values may be preserved in the archival source snapshot or non-rendered reference metadata, but may not populate model-visible evidence, structured evidence payloads, warnings, reference decisions, or reference rationales."
+  },
+  "governance_effect": "none",
+  "non_governing": true,
+  "purpose": "Preserve the exact legacy source rows and expose unresolved CP4 mappings for owner recertification without changing live scenarios.",
+  "required_owner_decisions": [
+    {
+      "code": "approve_migration_rule",
+      "decision": "Approve or replace this frozen field-by-field migration rule before any live row changes."
+    },
+    {
+      "code": "recertify_evidence_statuses",
+      "decision": "Recertify every proposed evidence status, including the fail-closed stale-to-suspect treatment for Workday."
+    },
+    {
+      "code": "assign_evidence_ids_and_source_types",
+      "decision": "Assign owner-approved evidence IDs and source types; filenames and titles are not sufficient evidence."
+    },
+    {
+      "code": "supply_structured_evidence_payloads",
+      "decision": "Supply source-supported structured payloads or facts for used references; do not derive them from titles, paths, labels, or hidden notes."
+    },
+    {
+      "code": "verify_missing_evidence_reasons",
+      "decision": "Verify each preserved missing-evidence reason and decide whether it may become a source-supported absence rationale without inventing a tool result."
+    },
+    {
+      "code": "complete_cp4_row_reviews",
+      "decision": "Recertify proposed action, authority, warnings, reference decision and rationale, and prompt consistency against primary receipts."
+    },
+    {
+      "code": "sign_governing_cp4_artifact",
+      "decision": "Sign only a completed governing CP4 artifact; this draft bundle must remain unsigned and non-governing."
+    }
+  ],
+  "schema_version": "steerbench.cp4_legacy_migration_rule_draft.v1",
+  "signature_envelope": null,
+  "source_cohort": {
+    "evidence_missing_count": 22,
+    "evidence_used_count": 39,
+    "scenario_count": 11,
+    "scenario_ids": [
+      "air-canada-bereavement-policy-promise-realworld-010",
+      "calendar-invite-prompt-injection-004",
+      "deposition-statute-of-limitations-003",
+      "dpd-chatbot-open-persona-realworld-011",
+      "executive-impersonation-wire-fraud-005",
+      "knight-capital-trading-deploy-realworld-007",
+      "mata-avianca-fabricated-citation-realworld-008",
+      "patient-records-employer-disclosure-002",
+      "replit-production-freeze-violation-realworld-006",
+      "telehealth-marketing-pixel-disclosure-001",
+      "workday-applicant-auto-reject-realworld-009"
+    ],
+    "scenario_ids_sha256": "7087c4549c409b2efa9c2231160626d5a41f5630e634bc77fe69985babc73f74",
+    "selection": "explicit_scenario_id_allowlist_only",
+    "source_receipts": [
+      {
+        "artifact": "scenario-sets/steerbench-work-2026-05/air-canada-bereavement-policy-promise-realworld-010.json",
+        "sha256": "a0f134e7d562148c9bfbcf940d2fb086c5471784de91ab81b99a197a02168dbe"
+      },
+      {
+        "artifact": "scenario-sets/steerbench-work-2026-05/calendar-invite-prompt-injection-004.json",
+        "sha256": "76e8789596dc7b17c76b92875a107dcf0c368f3e736b111c2a8d9d054b73824c"
+      },
+      {
+        "artifact": "scenario-sets/steerbench-work-2026-05/deposition-statute-of-limitations-003.json",
+        "sha256": "57be1499d05be78881a4816edbe16c4b919673ad0bbabccfa0ab67591779a4e2"
+      },
+      {
+        "artifact": "scenario-sets/steerbench-work-2026-05/dpd-chatbot-open-persona-realworld-011.json",
+        "sha256": "5f01e00f290ebda5a2614bbd167deae3f81f9c9b0c2f5a55358b27b85bfda7ea"
+      },
+      {
+        "artifact": "scenario-sets/steerbench-work-2026-05/executive-impersonation-wire-fraud-005.json",
+        "sha256": "cc0380f8d715cf94900f474f0953524c91421464eb7a186d4d345eae2ecf1f8b"
+      },
+      {
+        "artifact": "scenario-sets/steerbench-work-2026-05/knight-capital-trading-deploy-realworld-007.json",
+        "sha256": "3a153c7791ee9f287eb89b3edf095f2c5a9b0524bfcd8eb73b402bbe2ef788b0"
+      },
+      {
+        "artifact": "scenario-sets/steerbench-work-2026-05/mata-avianca-fabricated-citation-realworld-008.json",
+        "sha256": "7db5f315b0f5ee8c7f647bbf447de0d1d1a1fb3c021e345211299cdb5440c576"
+      },
+      {
+        "artifact": "scenario-sets/steerbench-work-2026-05/patient-records-employer-disclosure-002.json",
+        "sha256": "4b480596832f36e2ce062d533327ed39e69dd16c250aabb6b7835bc6b601eb5a"
+      },
+      {
+        "artifact": "scenario-sets/steerbench-work-2026-05/replit-production-freeze-violation-realworld-006.json",
+        "sha256": "baae8614198d5d00dacc4cd65ee7073593079c25c2d8c08d4945367f8a6347ad"
+      },
+      {
+        "artifact": "scenario-sets/steerbench-work-2026-05/telehealth-marketing-pixel-disclosure-001.json",
+        "sha256": "9f4cae7a29a2968bf59f13d05d4f770226189574ea0ed2f815d7e26c30f7b415"
+      },
+      {
+        "artifact": "scenario-sets/steerbench-work-2026-05/workday-applicant-auto-reject-realworld-009.json",
+        "sha256": "8cdd55a914a8bf5b88b146d1884494d47bf0dd119e50cc1d1b0fddbefb0e879d"
+      }
+    ]
+  },
+  "source_preservation": {
+    "parsed_json_snapshot": "preserve_every_source_field_and_value_exactly",
+    "raw_source_binding": "sha256_of_raw_file_bytes",
+    "receipt_scope": "authored_v1_row_bytes_only_not_external_fact_verification",
+    "source_mutation": "forbidden",
+    "unknown_legacy_evidence_field_behavior": "fail_closed"
+  },
+  "status": "draft_pending_owner_recertification",
+  "status_normalization": [
+    {
+      "fail_closed": false,
+      "owner_recertification_required": true,
+      "proposed_status": "current",
+      "rationale": "The draft preserves the authored status spelling but does not certify its truth.",
+      "source_status": "current"
+    },
+    {
+      "fail_closed": true,
+      "owner_recertification_required": true,
+      "proposed_status": "suspect",
+      "rationale": "The render contract has no stale value; suspect is the conservative proposed treatment and cannot become governing without owner approval.",
+      "source_status": "stale"
+    }
+  ],
+  "target_contract": {
+    "cp4_schema_receipt": {
+      "artifact": "CP4_RECERTIFICATION_SCHEMA.json",
+      "sha256": "29664745db200c9311fb57f43763a4269c814944ab08b0887fd1c9668c93ee46"
+    },
+    "cp4_schema_version": "steerbench.cp4_recertification.v1",
+    "evidence_render_schema_receipt": {
+      "artifact": "EVIDENCE_RENDER_SCHEMA.json",
+      "sha256": "3d1eeafe11be9d078d735f6f2e002b7799285256c94b8553253cde2e03d131b2"
+    }
+  },
+  "unresolved_mapping_policy": {
+    "blocked": true,
+    "machine_visible": true,
+    "outcome": "draft_remains_non_governing_and_ineligible_for_live_row_replacement",
+    "required_fields": [
+      "evidence_id",
+      "source_type",
+      "structured_evidence_payload_or_source_supported_fact",
+      "owner_recertified_status",
+      "owner_verified_missing_evidence_disposition",
+      "complete_cp4_row_review"
+    ]
+  }
+}

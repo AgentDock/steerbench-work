@@ -1,0 +1,68 @@
+{
+  "schema_version": "steerbench.cp4_dependency_pair_source_receipt_draft.v1",
+  "status": "draft_pending_owner_recertification",
+  "scientific_limit": "These are construction-dependency candidates derived from explicit authored row text. They do not become recertified pair or mirror IDs until the scientific owner signs the enclosing CP4 payload.",
+  "pairs": [
+    {
+      "pair_id": "incident-mirror:google-bard-jwst-error",
+      "members": [
+        {
+          "scenario_id": "bard-jwst-mirror-fact-checked-claim-tier-b-009",
+          "artifact": "scenario-sets/steerbench-work-2026-05/bard-jwst-mirror-fact-checked-claim-tier-b-009.json",
+          "sha256": "3248a6a69c874c93c847ba03fec9c343b2e0e77cf8bfbcbaba7ed3330166d552",
+          "authored_basis_pointer": "/metadata/underrefusal_incident_mirror/incident_name",
+          "authored_basis_value": "Google Bard JWST factual error"
+        },
+        {
+          "scenario_id": "google-bard-demo-marketing-claim-high-impact-020",
+          "artifact": "scenario-sets/steerbench-work-2026-05/google-bard-demo-marketing-claim-high-impact-020.json",
+          "sha256": "8df7c820fe11d4e89d1eb5de0ceef7c7fb6dac80b8ccf780bb96c96698e3b624",
+          "authored_basis_pointer": "/source_basis",
+          "authored_basis_value": "public-incident: Google Bard demo error, Feb 8 2023."
+        }
+      ],
+      "owner_decision_required": "Confirm that the incident anchor and its authored fact-checked mirror share one exact dependency family for leave-one-family-out evaluation."
+    },
+    {
+      "pair_id": "incident-mirror:uk-post-office-horizon",
+      "members": [
+        {
+          "scenario_id": "horizon-mirror-reconciled-adjustment-tier-b-011",
+          "artifact": "scenario-sets/steerbench-work-2026-05/horizon-mirror-reconciled-adjustment-tier-b-011.json",
+          "sha256": "b2b957e5b785f6cfcf7e92367cfb7365a93d7ad8e44e33a55d66bcdbfb1bf9a6",
+          "authored_basis_pointer": "/metadata/underrefusal_incident_mirror/incident_name",
+          "authored_basis_value": "UK Post Office Horizon scandal"
+        },
+        {
+          "scenario_id": "horizon-shortfall-prosecution-recommend-high-impact-003",
+          "artifact": "scenario-sets/steerbench-work-2026-05/horizon-shortfall-prosecution-recommend-high-impact-003.json",
+          "sha256": "4f7452c29d3e7cfe7ff021df7e295cba514a764ed88a4b0eab22a6e8c49c35cd",
+          "authored_basis_pointer": "/source_basis",
+          "authored_basis_value": "public-incident: UK Post Office Horizon IT scandal, 1999-2015."
+        }
+      ],
+      "owner_decision_required": "Confirm that the incident anchor and its authored reconciled mirror share one exact dependency family for leave-one-family-out evaluation."
+    },
+    {
+      "pair_id": "incident-mirror:australian-robodebt",
+      "members": [
+        {
+          "scenario_id": "robodebt-income-averaging-debt-notice-high-impact-004",
+          "artifact": "scenario-sets/steerbench-work-2026-05/robodebt-income-averaging-debt-notice-high-impact-004.json",
+          "sha256": "1ab95b724d640781b97793f80807128f6d94f231bc28526bac2196a807291bba",
+          "authored_basis_pointer": "/source_basis",
+          "authored_basis_value": "public-incident: Australian Government Robodebt scheme, 2015-2019."
+        },
+        {
+          "scenario_id": "robodebt-mirror-eligible-notice-tier-b-010",
+          "artifact": "scenario-sets/steerbench-work-2026-05/robodebt-mirror-eligible-notice-tier-b-010.json",
+          "sha256": "e3464a232d09babacfa71c1ed4de33e1666996f232b76c3cb3d4ca1d1a232112",
+          "authored_basis_pointer": "/metadata/underrefusal_incident_mirror/incident_name",
+          "authored_basis_value": "Australian Robodebt scheme"
+        }
+      ],
+      "owner_decision_required": "Confirm that the incident anchor and its authored eligible-notice mirror share one exact dependency family for leave-one-family-out evaluation."
+    }
+  ],
+  "signature_envelope": null
+}

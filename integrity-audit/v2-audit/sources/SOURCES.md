@@ -1,13 +1,17 @@
 # Source receipts
 
-Retrieved by non-interactive fetch on the dates below. A finding's
-receipt is the hashed retrieval, not the live URL. Copyrighted
-retrievals are NOT committed to this repository: for those, the receipt
-is a compact manifest (canonical source, version/section, retrieval
-date, SHA-256 of the raw download, a short controlling excerpt, and
-redistribution status). The hashed raw downloads are retained in the
-owners' private archive; anyone re-fetching the same URL can compare
-content, and the owners can produce the exact bytes on request.
+Source artifacts and manifests are listed below. Unless a subsection
+says otherwise, sources were retrieved by non-interactive fetch on the
+stated dates. A frozen receipt binds hashed source bytes, not merely a
+live URL; a manually normalized transcript whose source buffer was not
+retained is identified as such and is not treated as a frozen raw-source
+receipt. Copyrighted retrievals are NOT committed to this repository:
+for those, the receipt is a compact manifest (canonical source,
+version/section, retrieval date, SHA-256 of the raw download, a short
+controlling excerpt, and redistribution status). The hashed raw
+downloads are retained in the owners' private archive; anyone re-fetching
+the same URL can compare content, and the owners can produce the exact
+bytes on request.
 
 ## Committed excerpt receipt (NASA)
 
@@ -86,15 +90,56 @@ cites).
 - Redistribution status: copyright American College of Radiology; no
   redistribution license. Full HTML not committed.
 
-### NYC Administrative Code §§ 17-307 / 17-315 (NO FROZEN RECEIPT)
+## Committed public-law receipts (NYC)
 
-- URLs (source pointers only — a live URL is not a receipt):
-  https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-131683
-  and 0-0-0-214723
-- Status: no frozen receipt exists for this row. The pages are
-  Cloudflare-blocked to non-interactive fetch on two mirrors. An
-  owner-captured snapshot plus its SHA-256 is required at Checkpoint 4;
-  the missing frozen receipt blocks Checkpoint 4 for this row.
+### NYC Administrative Code §§ 17-307 and 17-315
+
+- Section 17-307 owner capture:
+  `nyc-admin-code-17-307-owner-capture-2026-08-21.pdf`, 49,781 bytes,
+  5 pages, SHA-256
+  `99d7062944a6ff00185abb11a15b54d573720cf2a795b2576d5a7c34e3070dbd`.
+  The owner printed the current American Legal section page to PDF on
+  2026-08-21 from
+  https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-131683.
+  The PDF contains complete § 17-307 plus § 17-315.1; § 17-315.1 is a
+  separate cleanliness-and-waste section and is not a substitute for
+  § 17-315.
+- Section 17-315 manually normalized transcript:
+  `nyc-admin-code-17-315-browser-receipt.md`, SHA-256
+  `c558e71d5b50aeb257a90e5541b03927ed18a96aad8fd4ca3212622bed9194e4`.
+  It records a manually normalized transcription of the section text
+  observed on 2026-08-21 at
+  https://codelibrary.amlegal.com/codes/newyorkcity/latest/NYCadmin/0-0-0-214723.
+  This file hash binds only the committed transcript bytes. The original
+  interactive browser buffer was not retained, so the transcript is not
+  a frozen raw-source receipt and no hash of source-page bytes is asserted.
+- Controlling source findings:
+  - § 17-307 is titled "Licenses, permits required; restrictions; term,"
+    not "Restrictions on mobile food vending." It requires licenses and
+    vehicle/pushcart permits; it does not state a blanket ban on vending
+    on residential streets or identify a generic set of permitted
+    commercial corridors.
+  - § 17-307's captured amendment history includes Local Laws 2020/080,
+    2021/018, 2026/054, and 2026/059. It does not support the row's single
+    `effective_date: 2023-01-15` assertion.
+  - § 17-315(d) requires a vending pushcart to remain twenty feet from
+    exits of exclusively residential-at-street-level buildings; it does
+    not apply that clearance to every vending vehicle. § 17-315(k)
+    establishes location/day/time-specific prohibitions and exceptions.
+    § 17-315(m) requires an official prohibited-block-face map keyed by
+    day and hour. These provisions contradict the row's blanket
+    residential-street answer and do not support its commercial-corridor
+    wording.
+- Status: the committed PDF closes the frozen § 17-307 source gap. The
+  manually normalized § 17-315 transcript is enough to diagnose the
+  frozen answer, but because its original browser buffer was not retained,
+  the frozen raw-source gap for § 17-315 remains open. The row remains
+  blocked at Checkpoint 4. Its current E01 title/date and E02 consistency
+  result are false or unsupported, and a borough-only E03 result cannot
+  establish a block-face/day/time answer. Correction requires a frozen
+  § 17-315 source capture, a new exact answer, fresh operational receipts
+  bound to those bytes, and dated scientific-owner source/gold
+  recertification for the intended evaluation date.
 
 ## Paper source pins (hand-authored-table finding)
 
